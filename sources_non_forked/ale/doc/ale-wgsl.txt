@@ -1,0 +1,17 @@
+===============================================================================
+ALE WGSL Integration                                         *ale-wgsl-options*
+
+
+===============================================================================
+naga                                                            *ale-wgsl-naga*
+
+g:ale_wgsl_naga_executable                         *g:ale_wgsl_naga_executable*
+                                                   *b:ale_wgsl_naga_executable*
+  Type: |String|
+  Default: `'naga'`
+
+  The executable that will be run for the `naga` linter.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

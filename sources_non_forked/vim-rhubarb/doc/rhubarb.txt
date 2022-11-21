@@ -1,0 +1,17 @@
+*rhubarb.txt*  fugitive.vim extension for GitHub
+
+Author:  Tim Pope <http://tpo.pe/>
+License: MIT
+
+Use |i_CTRL-X_CTRL-O| to omni-complete GitHub issues or project collaborator
+usernames when editing a commit message.
+
+Use Fugitive's |:GBrowse| to browse to the GitHub URL for the current buffer.
+
+ABOUT                                           *rhubarb-about*
+
+Grab the latest version or report a bug on GitHub:
+
+http://github.com/tpope/vim-rhubarb
+
+ vim:tw=78:et:ft=help:norl:

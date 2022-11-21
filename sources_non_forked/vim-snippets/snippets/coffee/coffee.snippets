@@ -1,0 +1,101 @@
+# Closure loop
+snippet forindo
+	for ${1:name} in ${2:array}
+		do ($1) ->
+			$0
+# Array comprehension
+snippet fora
+	for ${1:name} in ${2:array}
+		$0
+# Object comprehension
+snippet foro
+	for ${1:key}, ${2:value} of ${3:object}
+		$0
+# Range comprehension (inclusive)
+snippet forr
+	for ${1:name} in [${2:start}..${3:finish}]
+		$0
+snippet forrb
+	for ${1:name} in [${2:start}..${3:finish}] by ${4:step}
+		$0
+# Range comprehension (exclusive)
+snippet forrex
+	for ${1:name} in [${2:start}...${3:finish}]
+		$0
+snippet forrexb
+	for ${1:name} in [${2:start}...${3:finish}] by ${4:step}
+		$0
+# Function
+snippet fun
+	(${1:args}) ->
+		$0
+# Function (bound)
+snippet bfun
+	(${1:args}) =>
+		$0
+# Class
+snippet cla class ..
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+		${0}
+snippet cla class .. constructor: ..
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+		constructor: (${2:args}) ->
+			${3}
+
+		${0}
+snippet cla class .. extends ..
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} extends ${2:ParentClass}
+		${0}
+snippet cla class .. extends .. constructor: ..
+	class ${1:`substitute(vim_snippets#Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} extends ${2:ParentClass}
+		constructor: (${3:args}) ->
+			${4}
+
+		${0}
+# If
+snippet if
+	if $1
+		${0:${VISUAL}}
+# If __ Else
+snippet ife
+	if $1
+		${2:${VISUAL}}
+	else
+		${0}
+# Else if
+snippet eif
+	else if $1
+		${0:${VISUAL}}
+# Ternary If
+snippet ifte Ternary
+	if $1 then $2 else $0
+# Unless
+snippet unl Unless
+	$1 unless $0
+# Switch
+snippet swi
+	switch ${1:object}
+		when ${2:value}
+			$0
+
+# Log
+snippet log
+	console.log ${0}
+# Try __ Catch
+snippet try
+	try
+		${1:${VISUAL}}
+	catch ${2:error}
+		${0}
+# Require
+snippet req
+	${2:$1} = require '${1:sys}'
+# Export
+snippet exp
+	${0:root} = exports ? this
+
+snippet jsonp
+	JSON.parse ${0:jstr}
+# JSON.stringify
+snippet jsons
+	JSON.stringify ${0:object}

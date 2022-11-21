@@ -1,0 +1,54 @@
+snippet def
+	<%def name="${1:name}">
+		${0:}
+	</%def>
+snippet call
+	<%call expr="${1:name}">
+		${0:}
+	</%call>
+snippet doc
+	<%doc>
+		${0:}
+	</%doc>
+snippet text
+	<%text>
+		${0:}
+	</%text>
+snippet for
+	% for ${1:i} in ${2:iter}:
+		${0:}
+	% endfor
+snippet if if
+	% if $1:
+		${0:}
+	% endif
+snippet ife if/else
+	% if $1:
+		${2:}
+	% else:
+		${0:}
+	% endif
+snippet try
+	% try:
+		${1:${VISUAL}}
+	% except${2:}:
+		${0:pass}
+	% endtry
+snippet wh
+	% while ${1:}:
+		${0:}
+	% endwhile
+snippet $
+	${ ${0:} }
+snippet <%
+	<% ${0:} %>
+snippet <!%
+	<!% ${0:} %>
+snippet inherit
+	<%inherit file="${0:filename}" />
+snippet include
+	<%include file="${0:filename}" />
+snippet namespace
+	<%namespace file="${0:name}" />
+snippet page
+	<%page args="${0:}" />

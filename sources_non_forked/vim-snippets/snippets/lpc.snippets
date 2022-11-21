@@ -1,0 +1,190 @@
+##
+## Preprocessor
+# #include <...>
+snippet inc
+	#include <${1:stdio}.h>
+# #include "..."
+snippet Inc
+	#include "${1:`vim_snippets#Filename("$1.h")`}"
+# ifndef...define...endif
+snippet ndef
+	#ifndef $1
+	#define ${1:SYMBOL} ${2:value}
+	#endif /* ifndef $1 */
+# define
+snippet def
+	#define
+# ifdef...endif
+snippet ifdef
+	#ifdef ${1:FOO}
+		${2:#define }
+	#endif
+# if
+snippet #if
+	#if ${1:FOO}
+		${0:${VISUAL}}
+	#endif
+# header include guard
+snippet once
+	#ifndef ${1:`toupper(vim_snippets#Filename('$1_H', 'UNTITLED_H'))`}
+
+	#define $1
+
+	${0}
+
+	#endif /* end of include guard: $1 */
+##
+## Control Statements
+# if
+snippet if
+	if(${1:true})
+	{
+		${0:${VISUAL}}
+	}
+snippet ife
+	if(${1:true})
+	{
+		${2:${VISUAL}}
+	}
+	else
+	{
+		${0}
+	}
+# else
+snippet el
+	else
+	{
+		${0:${VISUAL}}
+	}
+# else if
+snippet elif
+	else if(${1:true})
+	{
+		${0:${VISUAL}}
+	}
+# ifi
+snippet ifi
+	if(${1:true}) ${0};
+# ternary
+snippet t Ternary: `condition ? true : false`
+	$1 ? $2 : $0
+# switch
+snippet switch
+	switch(${1:/* variable */})
+	{
+		case ${2:/* variable case */}:
+			${3}
+			${4:break;}${5}
+		default:
+			${6}
+	}
+# switch without default
+snippet switchndef
+	switch(${1:/* variable */})
+	{
+		case ${2:/* variable case */}:
+			${3}
+			${4:break;}${5}
+	}
+# case
+snippet case
+	case ${1:/* variable case */}:
+		${2}
+		${3:break;}
+snippet ret
+	return ${0};
+##
+## Loops
+#foreach
+snippet fore
+	foreach(${1:mixed} ${2:ele} in ${3:arr})
+	{
+		${4}
+	}
+# for
+snippet for
+	for(int ${2:i} = 0; $2 < ${1:count}; $2${3:++})
+	{
+		${4}
+	}
+# for (custom)
+snippet forr
+	for(int ${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++})
+	{
+		${5}
+	}
+# while
+snippet wh
+	while($1)
+	{
+		${0:${VISUAL}}
+	}
+# do... while
+snippet do
+	do{
+		${0:${VISUAL}}
+	}while ($1);
+##
+## Functions
+# function definition
+snippet fnc
+	${1:void} ${2:function_name}(${3})
+	{
+		${4}
+	}
+# function definition with zero parameters
+snippet defun0
+	${1:void} ${2:function_name}()
+	{
+		${3}
+	}
+# function definition with one parameter
+snippet defun1
+	${1:void} ${2:function_name}(${3:Type} ${4:Parameter})
+	{
+		${5}
+	}
+# function definition with two parameters
+snippet defun2
+	${1:void} ${2:function_name}(${3:Type} ${4:Parameter}, ${5:Type} ${6:Parameter})
+	{
+		${7}
+	}
+# function definition with three parameters
+snippet defun3
+	${1:void} ${2:function_name}(${3:Type} ${4:Parameter}, ${5:Type} ${6:Parameter}, ${7:Type} ${8:Parameter})
+	{
+		${9}
+	}
+# function declaration
+snippet fund
+	${1:void} ${2:function_name}(${3});
+##
+## Input/Output
+# printf
+snippet pr
+	printf("${1:%s}\n"${2});
+# fprintf (again, this isn't as nice as TextMate's version, but it works)
+snippet fpr
+	fprintf(${1:stderr}, "${2:%s}\n"${3});
+snippet prd
+	printf("${1:} = %d\n", $1);
+snippet prf
+	printf("${1:} = %f\n", $1);
+snippet prx
+	printf("${1:} = %${2}\n", $1);
+##
+# TODO section
+snippet todo
+	/*! TODO: ${1:Todo description here} */
+
+## Miscellaneous
+# This is kind of convenient
+snippet .
+	[${1}]
+
+
+##
+## MHXY
+snippet head
+	// code for ${1} by `$USER` create at `strftime("%Y-%m-%d %H:%M:%S")`

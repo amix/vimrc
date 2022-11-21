@@ -1,0 +1,48 @@
+priority -50
+
+# JavaScript versions -- from the TextMate bundle + some additions
+# for jasmine-jquery matchers
+#
+
+snippet des "Describe (js)" b
+describe('${1:description}', () => {
+	$0
+});
+endsnippet
+
+snippet it "it (js)" b
+it('${1:description}', () => {
+	$0
+});
+endsnippet
+
+snippet bef "before each (js)" b
+beforeEach(() => {
+	$0
+});
+endsnippet
+
+snippet aft "after each (js)" b
+afterEach(() => {
+	$0
+});
+endsnippet
+
+snippet befa "before all (js)" b
+beforeAll(() => {
+	$0
+});
+endsnippet
+
+snippet afta "after all (js)" b
+afterAll(() => {
+	$0
+});
+endsnippet
+
+snippet ru "runs (js)" b
+runs(() => {
+	$0
+});
+endsnippet
+

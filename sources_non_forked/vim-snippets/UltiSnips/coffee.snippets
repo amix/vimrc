@@ -1,0 +1,100 @@
+priority -50
+
+snippet fun "Function" b
+${1:name} = `!p snip.rv = "(" if t[2] else ""`${2:args}`!p snip.rv = ") " if t[2] else ""`->
+	${0:# body...}
+endsnippet
+
+snippet bfun "Function (bound)" i
+`!p snip.rv = "(" if t[1] else ""`${1:args}`!p snip.rv = ") " if t[1] else ""`=>`!p snip.rv = " " if t[2] and not t[2].startswith("\n") else ""`${2:expr}
+endsnippet
+
+snippet if "If" b
+if ${1:condition}
+	${0:# body...}
+endsnippet
+
+snippet ife "If .. Else" b
+if ${1:condition}
+	${2:# body...}
+else
+	${3:# body...}
+endsnippet
+
+snippet elif "Else if" b
+else if ${1:condition}
+	${0:# body...}
+endsnippet
+
+snippet ifte "Ternary if" b
+if ${1:condition} then ${2:value} else ${3:other}
+endsnippet
+
+snippet unl "Unless" b
+${1:action} unless ${2:condition}
+endsnippet
+
+snippet fora "Array Comprehension" b
+for ${1:name} in ${2:array}
+	${0:# body...}
+endsnippet
+
+snippet foro "Object Comprehension" b
+for ${1:key}, ${2:value} of ${3:Object}
+	${0:# body...}
+endsnippet
+
+snippet forr "Range Comprehension (inclusive)" b
+for ${1:name} in [${2:start}..${3:finish}]`!p snip.rv = " by " if t[4] else ""`${4:step}
+	${0:# body...}
+endsnippet
+
+snippet forrex "Range Comprehension (exclusive)" b
+for ${1:name} in [${2:start}...${3:finish}]`!p snip.rv = " by " if t[4] else ""`${4:step}
+	${0:# body...}
+endsnippet
+
+snippet swi "Switch" b
+switch ${1:object}
+	when ${2:value}
+		${3:# body...}
+	else
+		$0
+endsnippet
+
+snippet swit "Switch when .. then" b
+switch ${1:object}
+	when ${2:condition}`!p snip.rv = " then " if t[3] else ""`${3:value}
+	else`!p snip.rv = " " if t[4] and not t[4].startswith("\n") else ""`${4:value}
+endsnippet
+
+snippet cla "Class" b
+class ${1:ClassName}`!p snip.rv = " extends " if t[2] else ""`${2:Ancestor}
+
+	${3:constructor:`!p snip.rv = " (" if t[4] else ""`${4:args}`!p snip.rv = ")" if t[4] else ""` ->
+		${5:# body...}}
+	$0
+endsnippet
+
+snippet try "Try .. Catch" b
+try
+	$1
+catch ${2:error}
+	$3
+endsnippet
+
+snippet req "Require" b
+${1/^'?(\w+)'?$/\L$1\E/} = require(${1:'${2:sys}'})
+endsnippet
+
+snippet # "Interpolated Code" i
+#{$1}$0
+endsnippet
+
+snippet log "Log" b
+console.log ${1:"${2:msg}"}
+endsnippet
+
+snippet kv "Key:value for object" b
+${1:key}:${2:value}
+endsnippet

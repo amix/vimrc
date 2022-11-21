@@ -1,0 +1,32 @@
+This library provides some utility functions. There isn't much need to 
+install it unless another plugin requires you to do so.
+
+Most of the library is included in autoload files. No autocommands are 
+created. With the exception of loading ../plugin/02tlib.vim at startup 
+the library has no impact on startup time or anything else.
+
+The change-log is included at the bottom of ../plugin/02tlib.vim
+(move the cursor over the file name and type gfG)
+
+Demo of |tlib#input#List()|: 
+http://vimsomnia.blogspot.com/2010/11/selecting-items-from-list-with-tlibs.html
+
+
+-----------------------------------------------------------------------
+Install~
+
+Edit the vba file and type: >
+
+    :so %
+
+See :help vimball for details. If you have difficulties, please make 
+sure, you have the current version of vimball (vimscript #1502) 
+installed.
+
+
+
+
+
+License: GPLv3 or later
+
+

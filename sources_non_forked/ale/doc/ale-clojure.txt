@@ -1,0 +1,36 @@
+===============================================================================
+ALE Clojure Integration                                   *ale-clojure-options*
+
+
+===============================================================================
+clj-kondo                                               *ale-clojure-clj-kondo*
+
+A minimal and opinionated linter for code that sparks joy.
+
+https://github.com/borkdude/clj-kondo
+
+g:ale_clojure_clj_kondo_options               *g:ale_clojure_clj_kondo_options*
+                                              *b:ale_clojure_clj_kondo_options*
+  Type: |String|
+  Default: `'--cache'`
+
+  This variable can be changed to modify options passed to clj-kondo.
+
+
+===============================================================================
+joker                                                       *ale-clojure-joker*
+
+Joker is a small Clojure interpreter and linter written in Go.
+
+https://github.com/candid82/joker
+
+Linting options are not configurable by ale, but instead are controlled by a
+`.joker` file in same directory as the file (or current working directory if
+linting stdin), a parent directory relative to the file, or the users home
+directory.
+
+see https://github.com/candid82/joker#linter-mode for more information.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
+

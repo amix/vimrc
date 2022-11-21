@@ -1,0 +1,71 @@
+extends html
+
+snippet % <% %>
+	<% ${0} %>
+snippet = <%= %>
+	<%= ${0} %>
+snippet # <%# %>
+	<%# ${0} %>
+snippet end
+	<% end %>
+snippet for
+	<%= for ${1:item} <- ${2:items} ${3:@conn} do %>
+		${0}
+	<% end %>
+snippet if
+	<%= if ${1} do %>
+		${0:${VISUAL}}
+	<% end %>
+snippet ife
+	<%= if ${1} do %>
+		${2:${VISUAL}}
+	<% else %>
+		${0}
+	<% end %>
+snippet cond
+	<%= cond do %>
+		<% ${1} -> %>
+			${2:${VISUAL}}
+
+		<% true -> %>
+			${0}
+	<% end %>
+snippet unless
+	<%= unless ${1} do %>
+		${0:${VISUAL}}
+	<% end %>
+snippet ft form_tag
+	<%= form_tag(${1:"/users"}, method: ${2::post}) %>
+		${0}
+	</form>
+
+snippet sl select
+	<%= select ${1:f}, :${2:field}, ${3:[{"key", "value"}]}, prompt: ${4:"Prompt"} %>
+
+snippet sb submit
+	<%= submit ${1:"Submit"} %>
+
+snippet rb radio_button
+	<%= radio_button ${1:f}, :${2:field},  ${3:"value"} %>
+
+
+snippet et error_tag
+	<%= error_tag ${1:f}, :${2:field} %>
+snippet ti text_input
+	<%= text_input ${1:f}, :${2:field} %>
+snippet la label
+	<%= label ${1:f}, :${2:field}, "${3:Label}" %>
+snippet pi password_input
+	<%= password_input ${1:f}, :${2:password} %>
+snippet render
+	<%= render "${1:index}.html", ${2:var: @var} %>
+snippet lin link
+	<%= link "${1:Submit}", to: ${2:"/users"}, method: ${3::delete} %>
+snippet ff form_for
+	<%= form_for @changeset, ${1:"/users"}, fn f -> %>
+			${0}
+
+		<%= submit "Submit" %>
+	<% end %>
+snippet pry
+	<% require IEx; IEx.pry %>

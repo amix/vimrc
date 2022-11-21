@@ -1,0 +1,116 @@
+# shebang
+snippet #!
+	#!/usr/bin/env perl6
+
+# Hash Pointer
+snippet .
+	 =>
+# Function
+snippet sub
+	sub ${1:function_name}(${2:Str $var}) {
+		${3}
+	}
+snippet mul
+	multi ${1:function_name}(${2:Str $var}) {
+		${3}
+	}
+# Conditional
+snippet if
+	if ${1} {
+		${2}
+	}
+# Conditional if..else
+snippet ife
+	if ${1} {
+		${2}
+	}
+	else {
+		${3}
+	}
+snippet eif
+	elsif ${1} {
+		${2}
+	}
+# Conditional One-line
+snippet xif
+	${1} if $2;
+# Unless conditional
+snippet unless
+	unless ${1} {
+		${2}
+	}
+# Unless conditional One-line
+snippet xunless
+	${1} unless $2;
+# Ternary conditional
+snippet tc
+	$1 ?? ${2:value-if-true} !! ${3:value-if-false};
+# given - when (perl6 switch)
+snippet switch
+	given ${1:$var} {
+	  when $2 {
+		  ${3:# code block ...}
+	  }
+	  ${4}
+	  default {
+		  ${5}
+	  }
+	}
+# 'loop' - C's for.
+snippet loop
+	loop (my ${1:$i} = 0; $$1 < ${2:count}; $$1++) {
+		${3}
+	}
+# for loop
+snippet for
+	for ${1:@array} -> ${2:$variable} {
+		${3}
+	}
+# While Loop
+snippet wh
+	while ${1} {
+		${2}
+	}
+# Repeat while and repean until
+snippet rp
+	repeat {
+		${1}
+	} ${2:while|until} ${3};
+# classes ..
+snippet cl
+	${1:my} class ${2:ClassName} ${3:is|does Parent|Role}{
+		${4}
+	}
+snippet has
+	has ${1:Type} ${2:$!identifier};
+snippet mth
+	method ${1:method_name}(${2:$attr}) {
+		${3}
+	}
+snippet pmth
+	method ${1:!}${2:method_name}(${3:$attr}) {
+		${4}
+	}
+snippet smth
+	submethod ${1:submethod_name}(${2:$attr}) {
+		${3}
+	}
+# Tests
+snippet test
+	use v6;
+	use Test;
+	${1:use lib 'lib';}
+
+	plan ${2:$num-tests};
+
+# IO
+snippet slurp
+	my ${1:$var} = "${2:filename}".IO.slurp;
+snippet rfile
+	for "${1:filename}".IO.lines -> $line {
+		${2}
+	}
+snippet open
+	my $fh = open "${1:filename}", ${2::r|:w|:a};
+	${3:# actions};
+	$fh.close;

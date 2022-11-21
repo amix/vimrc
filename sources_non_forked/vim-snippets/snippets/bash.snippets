@@ -1,0 +1,25 @@
+extends sh
+
+# Shebang
+snippet #!
+	#!/usr/bin/env bash
+
+snippet s#!
+	#!/usr/bin/env bash
+	set -eu
+
+snippet if
+	if [[ $1 ]]; then
+		${0:${VISUAL}}
+	fi
+snippet elif
+	elif [[ $1 ]]; then
+		${0:${VISUAL}}
+snippet wh
+	while [[ $1 ]]; do
+		${0:${VISUAL}}
+	done
+snippet until
+	until [[ $1 ]]; do
+		${0:${VISUAL}}
+	done

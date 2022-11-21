@@ -1,0 +1,30 @@
+snippet .attr
+	.attr("${1}", ${2})
+snippet .style
+	.style("${1}", ${2})
+snippet axis
+	d3.svg.axis()
+	  .orient(${1})
+	  .scale(${2})
+snippet fd
+	function(d) { ${1} }
+snippet fdi
+	function(d, i) { ${1} }
+snippet marginconvention
+	var ${1:margin} = { top: ${2:10}, right: ${3:10}, bottom: ${4:10}, left: ${5:10} };
+	var ${6:width} = ${7:970} - $1.left - $1.right;
+	var ${8:height} = ${9:500} - $1.top - $1.bottom;
+	
+	var ${10:svg} = d3.select("${11}").append("svg")
+	  .attr("width", $6 + $1.left + $1.right)
+	  .attr("height", $8 + $1.top + $1.bottom)
+	    .append("g")
+	  .attr("transform", "translate(" + $1.left + "," + $1.top + ")")
+snippet nest
+	d3.nest()
+	  .key(${1})
+	  .entries(${2})
+snippet scale
+	d3.scale.linear()
+	  .domain(${1})
+	  .range(${2})

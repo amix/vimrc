@@ -1,0 +1,12 @@
+os: linux
+dist: bionic
+language: ruby
+
+addons:
+  apt:
+    packages:
+      - vim-gtk
+      - xvfb
+
+script:
+  - xvfb-run bundle exec rake

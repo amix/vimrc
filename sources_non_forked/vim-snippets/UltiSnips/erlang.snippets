@@ -1,0 +1,24 @@
+###########################################################################
+#                            TEXTMATE SNIPPETS                            #
+###########################################################################
+
+priority -50
+
+snippet pat "Case:Receive:Try Clause"
+${1:pattern}${2: when ${3:guard}} ->
+	${4:body}
+endsnippet
+
+snippet mod "Module Directive" b
+-module(${1:`!p snip.rv = snip.basename or "module"`}).
+endsnippet
+
+snippet || "List Comprehension"
+[${1:X} || ${2:X} <- ${3:List}${4:, gen}]
+endsnippet
+
+snippet gen "Generator Expression"
+${1:X} <- ${2:List}${3:, gen}
+endsnippet
+
+# vim:ft=snippets:

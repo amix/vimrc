@@ -1,0 +1,106 @@
+priority -50
+
+global !p
+import vim
+
+# Tests for the existence of a variable declared by Vim's filetype detection
+# suggesting the type of shell script of the current file
+def testShell(scope, shell):
+	return vim.eval("exists('" + scope + ":is_" + shell + "')")
+
+# Loops over the possible variables, checking for global variables
+# first since they indicate an override by the user.
+def getShell():
+	for scope in ["g", "b"]:
+		for shell in ["bash", "posix", "sh", "kornshell"]:
+			if testShell(scope, shell) == "1":
+				if shell == "kornshell":
+					return "ksh"
+				if shell == "posix":
+					return "sh"
+				return shell
+	return "sh"
+endglobal
+
+###########################################################################
+#                            TextMate Snippets                            #
+###########################################################################
+snippet #! "#!/usr/bin/env (!env)" b
+`!p snip.rv = '#!/usr/bin/env ' + getShell() + "\n" `
+endsnippet
+
+snippet sbash "safe bash options" b
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+`!p snip.rv ='\n\n' `
+endsnippet
+
+snippet temp "Tempfile" b
+${1:TMPFILE}="$(mktemp -t ${3:--suffix=${4:.SUFFIX}} ${2:`!p
+snip.rv = re.sub(r'[^a-zA-Z]', '_', snip.fn) or "untitled"
+`}.XXXXXX)"
+${5:${6/(.+)/trap "/}${6:rm -f '$${1/.*\s//}'}${6/(.+)/" 0               # EXIT\n/}${7/(.+)/trap "/}${7:rm -f '$${1/.*\s//}'; exit 1}${7/(.+)/" 2       # INT\n/}${8/(.+)/trap "/}${8:rm -f '$${1/.*\s//}'; exit 1}${8/(.+)/" 1 15    # HUP TERM\n/}}
+
+endsnippet
+
+snippet /case|sw(itch)?/ "case .. esac (case)" rb
+case ${1:word} in
+	${2:pattern} )
+		${0:${VISUAL}};;
+esac
+endsnippet
+
+snippet elif "elif .. (elif)" b
+elif ${2:[[ ${1:condition} ]]}; then
+	${0:${VISUAL}}
+endsnippet
+
+snippet for "for ... done (for)" b
+for (( i = 0; i < ${1:10}; i++ )); do
+	${0:${VISUAL}}
+done
+endsnippet
+
+snippet forin "for ... in ... done (forin)" b
+for ${1:i}${2/.+/ in /}${2:words}; do
+	${0:${VISUAL}}
+done
+endsnippet
+
+snippet here "here document (here)"
+<<-${2:'${1:TOKEN}'}
+	$0`echo \\n`${1/['"`](.+)['"`]/$1/}
+endsnippet
+
+snippet /ift(est)?/ "if ... then (if)" rb
+if ${2:[ ${1:condition} ]}; then
+	${0:${VISUAL}}
+fi
+endsnippet
+
+snippet if "if ... then (if)" b
+if [[ ${1:condition} ]]; then
+	${0:${VISUAL}}
+fi
+endsnippet
+
+snippet until "until ... (done)" b
+until ${2:[[ ${1:condition} ]]}; do
+	${0:${VISUAL}}
+done
+endsnippet
+
+snippet /wh(ile)?/ "while ... (done)" rb
+while ${2:[[ ${1:condition} ]]}; do
+	${0:${VISUAL}}
+done
+endsnippet
+
+snippet func "function() {...}" b
+${1:function} () {
+	${0:${VISUAL}}
+}
+endsnippet
+
+# vim:ft=snippets:

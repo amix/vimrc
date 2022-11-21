@@ -1,0 +1,394 @@
+## Main
+# main
+snippet main
+	int main(int argc, char *argv[])
+	{
+		${0}
+	}
+# main(void)
+snippet mainn
+	int main(void)
+	{
+		${0}
+	}
+##
+## Preprocessor
+# #include <...>
+snippet inc
+	#include <${1:stdio}.h>
+	$0
+# #include "..."
+snippet Inc
+	#include "${1:`vim_snippets#Filename("$1.h")`}"
+	$0
+# ifndef...define...endif
+snippet ndef
+	#ifndef $1
+	#define ${1:SYMBOL} ${2:value}
+	#endif /* ifndef $1 */
+# define
+snippet def
+	#define
+# ifdef...endif
+snippet ifdef
+	#ifdef ${1:FOO}
+		${2:#define }
+	#endif
+# if
+snippet #if
+	#if ${1:FOO}
+		${0:${VISUAL}}
+	#endif
+# header include guard
+snippet once
+	#ifndef ${1:`toupper(vim_snippets#Filename('$1_H', 'UNTITLED_H'))`}
+
+	#define $1
+
+	${0}
+
+	#endif /* end of include guard: $1 */
+# Disable C++ name mangling in C headers
+snippet nocxx
+	#ifdef __cplusplus
+	extern "C" {
+	#endif
+
+	${0}
+
+	#ifdef __cplusplus
+	} /* extern "C" */
+	#endif
+##
+## Control Statements
+# if
+snippet if
+	if (${1:true}) {
+		${0:${VISUAL}}
+	}
+snippet ife
+	if (${1:true}) {
+		${2:${VISUAL}}
+	} else {
+		${0}
+	}
+# else
+snippet el
+	else {
+		${0:${VISUAL}}
+	}
+# else if
+snippet elif
+	else if (${1:true}) {
+		${0:${VISUAL}}
+	}
+# ifi
+snippet ifi
+	if (${1:true}) ${0};
+# ternary
+snippet t Ternary: `condition ? true : false`
+	$1 ? $2 : $0
+# switch
+snippet switch
+	switch (${1:/* variable */}) {
+		case ${2:/* variable case */}:
+			${3}
+			${4:break;}${5}
+		default:
+			${6}
+	}
+# switch without default
+snippet switchndef
+	switch (${1:/* variable */}) {
+		case ${2:/* variable case */}:
+			${3}
+			${4:break;}${5}
+	}
+# case
+snippet case
+	case ${1:/* variable case */}:
+		${2}
+		${3:break;}
+snippet ret
+	return ${0};
+snippet ex
+	exit($0);
+##
+## Loops
+# for
+snippet for
+	for (int ${2:i} = 0; $2 < ${1:count}; $2${3:++}) {
+		${4}
+	}
+# for (custom)
+snippet forr
+	for (int ${1:i} = ${2:0}; ${3:$1 < 10}; $1${4:++}) {
+		${5}
+	}
+# while
+snippet wh
+	while (${1:1}) {
+		${0:${VISUAL}}
+	}
+snippet wht
+	while (true) {
+		${0:${VISUAL}}
+	}
+# do... while
+snippet do
+	do {
+		${0:${VISUAL}}
+	} while ($1);
+##
+## Functions
+# function definition
+snippet fun
+	${1:void} ${2:function_name}(${3})
+	{
+		${4}
+	}
+# function definition with zero parameters
+snippet fun0
+	${1:void} ${2:function_name}()
+	{
+		${3}
+	}
+# function definition with Doxygen documentation
+snippet dfun0
+	/*! \brief ${1:Brief function description here}
+	 *
+	 *  ${2:Detailed description of the function}
+	 *
+	 * \return ${3:Return parameter description}
+	 */
+	${4:void} ${5:function_name}()
+	{
+		${6}
+	}
+# function definition with one parameter
+snippet fun1
+	${1:void} ${2:function_name}(${3:Type} ${4:Parameter})
+	{
+		${5}
+	}
+# function definition with one parameter with  Doxygen documentation
+snippet dfun1
+	/*! \brief ${1:Brief function description here}
+	 *
+	 *  ${2:Detailed description of the function}
+	 *
+	 * \param $3 ${4:Parameter description}
+	 * \return ${5:Return parameter description}
+	 */
+	${6:void} ${7:function_name}(${8:Type} ${3:Parameter})
+	{
+		${9}
+	}
+# function definition with two parameters
+snippet fun2
+	${1:void} ${2:function_name}(${3:Type} ${4:Parameter}, ${5:Type} ${6:Parameter})
+	{
+		${7}
+	}
+# function definition with two parameters with  Doxygen documentation
+snippet dfun2
+	/*! \brief ${1:Brief function description here}
+	 *
+	 *  ${2:Detailed description of the function}
+	 *
+	 * \param $3 ${4:Parameter description}
+	 * \param $5 ${6:Parameter description}
+	 * \return ${7:Return parameter description}
+	 */
+	${8:void} ${9:function_name}(${10:Type} ${3:Parameter}, ${11:Type} ${5:Parameter})
+	{
+		${12}
+	}
+# function definition with three parameters
+snippet fun3
+	${1:void} ${2:function_name}(${3:Type} ${4:Parameter}, ${5:Type} ${6:Parameter}, ${7:Type} ${8:Parameter})
+	{
+		${9}
+	}
+# function definition with three parameters with  Doxygen documentation
+snippet dfun3
+	/*! \brief ${1:Brief function description here}
+	 *
+	 *  ${2:Detailed description of the function}
+	 *
+	 * \param $3 ${4:Parameter description}
+	 * \param $5 ${6:Parameter description}
+	 * \param $7 ${8:Parameter description}
+	 * \return ${9:Return parameter description}
+	 */
+	${10:void} ${11:function_name}(${12:Type} ${3:Parameter}, ${13:Type} ${5:Parameter}, ${14:Type} ${7:Parameter})
+	{
+		${15}
+	}
+# function declaration
+snippet fund
+	${1:void} ${2:function_name}(${3});
+##
+## Types
+# typedef
+snippet td
+	typedef ${1:int} ${2:MyCustomType};
+# struct
+snippet st
+	/*! \struct $1
+	 *  \brief ${3:Brief struct description}
+	 *
+	 *  ${4:Detailed description}
+	 */
+	struct ${1:`vim_snippets#Filename('$1_t', 'name')`} {
+		${2:Data} /*!< ${4:Description} */
+	}${5: /* optional variable list */};
+# typedef struct
+snippet tds
+	/*! \struct $2
+	 *  \brief ${5:Brief struct description}
+	 *
+	 *  ${6:Detailed description}
+	 */
+	typedef struct ${2:_$1 }{
+		m_${3:Data} /*!< ${4:Description} */
+	} ${1:`vim_snippets#Filename('$1_t', 'name')`};
+
+snippet enum
+	/*! \enum $1
+	 *
+	 *  ${2:Detailed description}
+	 */
+	enum ${1:name} { ${0} };
+# typedef enum
+snippet tde
+	/*! \enum $2
+	 *
+	 *  ${4:Detailed description}
+	 */
+	typedef enum {
+		${1:Data} /*!< ${3:Description} */
+	} ${2:foo};
+##
+## Input/Output
+# printf
+snippet pr
+	printf("${1:%s}\n"${2});
+# fprintf (again, this isn't as nice as TextMate's version, but it works)
+snippet fpr
+	fprintf(${1:stderr}, "${2:%s}\n"${3});
+snippet prd
+	printf("${1:} = %d\n", $1);
+snippet prf
+	printf("${1:} = %f\n", $1);
+snippet prx
+	printf("${1:} = %${2}\n", $1);
+snippet warn
+	warn("${1:%s}"$0);
+snippet warnx
+	warnx("${1:%s}"$0);
+snippet err
+	err(${1:1}, "${2:%s}"$0);
+snippet errx
+	errx(${1:1}, "${2:%s}"$0);
+# getopt
+snippet getopt
+	int choice;
+	while (1)
+	{
+		static struct option long_options[] =
+		{
+			/* Use flags like so:
+			{"verbose",	no_argument,	&verbose_flag, 'V'}*/
+			/* Argument styles: no_argument, required_argument, optional_argument */
+			{"version", no_argument,	0,	'v'},
+			{"help",	no_argument,	0,	'h'},
+			${1}
+			{0,0,0,0}
+		};
+
+		int option_index = 0;
+
+		/* Argument parameters:
+			no_argument: " "
+			required_argument: ":"
+			optional_argument: "::" */
+
+		choice = getopt_long( argc, argv, "vh",
+					long_options, &option_index);
+
+		if (choice == -1)
+			break;
+
+		switch( choice )
+		{
+			case 'v':
+				${2}
+				break;
+
+			case 'h':
+				${3}
+				break;
+
+			case '?':
+				/* getopt_long will have already printed an error */
+				break;
+
+			default:
+				/* Not sure how to get here... */
+				return EXIT_FAILURE;
+		}
+	}
+
+	/* Deal with non-option arguments here */
+	if ( optind < argc )
+	{
+		while ( optind < argc )
+		{
+			${0}
+		}
+	}
+
+## Assertions
+snippet asr
+	assert($1);
+
+snippet anl
+	assert(${1:ptr} != NULL);
+
+## Dynamic Allocation
+snippet mlc
+	${1:ptr} = (${2:type}*) malloc(sizeof($2));
+
+snippet clc
+	${1:ptr} = (${2:type}*) calloc(${3:size}, sizeof($2));
+
+snippet rlc
+	${1:ptr} = realloc($1, ${2:size} * sizeof(${3:type}));
+
+snippet mlcd
+	${1:type} ${2:ptr} = ($1*) malloc(sizeof($1));
+
+snippet clcd
+	${1:type} ${2:ptr} = ($1*) calloc(${3:size}, sizeof($1));
+
+snippet fre
+	free(${1:ptr});
+
+##
+# TODO section
+snippet todo
+	/*! TODO: ${1:Todo description here}
+	 *  \todo $1
+	 */
+## Miscellaneous
+# This is kind of convenient
+snippet .
+	[${1}]
+
+snippet asm
+	__asm__ __volatile__(
+	"${0}\n\t"
+	:
+	:
+	);

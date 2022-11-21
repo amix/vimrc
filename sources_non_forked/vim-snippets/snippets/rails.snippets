@@ -1,0 +1,487 @@
+snippet art
+	assert_redirected_to ${1:action}: '${2:index}'
+snippet artnp
+	assert_redirected_to ${1:parent}_${2:child}_path(${3:@$1}, ${0:@$2})
+snippet artnpp
+	assert_redirected_to ${1:parent}_${2:child}_path(${0:@$1})
+snippet artp
+	assert_redirected_to ${1:model}_path(${0:@$1})
+snippet artpp
+	assert_redirected_to ${0:model}s_path
+snippet asd
+	assert_difference '${1:Model}.${2:count}', ${3:1} do
+		${0}
+	end
+snippet asnd
+	assert_no_difference '${1:Model}.${2:count}' do
+		${0}
+	end
+snippet asre
+	assert_response :${1:success}, @response.body
+snippet asrj
+	assert_rjs :${1:replace}, '${0:dom id}'
+snippet ass assert_select(..)
+	assert_select '${1:path}', ${2:text}: '${3:inner_html}' ${4:do}
+		${0}
+	end
+snippet ba
+	before_action :${0:method}
+snippet bf
+	before_filter :${0:method}
+snippet bt
+	belongs_to :${0:association}
+snippet btp
+	belongs_to :${1:association}, polymorphic: true
+snippet crw
+	cattr_accessor :${0:attr_names}
+snippet defcreate
+	def create
+		@${1:model_class_name} = ${2:ModelClassName}.new($1_params)
+
+		respond_to do |format|
+			if @$1.save
+				flash[:notice] = '$2 was successfully created.'
+				format.html { redirect_to(@$1) }
+				format.json  { render json: @$1, status: :created, location: @$1 }
+			else
+				format.html { render action: 'new' }
+				format.json  { render json: @$1.errors, status: :unprocessable_entity }
+			end
+		end
+	end
+snippet defdestroy
+	def destroy
+		@${1:model_class_name} = ${2:ModelClassName}.find(params[:id])
+		@$1.destroy
+
+		respond_to do |format|
+			format.html { redirect_to($1s_url) }
+			format.json  { head :ok }
+		end
+	end
+snippet defedit
+	def edit
+		@${1:model_class_name} = ${0:ModelClassName}.find(params[:id])
+	end
+snippet defindex
+	def index
+		@${1:model_class_name} = ${2:ModelClassName}.all
+
+		respond_to do |format|
+			format.html # index.html.erb
+			format.json  { render json: @$1s }
+		end
+	end
+snippet defnew
+	def new
+		@${1:model_class_name} = ${2:ModelClassName}.new
+
+		respond_to do |format|
+			format.html # new.html.erb
+			format.json  { render json: @$1 }
+		end
+	end
+snippet defshow
+	def show
+		@${1:model_class_name} = ${2:ModelClassName}.find(params[:id])
+
+		respond_to do |format|
+			format.html # show.html.erb
+			format.json  { render json: @$1 }
+		end
+	end
+snippet defupdate
+	def update
+		@${1:model_class_name} = ${2:ModelClassName}.find(params[:id])
+
+		respond_to do |format|
+			if @$1.update($1_params)
+				flash[:notice] = '$2 was successfully updated.'
+				format.html { redirect_to(@$1) }
+				format.json  { head :ok }
+			else
+				format.html { render action: 'edit' }
+				format.json  { render json: @$1.errors, status: :unprocessable_entity }
+			end
+		end
+	end
+snippet defparams
+	def ${1:model_class_name}_params
+		params.require(:$1).permit()
+	end
+snippet dele delegate .. to
+	delegate :${1:methods}, to: :${0:object}
+snippet dele delegate .. to .. prefix .. allow_nil
+	delegate :${1:methods}, to: :${2:object}, prefix: :${3:prefix}, allow_nil: ${0:allow_nil}
+snippet amc
+	alias_method_chain :${1:method_name}, :${0:feature}
+snippet flash
+	flash[:${1:notice}] = '${0}'
+snippet habtm
+	has_and_belongs_to_many :${1:object}, join_table: '${2:table_name}', foreign_key: '${3}_id'
+snippet hm
+	has_many :${0:object}
+snippet hmd
+	has_many :${1:other}s, class_name: '${2:$1}', foreign_key: '${3:$1}_id', dependent: :destroy
+snippet hmt
+	has_many :${1:object}, through: :${0:object}
+snippet ho
+	has_one :${0:object}
+snippet hod
+	has_one :${1:object}, dependent: :${0:destroy}
+snippet i18
+	I18n.t('${1:type.key}')
+snippet ist
+	<%= image_submit_tag('${1:agree.png}', id: '${2:id}'${0}) %>
+snippet log
+	Rails.logger.${1:debug} ${0}
+snippet log2
+	RAILS_DEFAULT_LOGGER.${1:debug} ${0}
+snippet logd
+	logger.debug { '${1:message}' }
+snippet loge
+	logger.error { '${1:message}' }
+snippet logf
+	logger.fatal { '${1:message}' }
+snippet logi
+	logger.info { '${1:message}' }
+snippet logw
+	logger.warn { '${1:message}' }
+snippet mapc
+	${1:map}.${2:connect} '${0:controller/:action/:id}'
+snippet mapca
+	${1:map}.catch_all '*${2:anything}', controller: '${3:default}', action: '${4:error}'
+snippet mapr
+	${1:map}.resource :${0:resource}
+snippet maprs
+	${1:map}.resources :${0:resource}
+snippet mapwo
+	${1:map}.with_options ${2:controller}: '${3:thing}' do |$3|
+		${0}
+	end
+
+###############################
+#   model callback snippets   #
+###############################
+
+# before callback
+snippet mbv
+	before_validation :${0:method}
+snippet mbc
+	before_create :${0:method}
+snippet mbu
+	before_update :${0:method}
+snippet mbs
+	before_save :${0:method}
+snippet mbd
+	before_destroy :${0:method}
+
+# after callback
+snippet mav
+	after_validation :${0:method}
+snippet maf
+	after_find :${0:method}
+snippet mat
+	after_touch :${0:method}
+snippet macr
+	after_create :${0:method}
+snippet mau
+	after_update :${0:method}
+snippet mas
+	after_save :${0:method}
+snippet mad
+	after_destroy :${0:method}
+
+# around callback
+snippet marc
+	around_create :${0:method}
+snippet maru
+	around_update :${0:method}
+snippet mars
+	around_save :${0:method}
+snippet mard
+	around_destroy :${0:method}
+
+snippet mcht
+	change_table :${1:table_name} do |t|
+		${0}
+	end
+snippet mp
+	map(&:${0:id})
+snippet mrw
+	mattr_accessor :${0:attr_names}
+snippet oa
+	order('${0:field}')
+snippet od
+	order('${0:field} DESC')
+snippet pa
+	params[:${1:id}]
+snippet ra
+	render action: '${0:action}'
+snippet ral
+	render action: '${1:action}', layout: '${0:layoutname}'
+snippet rest
+	respond_to do |format|
+		format.${1:html} { ${0} }
+	end
+snippet rf
+	render file: '${0:filepath}'
+snippet rfu
+	render file: '${1:filepath}', use_full_path: ${0:false}
+snippet ri
+	render inline: "${0:<%= 'hello' %>}"
+snippet ril
+	render inline: "${1:<%= 'hello' %>}", locals: { ${2:name}: '${3:value}'${0} }
+snippet rit
+	render inline: "${1:<%= 'hello' %>}", type: ${0::rxml}
+snippet rjson
+	render json: '${0:text to render}'
+snippet rl
+	render layout: '${0:layoutname}'
+snippet rn
+	render nothing: ${0:true}
+snippet rns
+	render nothing: ${1:true}, status: ${0:401}
+snippet rp
+	render partial: '${0:item}'
+snippet rpc
+	render partial: '${1:item}', collection: ${0:@$1s}
+snippet rpl
+	render partial: '${1:item}', locals: { ${2:$1}: ${0:@$1} }
+snippet rpo
+	render partial: '${1:item}', object: ${0:@$1}
+snippet rps
+	render partial: '${1:item}', status: ${0:500}
+snippet rt
+	render text: '${0:text to render}'
+snippet rtl
+	render text: '${1:text to render}', layout: '${0:layoutname}'
+snippet rtlt
+	render text: '${1:text to render}', layout: ${0:true}
+snippet rts
+	render text: '${1:text to render}', status: ${0:401}
+snippet ru
+	render :update do |${1:page}|
+		$1.${0}
+	end
+snippet rxml
+	render xml: '${0:text to render}'
+snippet sc
+	scope :${1:name}, -> { where(${2:field}: ${0:value}) }
+snippet sl
+	scope :${1:name}, lambda do |${2:value}|
+		where('${3:field = ?}', ${0:value})
+	end
+snippet sha1
+	Digest::SHA1.hexdigest(${0:string})
+snippet va validates_associated
+	validates_associated :${0:attribute}
+snippet va validates .., acceptance: true
+	validates :${0:terms}, acceptance: true
+snippet vc
+	validates :${0:attribute}, confirmation: true
+snippet ve
+	validates :${1:attribute}, exclusion: { in: ${0:%w( mov avi )} }
+snippet vf
+	validates :${1:attribute}, format: { with: /${0:regex}/ }
+snippet vi
+	validates :${1:attribute}, inclusion: { in: %w(${0: mov avi }) }
+snippet vl
+	validates :${1:attribute}, length: { in: ${2:3}..${0:20} }
+snippet vn
+	validates :${0:attribute}, numericality: true
+snippet vp
+	validates :${0:attribute}, presence: true
+snippet vu
+	validates :${0:attribute}, uniqueness: true
+snippet format
+	format.${1:js|xml|html} { ${0} }
+snippet wc
+	where(${1:'conditions'}${0:, bind_var})
+snippet wf
+	where(${1:field}: ${0:value})
+snippet xdelete
+	xhr :delete, :${1:destroy}, id: ${2:1}
+snippet xget
+	xhr :get, :${1:show}, id: ${2:1}
+snippet xpost
+	xhr :post, :${1:create}, ${2:object}: ${3:object}
+snippet xput
+	xhr :put, :${1:update}, id: ${2:1}, ${3:object}: ${4:object}
+snippet test
+	test '${1:should do something}' do
+		${0}
+	end
+###########################
+#   migrations snippets   #
+###########################
+snippet mac
+	add_column :${1:table_name}, :${2:column_name}, :${0:data_type}
+snippet mai
+	add_index :${1:table_name}, :${0:column_name}
+snippet mrc
+	remove_column :${1:table_name}, :${0:column_name}
+snippet mrnc
+	rename_column :${1:table_name}, :${2:old_column_name}, :${0:new_column_name}
+snippet mcc
+	change_column :${1:table}, :${2:column}, :${0:type}
+snippet mnc
+	t.${1:string} :${2:title}${3:, null: false}
+snippet mct
+	create_table :${1:table_name} do |t|
+		${0}
+	end
+snippet mrev reversible do |dir| ... dir.up .. dir.down .. end
+	reversible do |dir|
+		dir.up do
+			${0}
+		end
+
+		dir.down do
+		end
+	end
+snippet cmm class Migration... < ApplicationModel .. self.table_name .. end
+	class Migration${1:class_name} < ApplicationRecord
+		self.table_name = :${2:model_name}s
+	end
+snippet migration class .. < ActiveRecord::Migration .. def up .. def down .. end
+	class `substitute( substitute(vim_snippets#Filename(), '^\d\+_', '',''), '\(_\|^\)\(.\)', '\u\2', 'g')` < ActiveRecord::Migration
+		def up
+			${0}
+		end
+
+		def down
+		end
+	end
+snippet migration class .. < ActiveRecord::Migration .. def change .. end
+	class `substitute( substitute(vim_snippets#Filename(), '^\d\+_', '',''), '\(_\|^\)\(.\)', '\u\2', 'g')` < ActiveRecord::Migration
+		def change
+			${0}
+		end
+	end
+snippet trc
+	t.remove :${0:column}
+snippet tre
+	t.rename :${1:old_column_name}, :${2:new_column_name}
+	${0}
+snippet tref
+	t.references :${0:model}
+snippet tcb
+	t.boolean :${1:title}
+	${0}
+snippet tcbi
+	t.binary :${1:title}, limit: ${2:2}.megabytes
+	${0}
+snippet tcd
+	t.decimal :${1:title}, precision: ${2:10}, scale: ${3:2}
+	${0}
+snippet tcda
+	t.date :${1:title}
+	${0}
+snippet tcdt
+	t.datetime :${1:title}
+	${0}
+snippet tcf
+	t.float :${1:title}
+	${0}
+snippet tch
+	t.change :${1:name}, :${2:string}, ${3:limit}: ${4:80}
+	${0}
+snippet tci
+	t.integer :${1:title}
+	${0}
+snippet tcl
+	t.integer :lock_version, null: false, default: 0
+	${0}
+snippet tcr
+	t.references :${1:taggable}, polymorphic: { default: '${2:Photo}' }
+	${0}
+snippet tcs
+	t.string :${1:title}
+	${0}
+snippet tct
+	t.text :${1:title}
+	${0}
+snippet tcti
+	t.time :${1:title}
+	${0}
+snippet tcts
+	t.timestamp :${1:title}
+	${0}
+snippet tctss
+	t.timestamps
+	${0}
+##########################
+#     Rspec snippets     #
+##########################
+#ShouldaMatchers#ActionController
+snippet isfp
+	it { should filter_param :${0:key} }
+snippet isrt
+	it { should redirect_to ${0:url} }
+snippet isrtp
+	it { should render_template ${0} }
+snippet isrwl
+	it { should render_with_layout ${0} }
+snippet isrf
+	it { should rescue_from ${0:exception} }
+snippet isrw
+	it { should respond_with ${0:status} }
+snippet isr
+	it { should route(:${1:method}, '${0:path}') }
+snippet isss
+	it { should set_session :${0:key} }
+snippet issf
+	it { should set_the_flash('${0}') }
+#ShouldaMatchers#ActiveModel
+snippet isama
+	it { should allow_mass_assignment_of :${0} }
+snippet isav
+	it { should allow_value(${1}).for :${0} }
+snippet isee
+	it { should ensure_exclusion_of :${0} }
+snippet isei
+	it { should ensure_inclusion_of :${0} }
+snippet isel
+	it { should ensure_length_of :${0} }
+snippet isva
+	it { should validate_acceptance_of :${0} }
+snippet isvc
+	it { should validate_confirmation_of :${0} }
+snippet isvn
+	it { should validate_numericality_of :${0} }
+snippet isvp
+	it { should validate_presence_of :${0} }
+snippet isvu
+	it { should validate_uniqueness_of :${0} }
+#ShouldaMatchers#ActiveRecord
+snippet isana
+	it { should accept_nested_attributes_for :${0} }
+snippet isbt
+	it { should belong_to :${0} }
+snippet isbtcc
+	it { should belong_to(:${1}).counter_cache ${0:true} }
+snippet ishbtm
+	it { should have_and_belong_to_many :${0} }
+snippet isbv
+	it { should be_valid }
+snippet ishc
+	it { should have_db_column :${0} }
+snippet ishi
+	it { should have_db_index :${0} }
+snippet ishm
+	it { should have_many :${0} }
+snippet ishmt
+	it { should have_many(:${1}).through :${0} }
+snippet isho
+	it { should have_one :${0} }
+snippet ishro
+	it { should have_readonly_attribute :${0} }
+snippet iss
+	it { should serialize :${0} }
+snippet isres
+	it { should respond_to :${0} }
+snippet isresw
+	it { should respond_to(:${1}).with(${0}).arguments }
+snippet super_call
+	${1:super_class}.instance_method(:${0:method}).bind(self).call

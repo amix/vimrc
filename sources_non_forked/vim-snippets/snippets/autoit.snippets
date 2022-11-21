@@ -1,0 +1,66 @@
+snippet if
+	If $1 Then
+		${0:; True code}
+	EndIf
+snippet el
+	Else
+		${0}
+snippet eif
+	ElseIf $1 Then
+		${0:; True code}
+# If/Else block
+snippet ife
+	If $1 Then
+		${2:; True code}
+	Else
+		${0:; Else code}
+	EndIf
+# If/ElseIf/Else block - because there is eif this is not really neccessary
+snippet ifelif
+	If ${1:condition 1} Then
+		${2:; True code}
+	ElseIf ${3:condition 2} Then
+		${4:; True code}
+	Else
+		${0:; Else code}
+	EndIf
+# Switch block
+snippet switch
+	Switch ($1)
+	Case ${2:case1}:
+		${3:; Case 1 code}
+	Case Else:
+		${0:; Else code}
+	EndSwitch
+# Select block
+snippet select
+	Select ($1)
+	Case ${2:case1}:
+		${3:; Case 1 code}
+	Case Else:
+		${0:; Else code}
+	EndSelect
+# While loop
+snippet wh
+	While ($1)
+		${0:; code...}
+	WEnd
+# For loop
+snippet for
+	For ${1:n} = ${3:1} to ${2:count}
+		${0:; code...}
+	Next
+# New Function
+snippet func
+	Func ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
+		${0:Return}
+	EndFunc
+# Message box
+snippet msg
+	MsgBox(${0:MsgType}, ${1:"Title"}, ${2:"Message Text"})
+# Debug Message
+snippet debug
+	MsgBox(0, "Debug", ${0:"Debug Message"})
+# Show Variable Debug Message
+snippet showvar
+	MsgBox(0, "${0:VarName}", $1)

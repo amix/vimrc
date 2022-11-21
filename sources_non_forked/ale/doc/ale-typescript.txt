@@ -1,0 +1,223 @@
+===============================================================================
+ALE TypeScript Integration                             *ale-typescript-options*
+
+
+===============================================================================
+cspell                                                  *ale-typescript-cspell*
+
+See |ale-cspell-options|
+
+
+===============================================================================
+deno                                                      *ale-typescript-deno*
+
+Starting from version 1.6.0, Deno comes with its own language server. Earlier
+versions are not supported.
+
+g:ale_deno_executable                                   *g:ale_deno_executable*
+                                                        *b:ale_deno_executable*
+  Type: |String|
+  Default: `'deno'`
+
+
+g:ale_deno_lsp_project_root                       *g:ale_deno_lsp_project_root*
+                                                  *b:ale_deno_lsp_project_root*
+  Type: |String|
+  Default: `''`
+
+  If this variable is left unset, ALE will try to find the project root by
+  executing the following steps in the given order:
+
+  1. Find an ancestor directory containing a tsconfig.json.
+  2. Find an ancestor directory containing a .git folder.
+  3. Use the directory of the current buffer (if the buffer was opened from
+     a file).
+
+
+g:ale_deno_unstable                                       *g:ale_deno_unstable*
+                                                          *b:ale_deno_unstable*
+  Type: |Number|
+  Default: `0`
+
+  Enable or disable unstable Deno features and APIs.
+
+
+g:ale_deno_importMap                                     *g:ale_deno_importMap*
+                                                         *b:ale_deno_importMap*
+  Type: |String|
+  Default: `'import_map.json'`
+
+  Specify the import map filename to load url maps in a deno project.
+
+
+===============================================================================
+dprint                                                  *ale-typescript-dprint*
+
+See |ale-dprint-options| and https://dprint.dev/plugins/typescript
+
+
+===============================================================================
+eslint                                                  *ale-typescript-eslint*
+
+Because of how TypeScript compiles code to JavaScript and how interrelated
+the two languages are, the `eslint` linter for TypeScript uses the JavaScript
+options for `eslint` too. See: |ale-javascript-eslint|.
+
+
+===============================================================================
+prettier                                              *ale-typescript-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+
+
+===============================================================================
+standard                                              *ale-typescript-standard*
+
+g:ale_typescript_standard_executable     *g:ale_typescript_standard_executable*
+                                         *b:ale_typescript_standard_executable*
+  Type: |String|
+  Default: `'standard'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_typescript_standard_options           *g:ale_typescript_standard_options*
+                                            *b:ale_typescript_standard_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to standard.
+
+
+g:ale_typescript_standard_use_global     *g:ale_typescript_standard_use_global*
+                                         *b:ale_typescript_standard_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+tslint                                                  *ale-typescript-tslint*
+
+This linter isn't recommended, because TSLint can't be used for checking for
+problems while you type. You should probably use the tsserver plugin instead.
+tsserver plugins are described here:
+https://github.com/Microsoft/TypeScript/wiki/Writing-a-Language-Service-Plugin
+
+Follow the instructions on the plugin website for installing it:
+https://github.com/Microsoft/typescript-tslint-plugin
+
+Then disable TSLint in vimrc or any other Vim configuration file. >
+  let g:ale_linters_ignore = {'typescript': ['tslint']}
+<
+
+g:ale_typescript_tslint_executable         *g:ale_typescript_tslint_executable*
+                                           *b:ale_typescript_tslint_executable*
+  Type: |String|
+  Default: `'tslint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_typescript_tslint_config_path       *g:ale_typescript_tslint_config_path*
+                                          *b:ale_typescript_tslint_config_path*
+  Type: |String|
+  Default: `''`
+
+  ALE will first discover the tslint.json path in an ancestor directory. If no
+  such path exists, this variable will be used instead.
+
+
+g:ale_typescript_tslint_ignore_empty_files
+                                   *g:ale_typescript_tslint_ignore_empty_files*
+                                   *b:ale_typescript_tslint_ignore_empty_files*
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, ALE will not report any problems for empty files with
+  TSLint. ALE will still execute TSLint for the files, but ignore any problems
+  reported. This stops ALE from complaining about newly created files,
+  and files where lines have been added and then removed.
+
+
+g:ale_typescript_tslint_rules_dir           *g:ale_typescript_tslint_rules_dir*
+                                            *b:ale_typescript_tslint_rules_dir*
+  Type: |String|
+  Default: `''`
+
+  If this variable is set, ALE will use it as the rules directory for tslint.
+
+
+g:ale_typescript_tslint_use_global         *g:ale_typescript_tslint_use_global*
+                                           *b:ale_typescript_tslint_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+tsserver                                              *ale-typescript-tsserver*
+
+g:ale_typescript_tsserver_executable     *g:ale_typescript_tsserver_executable*
+                                         *b:ale_typescript_tsserver_executable*
+  Type: |String|
+  Default: `'tsserver'`
+
+  ALE will first discover the tsserver path in an ancestor node_modules
+  directory. If no such path exists, this variable will be used instead.
+
+  If you wish to use only a globally installed version of tsserver, set
+  |g:ale_typescript_tsserver_use_global| to `1`.
+
+
+g:ale_typescript_tsserver_config_path   *g:ale_typescript_tsserver_config_path*
+                                        *b:ale_typescript_tsserver_config_path*
+  Type: |String|
+  Default: `''`
+
+  ALE will first discover the tsserver.json path in an ancestor directory. If
+  no such path exists, this variable will be used instead.
+
+
+g:ale_typescript_tsserver_use_global     *g:ale_typescript_tsserver_use_global*
+                                         *b:ale_typescript_tsserver_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  This variable controls whether or not ALE will search for a local path for
+  tsserver first. If this variable is set to `1`, then ALE will always use the
+  global version of tsserver, in preference to locally installed versions of
+  tsserver in node_modules.
+
+
+===============================================================================
+xo                                                          *ale-typescript-xo*
+
+g:ale_typescript_xo_executable                 *g:ale_typescript_xo_executable*
+                                               *b:ale_typescript_xo_executable*
+  Type: |String|
+  Default: `'xo'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_typescript_xo_options                       *g:ale_typescript_xo_options*
+                                                  *b:ale_typescript_xo_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to xo.
+
+
+g:ale_typescript_xo_use_global                 *g:ale_typescript_xo_use_global*
+                                               *b:ale_typescript_xo_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

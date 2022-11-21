@@ -1,0 +1,331 @@
+===============================================================================
+ALE YAML Integration                                         *ale-yaml-options*
+
+
+===============================================================================
+actionlint                                                *ale-yaml-actionlint*
+
+Website: https://github.com/rhysd/actionlint
+
+
+Installation
+-------------------------------------------------------------------------------
+
+See installation guide: https://github.com/rhysd/actionlint#quick-start
+
+This linter is disabled by default and must be enabled by setting `g:ale_linters`.
+To enable it only for Github Action YAML files a configuration like this is
+better:
+
+>
+ au BufRead,BufNewFile */.github/*/*.y{,a}ml
+                                \ let b:ale_linters = {'yaml': ['actionlint']}
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_actionlint_executable             *g:ale_yaml_actionlint_executable*
+                                             *b:ale_yaml_actionlint_executable*
+  Type: |String|
+  Default: `'actionlint'`
+
+  This variable can be set to change the path to actionlint.
+
+g:ale_yaml_actionlint_options                   *g:ale_yaml_actionlint_options*
+                                                *b:ale_yaml_actionlint_options*
+
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to add extra options to actionlint executable.
+
+  For example, to disable running `shellcheck` and `pyflakes` external commands,
+  you may want to set:
+>
+  let g:ale_yaml_actionlint_options = '-shellcheck= -pyflakes='
+<
+  Please note that passing `-format` as option is not supported at the moment.
+
+===============================================================================
+circleci                                                    *ale-yaml-circleci*
+
+Website: https://circleci.com/docs/2.0/local-cli
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Follow the instructions on the website, and make sure to test that you can
+validate configuration files with: >
+
+  circleci config validate - < .circleci/config.yml
+<
+
+As long as the validator runs correctly, you should be able to see errors when
+you save the configuration file. The validator doesn't run as you type because
+it sends network requests, and running too often would overload the circleci
+servers.
+
+
+===============================================================================
+prettier                                                    *ale-yaml-prettier*
+
+Website: https://github.com/prettier/prettier
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install prettier either globally or locally: >
+
+  npm install prettier -g  # global
+  npm install prettier     # local
+<
+
+===============================================================================
+spectral                                                    *ale-yaml-spectral*
+
+Website: https://github.com/stoplightio/spectral
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install spectral either globally or locally: >
+
+  npm install @stoplight/spectral -g  # global
+  npm install @stoplight/spectral     # local
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_spectral_executable                 *g:ale_yaml_spectral_executable*
+                                               *b:ale_yaml_spectral_executable*
+  Type: |String|
+  Default: `'spectral'`
+
+  This variable can be set to change the path to spectral.
+
+g:ale_yaml_spectral_use_global                 *g:ale_yaml_spectral_use_global*
+                                               *b:ale_yaml_spectral_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+swaglint                                                    *ale-yaml-swaglint*
+
+Website: https://github.com/byCedric/swaglint
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install swaglint either globally or locally: >
+
+  npm install swaglint -g  # global
+  npm install swaglint     # local
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_swaglint_executable                 *g:ale_yaml_swaglint_executable*
+                                               *b:ale_yaml_swaglint_executable*
+  Type: |String|
+  Default: `'swaglint'`
+
+  This variable can be set to change the path to swaglint.
+
+
+g:ale_yaml_swaglint_use_global                 *g:ale_yaml_swaglint_use_global*
+                                               *b:ale_yaml_swaglint_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+yaml-language-server                                 *ale-yaml-language-server*
+
+Website: https://github.com/redhat-developer/yaml-language-server
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install yaml-language-server either globally or locally: >
+
+  npm install yaml-language-server -g  # global
+  npm install yaml-language-server     # local
+
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_ls_executable                             *g:ale_yaml_ls_executable*
+                                                     *b:ale_yaml_ls_executable*
+  Type: |String|
+  Default: `'yaml-language-server'`
+
+  This variable can be set to change the path to yaml-language-server.
+
+
+g:ale_yaml_ls_config                                     *g:ale_yaml_ls_config*
+                                                         *b:ale_yaml_ls_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Dictionary containing configuration settings that will be passed to the
+  language server.  For example, to enable schema store: >
+      {
+    \   'yaml': {
+    \     'schemaStore': {
+    \         'enable': v:true,
+    \     },
+    \   },
+    \ }
+<
+  Consult the yaml-language-server documentation for more information about
+  settings.
+
+
+g:ale_yaml_ls_use_global                             *g:ale_yaml_ls_use_global*
+                                                     *b:ale_yaml_ls_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+yamlfix                                                      *ale-yaml-yamlfix*
+
+Website: https://lyz-code.github.io/yamlfix
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install yamlfix: >
+
+  pip install yamlfix
+<
+
+Options
+-------------------------------------------------------------------------------
+g:ale_yaml_yamlfix_executable                   *g:ale_yaml_yamlfix_executable*
+                                                *b:ale_yaml_yamlfix_executable*
+  Type: |String|
+  Default: `'yamlfix'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_yaml_yamlfix_options                         *g:ale_yaml_yamlfix_options*
+                                                   *b:ale_yaml_yamlfix_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to yamlfix.
+
+g:ale_yaml_yamlfix_use_global                   *g:ale_yaml_yamlfix_use_global*
+                                                *b:ale_yaml_yamlfix_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+yamllint                                                    *ale-yaml-yamllint*
+
+Website: https://github.com/adrienverge/yamllint
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install yamllint in your a virtualenv directory, locally, or globally: >
+
+  pip install yamllint # After activating virtualenv
+  pip install --user yamllint # Install to ~/.local/bin
+  sudo pip install yamllint # Install globally
+
+See |g:ale_virtualenv_dir_names| for configuring how ALE searches for
+virtualenv directories.
+
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_yamllint_executable                 *g:ale_yaml_yamllint_executable*
+                                               *b:ale_yaml_yamllint_executable*
+  Type: |String|
+  Default: `'yamllint'`
+
+  This variable can be set to change the path to yamllint.
+
+
+g:ale_yaml_yamllint_options                       *g:ale_yaml_yamllint_options*
+                                                  *b:ale_yaml_yamllint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to yamllint.
+
+
+===============================================================================
+gitlablint                                                  *ale-yaml-gitlablint*
+
+Website: https://github.com/elijah-roberts/gitlab-lint
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install yamllint in your a virtualenv directory, locally, or globally: >
+
+  pip3 install gitlab_lint        # After activating virtualenv
+  pip3 install --user gitlab_lint # Install to ~/.local/bin
+  sudo pip3 install gitlab_lint   # Install globally
+
+See |g:ale_virtualenv_dir_names| for configuring how ALE searches for
+virtualenv directories.
+
+Is recommended to use |g:ale_pattern_options| to enable this linter so it only
+applies to 'gitlab-ci.yml' files and not all yaml files:
+>
+  let g:ale_pattern_options = {
+  \   '.gitlab-ci\.yml$': {
+  \       'ale_linters': ['gitlablint'],
+  \   },
+  \}
+<
+
+Options
+-------------------------------------------------------------------------------
+
+g:ale_yaml_gitlablint_executable               *g:ale_yaml_gitlablint_executable*
+                                               *b:ale_yaml_gitlablint_executable*
+  Type: |String|
+  Default: `'gll'`
+
+  This variable can be set to change the path to gll.
+
+
+g:ale_yaml_gitlablint_options                     *g:ale_yaml_gitlablint_options*
+                                                  *b:ale_yaml_gitlablint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to gll.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

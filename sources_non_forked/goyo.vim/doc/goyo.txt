@@ -1,0 +1,168 @@
+*goyo.txt*	goyo	Last change: April 2 2017
+GOYO - TABLE OF CONTENTS                                         *goyo* *goyo-toc*
+==============================================================================
+
+  goyo.vim (고요)
+    Installation
+    Usage
+      Dimension expression
+    Configuration
+      Callbacks
+    Inspiration
+    Pros.
+    License
+
+GOYO.VIM (고요)                                                         *goyo-vim*
+==============================================================================
+
+Distraction-free writing in Vim.
+
+https://raw.github.com/junegunn/i/master/goyo.png
+
+(Color scheme: {seoul256}{1})
+
+Best served with {limelight.vim}{2}.
+
+                                 {1} https://github.com/junegunn/seoul256.vim
+                                 {2} https://github.com/junegunn/limelight.vim
+
+
+INSTALLATION                                                 *goyo-installation*
+==============================================================================
+
+Use your favorite plugin manager.
+
+ - {vim-plug}{3}
+   1. Add `Plug 'junegunn/goyo.vim'` to .vimrc
+   2. Run `:PlugInstall`
+
+                                      {3} https://github.com/junegunn/vim-plug
+
+
+USAGE                                                               *goyo-usage*
+==============================================================================
+
+                                                                         *:Goyo*
+
+ - `:Goyo`
+   - Toggle Goyo
+ - `:Goyo [dimension]`
+   - Turn on or resize Goyo
+ - `:Goyo!`
+   - Turn Goyo off
+
+The window can be resized with the usual [count]`CTRL-W` + `>`, `<`, `+`, `-` keys,
+and `CTRL-W` + `=` will resize it back to the initial size.
+
+
+< Dimension expression >______________________________________________________~
+                                                     *goyo-dimension-expression*
+
+The expected format of a dimension expression is
+`[WIDTH][XOFFSET][x[HEIGHT][YOFFSET]]`. `XOFFSET` and `YOFFSET` should be
+prefixed by `+` or `-`. Each component can be given in percentage.
+>
+    " Width
+    Goyo 120
+
+    " Height
+    Goyo x30
+
+    " Both
+    Goyo 120x30
+
+    " In percentage
+    Goyo 120x50%
+
+    " With offsets
+    Goyo 50%+25%x50%-25%
+<
+
+CONFIGURATION                                               *goyo-configuration*
+==============================================================================
+
+                                      *g:goyo_width* *g:goyo_height* *g:goyo_linenr*
+
+ - `g:goyo_width` (default: 80)
+ - `g:goyo_height` (default: 85%)
+ - `g:goyo_linenr` (default: 0)
+
+
+< Callbacks >_________________________________________________________________~
+                                                                *goyo-callbacks*
+
+By default, {vim-airline}{4}, {vim-powerline}{5}, {powerline}{6},
+{lightline.vim}{7}, {vim-signify}{8}, and {vim-gitgutter}{9} are temporarily
+disabled while in Goyo mode.
+
+If you have other plugins that you want to disable/enable, or if you want to
+change the default settings of Goyo window, you can set up custom routines to
+be triggered on `GoyoEnter` and `GoyoLeave` events.
+>
+    function! s:goyo_enter()
+      silent !tmux set status off
+      silent !tmux list-panes -F '\#F' | grep -q Z || tmux resize-pane -Z
+      set noshowmode
+      set noshowcmd
+      set scrolloff=999
+      Limelight
+      " ...
+    endfunction
+
+    function! s:goyo_leave()
+      silent !tmux set status on
+      silent !tmux list-panes -F '\#F' | grep -q Z && tmux resize-pane -Z
+      set showmode
+      set showcmd
+      set scrolloff=5
+      Limelight!
+      " ...
+    endfunction
+
+    autocmd! User GoyoEnter nested call <SID>goyo_enter()
+    autocmd! User GoyoLeave nested call <SID>goyo_leave()
+<
+More examples can be found here: {Customization}{10}
+
+                  {4} https://github.com/bling/vim-airline
+                  {5} https://github.com/Lokaltog/vim-powerline
+                  {6} https://github.com/Lokaltog/powerline
+                  {7} https://github.com/itchyny/lightline.vim
+                  {8} https://github.com/mhinz/vim-signify
+                  {9} https://github.com/airblade/vim-gitgutter
+                  {10} https://github.com/junegunn/goyo.vim/wiki/Customization
+
+
+INSPIRATION                                                   *goyo-inspiration*
+==============================================================================
+
+ - {LiteDFM}{11}
+ - {VimRoom}{12}
+
+                                    {11} https://github.com/bilalq/lite-dfm
+                                    {12} http://projects.mikewest.org/vimroom/
+
+
+PROS.                                                                *goyo-pros*
+==============================================================================
+
+ 1. Works well with splits. Doesn't mess up with the current window arrangement
+ 2. Works well with popular statusline plugins
+ 3. Prevents accessing the empty windows around the central buffer
+ 4. Can be closed with any of `:q[uit]`, `:clo[se]`, `:tabc[lose]`, or `:Goyo`
+ 5. Can dynamically change the width of the window
+ 6. Adjusts its colors when color scheme is changed
+ 7. Realigns the window when the terminal (or window) is resized or when the size
+    of the font is changed
+ 8. Correctly hides colorcolumns and Emojis in statusline
+ 9. Highly customizable with callbacks
+
+
+LICENSE                                                           *goyo-license*
+==============================================================================
+
+MIT
+
+
+==============================================================================
+vim:tw=78:sw=2:ts=2:ft=help:norl:nowrap:

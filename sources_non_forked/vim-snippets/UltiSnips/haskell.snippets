@@ -1,0 +1,13 @@
+priority -50
+
+snippet imp "Simple import"
+import ${1:${2:Data}.${0:Text}}
+endsnippet
+
+snippet imp2 "Selective import" b
+import ${1:${2:Data}.${3:Text}} (${4})${0}
+endsnippet
+
+snippet impq "Qualified import"
+import qualified ${1:${2:Data}.${3:Text}} as ${0:`!p snip.rv = t[1].split(".")[-1]`}
+endsnippet

@@ -1,0 +1,138 @@
+===============================================================================
+ALE Terraform Integration                               *ale-terraform-options*
+
+
+===============================================================================
+checkov                                                 *ale-terraform-checkov*
+
+g:ale_terraform_checkov_executable         *g:ale_terraform_checkov_executable*
+                                           *b:ale_terraform_checkov_executable*
+
+  Type: |String|
+  Default: `'checkov'`
+
+  This variable can be changed to use a different executable for checkov.
+
+
+g:ale_terraform_checkov_options               *g:ale_terraform_checkov_options*
+                                              *b:ale_terraform_checkov_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to set additional options for checkov.
+
+===============================================================================
+terraform-fmt-fixer                                   *ale-terraform-fmt-fixer*
+
+g:ale_terraform_fmt_executable                 *g:ale_terraform_fmt_executable*
+                                               *b:ale_terraform_fmt_executable*
+
+  Type: |String|
+  Default: `'terraform'`
+
+  This variable can be changed to use a different executable for terraform.
+
+
+g:ale_terraform_fmt_options                       *g:ale_terraform_fmt_options*
+                                                  *b:ale_terraform_fmt_options*
+  Type: |String|
+  Default: `''`
+
+
+===============================================================================
+terraform                                             *ale-terraform-terraform*
+
+g:ale_terraform_terraform_executable     *g:ale_terraform_terraform_executable*
+                                         *b:ale_terraform_terraform_executable*
+
+  Type: |String|
+  Default: `'terraform'`
+
+  This variable can be changed to use a different executable for terraform.
+
+
+===============================================================================
+terraform-ls                                       *ale-terraform-terraform-ls*
+
+Official terraform language server. More stable than *terraform-lsp* but
+currently has less features.
+
+g:ale_terraform_ls_executable                   *g:ale_terraform_ls_executable*
+                                                *b:ale_terraform_ls_executable*
+  Type: |String|
+  Default: `'terraform-ls'`
+
+  This variable can be changed to use a different executable for terraform-ls.
+
+
+g:ale_terraform_ls_options                         *g:ale_terraform_ls_options*
+                                                   *b:ale_terraform_ls_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to pass custom CLI flags to terraform-ls.
+
+
+===============================================================================
+terraform-lsp                                     *ale-terraform-terraform-lsp*
+
+g:ale_terraform_langserver_executable   *g:ale_terraform_langserver_executable*
+                                        *b:ale_terraform_langserver_executable*
+  Type: |String|
+  Default: `'terraform-lsp'`
+
+  This variable can be changed to use a different executable for terraform-lsp.
+
+
+g:ale_terraform_langserver_options         *g:ale_terraform_langserver_options*
+                                           *b:ale_terraform_langserver_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to pass custom CLI flags to terraform-lsp.
+
+
+===============================================================================
+tflint                                                   *ale-terraform-tflint*
+
+g:ale_terraform_tflint_executable           *g:ale_terraform_tflint_executable*
+                                            *b:ale_terraform_tflint_executable*
+
+  Type: |String|
+  Default: `'tflint'`
+
+  This variable can be changed to use a different executable for tflint.
+
+
+g:ale_terraform_tflint_options                 *g:ale_terraform_tflint_options*
+                                               *b:ale_terraform_tflint_options*
+  Type: |String|
+  Default: `'-f json'`
+
+  This variable can be changed to pass different options to tflint. Ale does
+  expect json output from tflint, so if you change this, you'll probably want
+  to include '-f json' in your new value.
+
+
+===============================================================================
+tfsec                                                     *ale-terraform-tfsec*
+
+g:ale_terraform_tfsec_executable             *g:ale_terraform_tfsec_executable*
+                                             *b:ale_terraform_tfsec_executable*
+
+  Type: |String|
+  Default: `'tfsec'`
+
+  This variable can be changed to use a different executable for tfsec.
+
+g:ale_terraform_tfsec_options                   *g:ale_terraform_tfsec_options*
+                                                *b:ale_terraform_tfsec_options*
+
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to pass custom CLI flags to tfsec.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
+

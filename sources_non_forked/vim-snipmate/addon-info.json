@@ -1,0 +1,12 @@
+{
+  "name" : "snipMate",
+  "version" : "dev",
+  "author" : "Michael Sanders -> original project http://github.com/msanders/snipmate.vim",
+  "maintainer" : "Rok Garbas / Marc Weber",
+  "repository" : {"type": "git", "url": "git://github.com/garbas/vim-snipmate.git"},
+  "dependencies" : {
+    "vim-addon-mw-utils": {},
+    "tlib": {}
+  },
+  "description" : "snipMate.vim aims to be a concise vim script that implements some of TextMate's snippets features in Vim. See README.md to learn about the features this fork adds"
+}

@@ -1,0 +1,108 @@
+# Closure loop
+snippet forinlet
+	for ${1:name} in ${2:array}
+		let $1
+			${3}
+# Array comprehension
+snippet fora
+	for ${1:name} in ${2:array}
+		${3}
+# Object comprehension
+snippet foro
+	for ${1:key}, ${2:value} of ${3:object}
+		${4}
+# Range comprehension (inclusive)
+snippet forr
+	for ${1:name} from ${2:start} to ${3:finish}
+		${4}
+snippet forrb
+	for ${1:name} from ${2:start} to ${3:finish} by ${4:step}
+		${5}
+# Range comprehension (exclusive)
+snippet forrex
+	for ${1:name} from ${2:start} til ${3:finish}
+		${4}
+snippet forrexb
+	for ${1:name} from ${2:start} til ${3:finish} by ${4:step}
+		${5}
+# Function
+snippet fun
+	(${1:args}) ->
+		${2}
+# Function (bound)
+snippet bfun
+	(${1:args}) ~>
+		${2}
+# Class
+snippet cla class ..
+	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+		${2}
+snippet cla class .. constructor: ..
+	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`}
+		(${2:args}) ->
+			${3}
+
+		${4}
+snippet cla class .. extends ..
+	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} extends ${2:ParentClass}
+		${3}
+snippet cla class .. extends .. constructor: ..
+	class ${1:`substitute(Filename(), '\(_\|^\)\(.\)', '\u\2', 'g')`} extends ${2:ParentClass}
+		(${3:args}) ->
+			${4}
+
+		${5}
+# If
+snippet if
+	if $1
+		${2}
+# If __ Else
+snippet ife
+	if $1
+		${2}
+	else
+		${3}
+# Else if
+snippet elif
+	else if $1
+		${2}
+# Ternary If
+snippet ifte
+	if $1 then $2 else $0
+# Unless
+snippet unl
+	$1 unless $0
+# Switch
+snippet swi
+	switch ${1:object}
+	case ${2:value}
+		${3}
+	default void
+snippet mat
+	match ${1:object}
+	| ${2:value} => ${3}
+	| otherwise => void
+
+# Log
+snippet log
+	console.log ${1}
+# stringify
+snippet str
+	JSON.stringify ${1}, void, 2
+
+# Try __ Catch
+snippet try
+	try
+		${1:${VISUAL}}
+	catch ${2:error}
+		${3}
+# Require
+snippet req
+	${2:$1} = require '${1}'${3}
+# Require!
+snippet req!
+	require! ${1}
+
+# Export
+snippet exp
+	${1:root} = exports ? this

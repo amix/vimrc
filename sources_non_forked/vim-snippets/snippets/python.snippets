@@ -1,0 +1,523 @@
+snippet #!
+	#!/usr/bin/env python3
+snippet #!2
+	#!/usr/bin/env python2
+	# -*- coding: utf-8 -*-
+snippet #!3
+	#!/usr/bin/env python3
+snippet imp
+	import ${0:module}
+snippet uni
+	def __unicode__(self):
+		${0:representation}
+snippet from
+	from ${1:package} import ${0:module}
+
+# Module Docstring
+snippet docs
+	"""
+	File: ${1:`vim_snippets#Filename('$1.py', 'foo.py')`}
+	Author: `g:snips_author`
+	Email: `g:snips_email`
+	Github: `g:snips_github`
+	Description: ${0}
+	"""
+
+# Unittest skip
+snippet sk "skip unittests" b
+	@unittest.skip(${1:skip_reason})
+
+snippet wh
+	while $1:
+		${0:${VISUAL}}
+
+# dowh - does the same as do...while in other languages
+snippet dowh
+	while True:
+		${1}
+		if $0:
+			break
+
+snippet with
+	with ${1:expr} as ${2:var}:
+		${0:${VISUAL}}
+
+snippet awith
+	async with ${1:expr} as ${2:var}:
+		${0:${VISUAL}}
+
+# New Class
+snippet cl
+	class ${1:ClassName}(${2:object}):
+		"""${3:docstring for $1}"""
+		def __init__(self, ${4:arg}):
+			${5:super($1, self).__init__()}
+			self.$4 = $4
+			${0}
+snippet cla
+	class ${1:class_name}:
+		"""${0:description}"""
+
+snippet clai
+	class ${1:class_name}:
+		"""${2:description}"""
+		def __init__(self, ${3:args}):
+			${0}
+
+# Data class
+snippet dcl dataclass
+	@dataclass
+	class ${1:ClassName}:
+		"""${2:description}"""
+		${3:var_1}: ${4:int}
+		${5:var_2}: ${6:float} = ${7:0}
+
+		def ${8:total}(self): -> $6:
+			return ${0:self.$3 * self.$5}
+
+# New Function
+snippet def
+	def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
+		"""${3:docstring for $1}"""
+		${0}
+snippet deff
+	def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
+		${0}
+snippet adef
+	async def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
+		"""${3:docstring for $1}"""
+		${0}
+snippet adeff
+	async def ${1:fname}(${2:`indent('.') ? 'self' : ''`}):
+		${0}
+
+# New Method
+snippet defi
+	def __init__(self, ${1:args}):
+		${0}
+snippet defm
+	def ${1:mname}(self, ${2:arg}):
+		${0}
+snippet adefm
+	async def ${1:mname}(self, ${2:arg}):
+		${0}
+
+# New Property
+snippet property
+	@property
+	def ${1:foo}(self) -> ${2:type}:
+		"""${3:doc}"""
+		return self._$1
+
+	@$1.setter
+	def $1(self, value: $2):
+		self._$1 = value
+
+# Ifs
+snippet if
+	if $1:
+		${0:${VISUAL}}
+snippet el
+	else:
+		${0:${VISUAL}}
+snippet ei
+	elif $1:
+		${0:${VISUAL}}
+
+# Match
+snippet match Structural pattern matching
+	match ${1:expression}:
+		case ${2:pattern_1}:
+			${3:pass}
+		case ${4:pattern_2}:
+			${5:pass}
+
+# Match with wildcard
+snippet matchw Pattern matching with wildcard
+	match ${1:expression}:
+		case ${2:pattern_1}:
+			${3:pass}
+		case _:
+			${0:pass}
+
+# For
+snippet for
+	for ${1:item} in ${2:items}:
+		${0}
+
+# Encodes
+snippet cutf8
+	# -*- coding: utf-8 -*-
+snippet clatin1
+	# -*- coding: latin-1 -*-
+snippet cascii
+	# -*- coding: ascii -*-
+
+# Lambda
+snippet ld
+	${1:var} = lambda ${2:vars} : ${0:action}
+
+snippet ret
+	return ${0}
+snippet .
+	self.
+snippet sa self.attribute = attribute
+	self.${1:attribute} = $1
+
+snippet try Try/Except
+	try:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
+		${0:raise $3}
+snippet trye Try/Except/Else
+	try:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
+		${4:raise $3}
+	else:
+		${0}
+snippet tryf Try/Except/Finally
+	try:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
+		${4:raise $3}
+	finally:
+		${0}
+snippet tryef Try/Except/Else/Finally
+	try:
+		${1:${VISUAL}}
+	except ${2:Exception} as ${3:e}:
+		${4:raise $3}
+	else:
+		${5}
+	finally:
+		${0}
+
+# if __name__ == '__main__':
+snippet ifmain
+	if __name__ == '__main__':
+		${0:main()}
+# __magic__
+snippet _
+	__${1:init}__
+
+# debugger breakpoint
+snippet br
+	breakpoint()
+# python debugger (pdb)
+snippet pdb
+	__import__('pdb').set_trace()
+# bpython debugger (bpdb)
+snippet bpdb
+	__import__('bpdb').set_trace()
+# ipython debugger (ipdb)
+snippet ipdb
+	__import__('ipdb').set_trace()
+# embed ipython itself
+snippet iem
+	__import__('IPython').embed()
+# remote python debugger (rpdb)
+snippet rpdb
+	__import__('rpdb').set_trace()
+# web python debugger (wdb)
+snippet wdb
+	__import__('wdb').set_trace()
+# ptpython
+snippet ptpython
+	__import__('ptpython.repl', fromlist=('repl')).embed(globals(), locals(), vi_mode=${1:False}, history_filename=${2:None})
+# python console debugger (pudb)
+snippet pudb
+	__import__('pudb').set_trace()
+# python console debugger remote (pudb)
+snippet pudbr
+	from pudb.remote import set_trace
+	set_trace()
+# pdb in nosetests
+snippet nosetrace
+	__import__('nose').tools.set_trace()
+snippet pprint
+	__import__('pprint').pprint(${1})
+
+snippet "
+	"""${0:doc}
+	"""
+
+# assertions
+snippet a=
+	self.assertEqual(${0}, ${1})
+# test function/method
+snippet test
+	def test_${1:description}(${2:`indent('.') ? 'self' : ''`}):
+		${0}
+# test case
+snippet testcase
+	class ${1:ExampleCase}(unittest.TestCase):
+
+		def test_${2:description}(self):
+			${0}
+# test given when then
+snippet tgwt
+	# given: ${1}
+	# when: ${2}
+	# then: ${3}
+snippet fut
+	from __future__ import ${0}
+
+#getopt
+snippet getopt
+	try:
+		# Short option syntax: "hv:"
+		# Long option syntax: "help" or "verbose="
+		opts, args = getopt.getopt(sys.argv[1:], "${1:short_options}", [${2:long_options}])
+
+	except getopt.GetoptError, err:
+		# Print debug info
+		print str(err)
+		${3:error_action}
+
+	for option, argument in opts:
+		if option in ("-h", "--help"):
+			${0}
+		elif option in ("-v", "--verbose"):
+			verbose = argument
+
+# argparse
+snippet addp
+	parser = ${VISUAL:argparse.}ArgumentParser()
+snippet addsp
+	${0:sub_parser} = parser.add_subparsers().add_parser("${1:name}")
+snippet addarg
+	parser.add_argument("${0:short_arg}", "${1:long_arg}", default=${2:None}, help="${3:Help text}")
+snippet addnarg
+	parser.add_argument("${0:arg}", nargs="${1:*}", default=${2:None}, help="${3:Help text}")
+snippet addaarg
+	parser.add_argument("${0:arg}", "${1:long_arg}", action="${2:store_true}", default=${3:False}, help="${4:Help text}")
+snippet pargs
+	"${VISUAL:return }"parser.parse_args()
+
+# logging
+# glog = get log
+snippet glog
+	import logging
+	LOGGER = logging.getLogger(${0:__name__})
+snippet le
+	LOGGER.error(${0:msg})
+# conflict with lambda=ld, therefor we change into Logger.debuG
+snippet lg
+	LOGGER.debug(${0:msg})
+snippet lw
+	LOGGER.warning(${0:msg})
+snippet lc
+	LOGGER.critical(${0:msg})
+snippet li
+	LOGGER.info(${0:msg})
+snippet epydoc
+	"""${1:Description}
+
+	@param ${2:param}: ${3: Description}
+	@type  $2: ${4: Type}
+
+	@return: ${5: Description}
+	@rtype : ${6: Type}
+
+	@raise e: ${0: Description}
+	"""
+snippet dol
+	def ${1:__init__}(self, *args, **kwargs):
+		super(${0:ClassName}, self).$1(*args, **kwargs)
+snippet kwg
+	self.${1:var_name} = kwargs.get('$1', ${2:None})
+snippet lkwg
+	${1:var_name} = kwargs.get('$1', ${2:None})
+snippet args
+	*args${1:,}${0}
+snippet kwargs
+	**kwargs${1:,}${0}
+snippet akw
+	*args, **kwargs${1:,}${0}
+
+# comprehensions
+snippet lcp list comprehension
+	[${1} for ${2} in ${3:${VISUAL}}]${0}
+
+snippet dcp dict comprehension
+	{${1}: ${2} for ${3} in ${4:${VISUAL}}}${0}
+
+snippet scp set comprehension
+	{${1} for ${2} in ${3:${VISUAL}}}${0}
+
+snippet contain "methods for emulating a container type" b
+	def __len__(self):
+		${1:pass}
+
+	def __getitem__(self, key):
+		${2:pass}
+
+	def __setitem__(self, key, value):
+		${3:pass}
+
+	def __delitem__(self, key):
+		${4:pass}
+
+	def __iter__(self):
+		${5:pass}
+
+	def __reversed__(self):
+		${6:pass}
+
+	def __contains__(self, item):
+		${7:pass}
+
+snippet context "context manager methods" b
+	def __enter__(self):
+		${1:pass}
+
+	def __exit__(self, exc_type, exc_value, traceback):
+		${2:pass}
+
+snippet attr "methods for customizing attribute access" b
+	def __getattr__(self, name):
+		${1:pass}
+
+	def __setattr__(self, name, value):
+		${2:pass}
+
+	def __delattr__(self, name):
+		${3:pass}
+
+snippet desc "methods implementing descriptors" b
+	def __get__(self, instance, owner):
+		${1:pass}
+
+	def __set__(self, instance, value):
+		${2:pass}
+
+	def __delete__(self, instance):
+		${3:pass}
+
+snippet cmp "methods implementing rich comparison"
+	def __eq__(self, other):
+		${1:pass}
+
+	def __ne__(self, other):
+		${2:pass}
+
+	def __lt__(self, other):
+		${3:pass}
+
+	def __le__(self, other):
+		${4:pass}
+
+	def __gt__(self, other):
+		${5:pass}
+
+	def __ge__(self, other):
+		${6:pass}
+
+	def __cmp__(self, other):
+		${7:pass}
+
+snippet repr "methods implementing string representation"
+	def __repr__(self):
+		${1:pass}
+
+	def __str__(self):
+		${2:pass}
+
+	def __unicode__(self):
+		${3:pass}
+
+# note: reflected operands and augmented arithmeitc assignements have been
+# intentionally ommited to reduce verbosity.
+snippet numeric "methods for emulating a numeric type" b
+	def __add__(self, other):
+		${1:pass}
+
+	def __sub__(self, other):
+		${2:pass}
+
+	def __mul__(self, other):
+		${3:pass}
+
+	def __div__(self, other):
+		${4:pass}
+
+	def __truediv__(self, other):
+		${5:pass}
+
+	def __floordiv__(self, other):
+		${6:pass}
+
+	def __mod__(self, other):
+		${7:pass}
+
+	def __divmod__(self, other):
+		${8:pass}
+
+	def __pow__(self, other):
+		${9:pass}
+
+	def __lshift__(self, other):
+		${10:pass}
+
+	def __rshift__(self, other):
+		${11:pass}
+
+	def __and__(self, other):
+		${12:pass}
+
+	def __xor__(self, other):
+		${13:pass}
+
+	def __or__(self, other):
+		${14:pass}
+
+	def __neg__(self):
+		${15:pass}
+
+	def __pos__(self):
+		${16:pass}
+
+	def __abs__(self):
+		${17:pass}
+
+	def __invert__(self):
+		${18:pass}
+
+	def __complex__(self):
+		${19:pass}
+
+	def __int__(self):
+		${20:pass}
+
+	def __long__(self):
+		${21:pass}
+
+	def __float__(self):
+		${22:pass}
+
+	def __oct__(self):
+		${22:pass}
+
+	def __hex__(self):
+		${23:pass}
+
+	def __index__(self):
+		${24:pass}
+
+	def __coerce__(self, other):
+		${25:pass}
+
+# Printing
+snippet pr
+	print($0)
+snippet prs
+	print("$0")
+snippet prf
+	print(f"$0")
+snippet fpr
+	print($0, file=${1:sys.stderr})
+snippet fprs
+	print("$0", file=${1:sys.stderr})
+snippet fprf
+	print(f"$0", file=${1:sys.stderr})

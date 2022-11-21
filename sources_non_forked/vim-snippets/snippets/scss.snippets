@@ -1,0 +1,44 @@
+extends css
+
+snippet $
+	$${1:variable}: ${0:value};
+snippet imp
+	@import '${0}';
+snippet mix
+	@mixin ${1:name}(${2}) {
+		${0}
+	}
+snippet inc
+	@include ${1:mixin}(${2});
+snippet ext
+	@extend ${0};
+snippet fun
+	@function ${1:name}(${2:args}) {
+		${0}
+	}
+snippet if
+	@if $1 {
+		${0}
+	}
+snippet ife
+	@if $1 {
+		${2}
+	} @else {
+		${0}
+	}
+snippet eif
+	@else if $1 {
+		${0}
+	}
+snippet for
+	@for ${1:$i} from ${2:1} through ${3:3} {
+		${0}
+	}
+snippet each
+	@each ${1:$item} in ${2:items} {
+		${0}
+	}
+snippet while
+	@while ${1:$i} ${2:>} ${3:0} {
+		${0}
+	}

@@ -1,0 +1,356 @@
+*AutoPairs.txt*  Insert or delete brackets, parens, quotes in pair
+
+Author:  jiangmiao
+License: MIT
+URL: https://github.com/jiangmiao/auto-pairs
+
+==============================================================================
+CONTENTS                                                    *autopairs-contents*
+
+    1. Installation ............................. |autopairs-installation|
+    2. Features ..................................... |autopairs-features|
+    3. Fly Mode ..................................... |autopairs-fly-mode|
+    4. Shortcuts ................................... |autopairs-shortcuts|
+    5. Options ....................................... |autopairs-options|
+    6. Troubleshooting ......................  |autopairs-troubleshooting|
+
+==============================================================================
+1. Introduction                                         *autopairs-installation*
+
+Copy `plugin/auto-pairs.vim` to `~/.vim/plugin`.
+
+Or if you are using `pathogen`: >
+
+    git clone git://github.com/jiangmiao/auto-pairs.git ~/.vim/bundle/auto-pairs
+
+==============================================================================
+2. Features                                                 *autopairs-features*
+
+Insert in pair: >
+
+        input: [
+        output: [|]
+
+Delete in pair: >
+
+        input: foo[<BS>]
+        output: foo
+
+Insert new indented line after Return: >
+
+        input: {|} (press <CR> at |)
+        output: {
+            |
+        }
+
+Insert spaces before closing characters, only for [], (), {}: >
+
+        input: {|} (press <SPACE> at |)
+        output: { | }
+
+        input: {|} (press <SPACE>foo} at |)
+        output: { foo }|
+
+        input: '|' (press <SPACE> at |)
+        output: ' |'
+
+Skip ' when inside a word: >
+
+        input: foo| (press ' at |)
+        output: foo'
+
+Skip closed bracket: >
+
+        input: []
+        output: []
+
+Ignore auto pair when previous character is '\': >
+
+        input: "\'
+        output: "\'"
+
+Fast Wrap: >
+
+        input: |'hello' (press (<M-e> at |)
+        output: ('hello')
+
+    Wrap string, only support c style string.
+        input: |'h\\el\'lo' (press (<M-e> at |)
+        output ('h\\ello\'')
+
+        input: |[foo, bar()] (press (<M-e> at |)
+        output: ([foo, bar()])
+
+Quick jump to closed pair: >
+
+        input:
+        {
+            something;|
+        }
+
+        (press } at |)
+
+        output:
+        {
+
+        }|
+
+Support ```, ''' and """: >
+
+        input:
+            '''
+
+        output:
+            '''|'''
+
+Delete Repeated Pairs in one time: >
+
+        input: """|""" (press <BS> at |)
+        output: |
+
+        input: {{|}} (press <BS> at |)
+        output: |
+
+        input: [[[[[[|]]]]]] (press <BS> at |)
+        output: |
+
+Fly Mode (|autopairs-flymode|): >
+
+        input: if(a[3)
+        output: if(a[3])| (In Fly Mode)
+        output: if(a[3)]) (Without Fly Mode)
+
+        input:
+        {
+            hello();|
+            world();
+        }
+
+        (press } at |)
+
+        output:
+        {
+            hello();
+            world();
+        }|
+
+        (then press <M-b> at | to do backinsert)
+        output:
+        {
+            hello();}|
+            world();
+        }
+
+        See |Fly Mode| section for details
+
+==============================================================================
+3. Fly Mode                                                  *autopairs-flymode*
+
+Fly Mode will always force closed-pair jumping instead of inserting. Only for
+")", "}", "]". If jumps in mistake, you can use |g:AutoPairsBackInsert| (default
+Key: <M-b>) to jump back and insert closed pair.
+
+The most situation maybe you want to insert single closed pair in the string,
+eg: >
+
+    ")"
+
+Fly Mode is DISABLED by default. To enable Fly Mode add following to your
+'.vimrc': >
+
+    let g:AutoPairsFlyMode = 1
+
+Default Options: >
+
+    let g:AutoPairsFlyMode = 0
+    let g:AutoPairsShortcutBackInsert = '<M-b>'
+
+==============================================================================
+4. Shortcuts                                             *autopairs-shortcuts*
+
+System Shortcuts:
+    <CR> : Insert new indented line after return if cursor in blank brackets
+           or quotes.
+    <BS> : Delete brackets in pair
+    <M-p>: Toggle Autopairs (|g:AutoPairsShortcutToggle|)
+    <M-e>: Fast Wrap (|g:AutoPairsShortcutFastWrap|)
+    <M-n>: Jump to next closed pair (|g:AutoPairsShortcutJump|)
+    <M-b>: BackInsert (|g:AutoPairsShortcutBackInsert|)
+
+
+    To rebind keys <M-p>, <M-e> or <M-n> or in case of conflicts with
+    another keys:
+
+        let g:AutoPairsShortcutToggle = '<another key>'
+
+    If the key is empty string '', then the shortcut will be disabled.
+
+==============================================================================
+5. Options                                                 *autopairs-options*
+
+                                                                 *g:AutoPairs*
+|g:AutoPairs|                                                             dict
+
+Default: >
+    {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
+
+Specifies which symbols should be automatically paired.
+
+To append new pairs without overwriting defaults, add values in your `.vimrc`.:
+
+    let g:AutoPairs['<']='>'
+
+This example will enable matching of `<` with `>`.
+
+
+                                                                  *b:AutoPairs*
+|b:AutoPairs|                                                              dict
+
+Default: |g:AutoPairs|
+
+Buffer level pairs set.
+
+You can set |b:AutoPairs| before |BufEnter|: >
+
+    au Filetype FILETYPE let b:AutoPairs = {"(": ")"}
+
+This sets |AutoPairs| to only match for parenthesis for 'FILETYPE'.
+
+
+
+                                                    *g:AutoPairsShortcutToggle*
+|g:AutoPairsShortcutToggle|                                              string
+
+Default: <M-p>
+
+The shortcut to toggle autopairs.
+
+
+
+                                                  *g:AutoPairsShortcutFastWrap*
+|g:AutoPairsShortcutFastWrap|                                            string
+
+Default: <M-e>
+
+Fast wrap the word. All pairs will be considered as a block (including <>).
+
+        (|)'hello' after fast wrap at |, the word will be ('hello')
+        (|)<hello> after fast wrap at |, the word will be (<hello>)
+
+
+
+                                                      *g:AutoPairsShortcutJump*
+|g:AutoPairsShortcutJump|                                                string
+
+Default: <M-n>
+
+Jump to the next closed pair.
+
+
+                                                *g:AutoPairsShortcutBackInsert*
+|g:AutoPairsShortcutBackInsert|                                          string
+
+Default: <M-b>
+
+Work with |autopairs-flymode|, insert the key at the Fly Mode jumped position.
+
+
+
+                                                             *g:AutoPairsMapBS*
+|g:AutoPairsMapBS|                                                          int
+
+Default: 1
+
+Map <BS> to delete brackets and quotes in pair, executes:
+
+    inoremap <buffer> <silent> <BS> <C-R>=AutoPairsDelete()<CR>
+
+
+                                                             *g:AutoPairsMapCh*
+|g:AutoPairsMapCh|                                                          int
+
+Default: 1
+
+Map <C-h> to delete brackets and quotes in pair.
+
+
+                                                             *g:AutoPairsMapCR*
+|g:AutoPairsMapCR|                                                          int
+
+Default: 1
+
+Map <CR> to insert a new indented line if cursor in (|), {|} [|], '|', "|".
+Executes:
+
+    inoremap <buffer> <silent> <CR> <C-R>=AutoPairsReturn()<CR>
+
+
+                                                        *g:AutoPairsCenterLine*
+|g:AutoPairsCenterLine|                                                     int
+
+Default: 1
+
+When |g:AutoPairsMapCR| is on, center current line after return if the line
+is at the bottom 1/3 of the window.
+
+
+                                                          *g:AutoPairsMapSpace*
+|g:AutoPairsMapSpace|                                                       int
+
+Default: 1
+
+Map <space> to insert a space after the opening character and before the
+closing one.
+
+Executes:
+
+    inoremap <buffer> <silent> <CR> <C-R>=AutoPairsSpace()<CR>
+
+
+                                                           *g:AutoPairsFlyMode*
+|g:AutoPairsFlyMode|                                                        int
+
+Default: 0
+
+Set it to 1 to enable |autopairs-flymode|.
+
+
+                                                    *g:AutoPairsMultilineClose*
+|g:AutoPairsMultilineClose|                                                 int
+
+Default: 1
+
+When you press the key for the closing pair (e.g. `)`) it jumps past it.
+If set to 1, then it'll jump to the next line, if there is only 'whitespace'.
+If set to 0, then it'll only jump to a closing pair on the same line.
+
+==============================================================================
+6. Troubleshooting                                 *autopairs-troubleshooting*
+
+This plugin remaps keys `([{'"}]) <BS>`
+
+If auto pairs cannot work, use |:imap| to check if the map is corrected.
+
+The correct map should be: >
+
+    <C-R>=AutoPairsInsert("\(")<CR>
+
+Or the plugin conflicts with some other plugins. Use command: >
+
+    :call AutoPairsInit() to remap the keys.
+
+--- How to insert parens purely? ---
+
+There are 3 ways:
+
+    1. Use Ctrl-V ) to insert paren without trigger the plugin.
+
+    2. Use Alt-P to turn off the plugin.
+
+    3. Use DEL or <C-O>x to delete the character insert by plugin.
+
+--- Swedish Character Conflict ---
+
+Because AutoPairs uses Meta(Alt) key as a shortcut, it conflicts with some
+Swedish character such as å. To fix the issue, you need remap or disable the
+related shortcut.

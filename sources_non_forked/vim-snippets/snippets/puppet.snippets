@@ -1,0 +1,245 @@
+# Snippets for use with VIM and http://www.vim.org/scripts/script.php?script_id=2540
+#
+# Please contact Jorge Vidal <im@jor.ge> for additions and feedback,
+# see it in action @ http://www.devco.net/archives/2009/09/22/vim_and_puppet.php
+# Many thanks to the original author R.I.Pienaar <rip@devco.net>
+
+# Header using Puppet Strings (YARD tags) https://puppet.com/docs/puppet/latest/modules_documentation.html
+# More info: https://github.com/puppetlabs/puppet-strings
+snippet classheader
+	# ${1:`vim_snippets#Filename(substitute(expand('%:p:s?\v.{-}/(\w+)/manifests/(.+)\.pp?\1/\2?'), '/', '::', 'g'), 'class-name')`}
+	# ${2:A description of what this class does}
+	#
+	# @summary ${3:A short summary of the purpose of this class}
+	#
+	# @param ${4:parameter1}
+	#   ${6:Explanation of what this parameter affects.}
+	#
+	# @example Simple use
+	#   include $1
+	#
+	# @example Use with params
+	#   class { '$1':
+	#     $$4 => '${7:undef}',
+	#   }
+	#
+	# @author ${8:`g:snips_author`} <${9:`g:snips_email`}>
+	#
+	# @note Copyright `strftime("%Y")` $8
+	#
+	class $1(
+		${5:String} $$4 = undef,
+	) {
+		${0}
+	}
+
+snippet defheader
+	# ${1:`vim_snippets#Filename(expand('%:p:s?.*modules/??:h:h'), 'define-name')`}
+	# ${2:A description of what this define does}
+	#
+	# @summary ${3:A short summary of the purpose of this define}
+	#
+	# @param ${4:parameter1} [${5:String}]
+	#   ${6:Explanation of what this parameter affects.}
+	#
+	# @example Simple use
+	#   $1 { 'namevar':
+	#     $$4 => '${7:undef}',
+	#   }
+	#
+	# @author ${8:`g:snips_author`} <${9:`g:snips_email`}>
+	#
+	# @note Copyright `strftime("%Y")` $8
+	#
+	define $1(
+		$$4 = undef,
+	) {
+		${0}
+	}
+
+# Language Constructs
+snippet class
+	class ${1:`vim_snippets#Filename('', 'name')`} {
+		${0}
+	}
+snippet node
+	node "${1:`vim_snippets#Filename('', 'fqdn')`}" {
+		${0}
+	}
+snippet case
+	case $${1:variable} {
+		default: { ${0} }
+	}
+snippet ife
+	if $${1:variable} {
+		${2}
+	} else {
+		${0}
+	}
+snippet if
+	if $${1:variable} {
+		${0}
+	}
+snippet ifd
+	if defined(${1:Resource}["${2:name}"]) {
+		${0}
+	}
+snippet ifnd
+	if !defined(${1:Resource}["${2:name}"]) {
+		${0}
+	}
+snippet el
+	else {
+		${0}
+	}
+snippet ?
+	? {
+		"${1}"	=> ${0}
+	  }
+#
+# blocks etc and general syntax sugar
+snippet [
+	[ ${1} ]
+snippet >
+	${1}	=> ${0}
+snippet p:
+	"puppet://puppet/${1:module name}/${0:file name}"
+#
+# Functions
+snippet alert
+	alert("${1:message}")
+snippet crit
+	crit("${1:message}")
+snippet debug
+	debug("${1:message}")
+snippet defined
+	defined(${1:Resource}["${2:name}"])
+snippet emerg
+	emerg("${1:message}")
+snippet extlookup Simple extlookup
+	extlookup("${1:variable}")
+snippet extlookup Extlookup with defaults
+	extlookup("${1:variable}", "${2:default}")
+snippet extlookup Extlookup with defaults and custom data file
+	extlookup("${1:variable}", "${2:default}", "${3:data source}")
+snippet fail
+	fail("${1:message}")
+snippet info
+	info("${1:message}")
+snippet inline_template
+	inline_template("<%= ${1} %>")
+snippet notice
+	notice("${1:message}")
+snippet realize
+	realize(${1:Resource}[${2:name}])
+snippet regsubst
+	regsubst(${1:hay stack}, ${2:needle}, "${3:replacement}")
+snippet inc
+	include ${1:classname}
+snippet split
+	split(${1:hay stack}, "${2:patten}")
+snippet versioncmp
+	versioncmp("${1:version}", "${2:version}")
+snippet warning
+	warning("${1:message}")
+#
+# Types
+snippet cron
+	cron { "${1:name}":
+		command => "${2}",
+		user    => "${3:root}",
+		${4}    => ${0},
+	}
+
+snippet exec
+	exec { "${1:name}":
+		command => "${2:$1}",
+		user    => "${3:root}",
+		${4}    => ${0},
+	}
+
+snippet user
+	user { "${1:user}":
+		ensure      => present,
+		comment     => "${2:$1}",
+		managehome  => true,
+		home        => "${0:/home/$1}",
+	}
+
+snippet group
+	group { "${1:group}":
+		ensure => ${0:present},
+	}
+
+snippet host
+	host { "${1:hostname}":
+		ip => ${0:127.0.0.1},
+	}
+
+snippet mailalias
+	mailalias { "${1:localpart}":
+		recipient => "${0:recipient}",
+	}
+
+snippet mount
+	mount { "${1:destination path}":
+		ensure	=> ${2:mounted},
+		device	=> "${0:device name or path}",
+	}
+
+snippet notify
+	notify { "${1:message}": }
+
+snippet package
+	package { "${1:package name}":
+		ensure	=> ${0:present},
+	}
+
+snippet yumrepo
+	yumrepo { "${1:repo name}":
+		descr   => "${2:$1}",
+		enabled => ${0:1},
+	}
+
+snippet define
+	define ${1} (${2}) {
+		${0}
+	}
+
+snippet service
+	service { "${1:service}":
+		ensure    => running,
+		enable    => true,
+		require   => [ Package["${2:package}"], File["${3:file}"], ],
+		subscribe => [ File["${4:configfile1}"], File["${5:configfile2}"], Package["${6:package}"], ],
+	}
+
+snippet file
+	file { "${1:filename}":
+		ensure  => ${2:present},
+		owner   => "${3:root}",
+		group   => "${4:root}",
+		mode    => "${5:0644}",
+		source  => "puppet:///modules/${6:module}/${7:source}",
+		content => template("${8:module}/${9:template}"),
+		alias   => "${10:alias}",
+		require => [ Package["${11:package}"], File["${12:file}"], ],
+	}
+
+snippet archive
+	archive { "${1:filename}":
+		ensure     => ${2:present},
+		url        => "http://${3:url}",
+		extension  => "${4:tgz}",
+		target     => "${5:target}",
+		checksum   => ${6:false},
+		src_target => "${7:/tmp}",
+	}
+
+snippet firewall
+	firewall { "${1:comment}":
+		proto	=> ${2:tcp},
+		action	=> ${3:accept},
+		port	=> ${4},
+	}
+

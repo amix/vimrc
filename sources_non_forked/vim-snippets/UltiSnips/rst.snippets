@@ -1,0 +1,311 @@
+# -*- coding: utf-8 -*-
+
+priority -50
+
+###########################################################################
+#							   General Stuff							  #
+###########################################################################
+global !p
+from collections import Counter
+from vimsnippets import complete, has_cjk, display_width
+
+# http://docutils.sourceforge.net/docs/ref/rst/roles.html
+TEXT_ROLES = ['emphasis', 'literal', 'code', 'math',
+			  'pep-reference', 'rfc-reference',
+			  'strong', 'subscript', 'superscript',
+			  'title-reference', 'raw']
+TEXT_ROLES_REGEX = r'\.\.\srole::?\s(w+)'
+
+# http://docutils.sourceforge.net/docs/ref/rst/directives.html#specific-admonitions
+SPECIFIC_ADMONITIONS = ["attention", "caution", "danger",
+						"error", "hint", "important", "note",
+						"tip", "warning"]
+# http://docutils.sourceforge.net/docs/ref/rst/directives.html
+DIRECTIVES = ['code', 'contents', 'admonition', 'table', 'csv-table', 'list-table',
+			  'class', 'container', 'sidebar', 'topic', 'title',
+			  'role', 'default-role', 'raw']
+
+# DIRECTIVES_WITHOUT_TITLE means directive arguments equal None
+DIRECTIVES_WITHOUT_TITLE = ['math', 'meta', 'parsed-literal', 'line-block',
+							'header', 'compound', 'highlights', 'pull-quote',
+							'footer', 'epigraph', 'rubric', 'sectnum']
+
+INCLUDABLE_DIRECTIVES = ['image', 'figure', 'include']
+
+# Directives for Subsubsection Definition
+DIRECTIVES_FOR_SUBSTITUTION = ['replace', 'unicode', 'date']
+
+# http://www.pygal.org/en/stable/documentation/types/index.html
+CHART_TYPES = ["Line", "StackedLine", "HorizontalLine", "Bar", "StackedBar", "HorizontalBar", "Histogram", "XY", "DateLine", "TimeLine", "TimeDeltaLine", "DateTimeLine", "Pie", "Radar", "Box", "Dot", "Funnel", "Gauge", "SolidGauge", "Pyramid", "Treemap"]
+
+def real_filename(filename):
+	"""pealeextension name off if possible
+	# i.e. "foo.bar.png will return "foo.bar"
+	"""
+	return os.path.splitext(filename)[0]
+
+def check_file_exist(rst_path, relative_path):
+	"""
+	For RST file, it can just include files as relative path.
+
+	:param rst_path: absolute path to rst file
+	:param relative_path: path related to rst file
+	:return: relative file's absolute path if file exist
+	"""
+	abs_path = os.path.join(os.path.dirname(rst_path), relative_path)
+	if os.path.isfile(abs_path):
+		return abs_path
+
+def	make_items(times, leading='+'):
+	"""
+	make lines with leading char multitimes
+
+	:param: times, how many times you need
+	:param: leading, leading character
+	"""
+	times = int(times)
+	if leading == 1:
+		msg = ""
+		for x in range(1, times+1):
+			msg += "%s. Item\n" % x
+		return msg
+	else:
+		return ("%s Item\n" % leading) * times
+
+
+def look_up_directives(regex, fpath):
+	"""
+	find all directive args in given file
+	:param: regex, the regex that needs to match
+	:param: path, to path to rst file
+
+	:return: list, empty list if nothing match
+	"""
+	try:
+		with open(fpath) as source:
+			match = re.findall(regex, source.read())
+	except IOError:
+		match = []
+	return match
+
+
+def get_popular_code_type():
+	"""
+	find most popular code type in the given rst
+
+	:param path: file to detect
+
+	:return: string, most popular code type in file
+	"""
+	buf = "".join(vim.current.buffer)
+	types = re.findall(r'[:|\.\.\s]code::?\s(\w+)', buf)
+	try:
+		popular_type = Counter(types).most_common()[0][0]
+	except IndexError:
+		popular_type = "lua" # Don't break default
+	return popular_type
+endglobal
+
+snippet part "Part" b
+`!p snip.rv = display_width(t[1])*'#'`
+${1:${VISUAL:Part name}}
+`!p snip.rv = display_width(t[1])*'#'`
+
+$0
+endsnippet
+
+snippet chap "Chapter" b
+`!p snip.rv = display_width(t[1])*'*'`
+${1:${VISUAL:Chapter name}}
+`!p snip.rv = display_width(t[1])*'*'`
+
+$0
+endsnippet
+
+snippet sec "Section" b
+${1:${VISUAL:Section name}}
+`!p snip.rv = display_width(t[1])*'='`
+
+$0
+endsnippet
+
+snippet ssec "Subsection" b
+${1:${VISUAL:Subsection name}}
+`!p snip.rv = display_width(t[1])*'-'`
+
+$0
+endsnippet
+
+snippet sssec "Subsubsection" b
+${1:${VISUAL:Subsubsection name}}
+`!p snip.rv = display_width(t[1])*'^'`
+
+$0
+endsnippet
+
+snippet para "Paragraph" b
+${1:${VISUAL:Paragraph name}}
+`!p snip.rv = display_width(t[1])*'"'`
+
+$0
+endsnippet
+
+snippet em "Emphasize string" i
+`!p
+# dirty but works with CJK character detection
+if has_cjk(vim.current.line):
+	snip.rv ="\ "`*${1:${VISUAL:Em}}*`!p
+if has_cjk(vim.current.line):
+	snip.rv ="\ "
+else:
+	snip.rv = " "
+`$0
+endsnippet
+
+snippet st "Strong string" i
+`!p
+if has_cjk(vim.current.line):
+	snip.rv ="\ "`**${1:${VISUAL:Strong}}**`!p
+if has_cjk(vim.current.line):
+	snip.rv ="\ "
+else:
+	snip.rv = " "
+`$0
+endsnippet
+
+snippet "li(st)? (?P<num>\d+)" "List" br
+$0
+`!p
+# usage: li 4<tab>
+# which will extand into a unordered list contains 4 items
+snip.rv = make_items(match.groupdict()['num'])
+`
+endsnippet
+
+snippet "ol(st)? (?P<num>\d+)" "Order List" br
+$0
+`!p
+# usage: ol 4<tab>
+# which will extand into a ordered list contains 4 items
+snip.rv = make_items(match.groupdict()['num'], 1)
+`
+endsnippet
+###########################################################################
+#						  More Specialized Stuff.						  #
+###########################################################################
+snippet cb "Code Block" b
+.. code-block:: ${1:`!p snip.rv = get_popular_code_type()`}
+
+	${2:${VISUAL:code}}
+
+$0
+endsnippet
+
+# match snippets :
+# img, inc, fig
+snippet id "Includable Directives" b
+`!p
+real_name=real_filename(os.path.basename(t[2]))
+di=t[1][:2]
+
+link=""
+content=""
+
+if di == 'im':
+	link = "|{0}|".format(real_name)
+
+if di == 'fi':
+	content="""
+	:alt: {0}
+
+	{0}""".format(real_name)
+`
+..`!p snip.rv = " %s" % link if link else ""` $1`!p
+snip.rv=complete(t[1], INCLUDABLE_DIRECTIVES)
+`:: ${2:${VISUAL:file}}`!p
+if content:
+	snip.rv +="    "+content`
+`!p
+# Tip of whether file is exist in comment type
+if not check_file_exist(path, t[2]):
+	snip.rv='.. FILE {0} does not exist'.format(t[2])
+else:
+	snip.rv=""
+`$0
+endsnippet
+
+snippet di "Directives" b
+.. $1`!p snip.rv=complete(t[1], DIRECTIVES)`:: $2
+
+	${3:${VISUAL:Content}}
+$0
+endsnippet
+
+snippet dt "Directives without title" b
+.. $1`!p snip.rv=complete(t[1], DIRECTIVES_WITHOUT_TITLE)`::
+
+	${2:${VISUAL:Content}}
+$0
+endsnippet
+
+snippet ds "Directives for subscription" b
+.. |$1| $2`!p snip.rv=complete(t[2], DIRECTIVES_FOR_SUBSTITUTION)`:: ${3:Content}
+$0
+endsnippet
+
+snippet sa "Specific Admonitions" b
+.. $1`!p snip.rv =complete(t[1], SPECIFIC_ADMONITIONS)`:: $2
+
+	${3:${VISUAL:Content}}
+
+$0
+endsnippet
+
+# it will be trigger at start of line or after a word
+snippet ro "Text Roles" w
+\ :$1`!p snip.rv=complete(t[1],
+							   TEXT_ROLES+look_up_directives(TEXT_ROLES_REGEX,
+														path))`:\`$2\`\
+endsnippet
+
+snippet eu "Embedded URI" i
+`!p
+if has_cjk(vim.current.line):
+	snip.rv = "\ "`\`${1:${VISUAL:Text}} <${2:URI}>\`_`!p
+if has_cjk(vim.current.line):
+	snip.rv ="\ "
+else:
+	snip.rv = ""
+`$0
+endsnippet
+
+snippet fnt "Footnote or Citation" i
+[${1:Label}]_ $0
+
+.. [$1] ${2:Reference}
+endsnippet
+
+# Only for Nikola — Static Site Generator
+snippet chart "Pygal chart for Nikola" b
+.. chart:: $1`!p snip.rv=complete(t[1], CHART_TYPES)`
+	:title: '${2:Browser usage evolution (in %)}'
+	:x_labels: [${3:"2002", "2003", "2004", "2005", "2006", "2007"}]
+
+	'Firefox', [None, None, 0, 16.6, 25, 31]
+	'Chrome',  [None, None, None, None, None, None]
+	'IE',      [85.8, 84.6, 84.7, 74.5, 66, 58.6]
+	'Others',  [14.2, 15.4, 15.3, 8.9, 9, 10.4]
+$0
+endsnippet
+
+############
+#  Sphinx  #
+############
+
+snippet sid "SideBar" b
+.. sidebar:: ${1:SideBar Title}
+
+	${2:${VISUAL:SideBar Content}}
+endsnippet
+
+# vim:set list noet sts=0 sw=4 ts=4:

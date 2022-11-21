@@ -1,0 +1,109 @@
+# create package spec
+snippet ps
+	create or replace package ${1:name}
+	as
+		${0:-- spec}
+	end; -- end of package spec $1
+# create package body
+snippet pb
+	create or replace package body ${1:name}
+	as
+		$0
+	end; -- end of package body $1;
+# package procedure spec
+snippet pps
+	procedure ${1:name}(${0:args});
+# package procedure body
+snippet ppb
+	procedure ${1:name}(${2:args})
+	as
+	begin
+		$0
+	end $2;
+# package function spec
+snippet pfs
+	function ${1:name}(${2:args})
+	  return ${0:type};
+# package function body
+snippet pfb
+	function ${1:name}(${2:args})
+	  return ${3:type}
+	as
+		l_res	$3;
+	begin
+		$0;
+		return l_res;
+	end $1;
+# snow errors
+snippet err
+	show errors;
+# proc/func in parameter
+snippet p
+	${1:name} ${2:in} ${3:type} ${0: := null}
+# package type: record
+snippet tr
+	type tr_${1:name} is record (${0:/* columns */});
+# package type: nested table
+snippet tt
+	type tt_${1:name} is table of tr_${0:name};
+# package type: indexed table
+snippet tti
+	type tt_${1:name} is table of tr_${0:name} index by binary_integer;
+# proc/func comment
+snippet doc
+	/*
+	 *	${0: comment ...}
+	 */
+# plsql block
+snippet beg
+	begin
+		${0}
+	end;
+# plsql block with declare part
+snippet dec
+	declare
+		${1}
+	begin
+		${0}
+	end;
+# return pipe row
+snippet rpipe
+	for ${1:i} in 1 .. ${0:l_res}.count loop
+		pipe row( $2($1) );
+	end loop;
+	return;
+# bulk collect
+snippet bc
+	bulk collect into ${0}
+# local variable
+snippet l
+	l_${1}		${0:number};
+# output
+snippet log
+	dbms_output.put_line('${0}');
+# for loop
+snippet for
+	for ${1:i} in ${2:1}..${3:42} loop
+		${0}
+	end loop;
+# for loop with select
+snippet fors
+	for ${1:rec} in (${2: select}) loop
+		${0}
+	end loop;
+# for loop with collection
+snippet forc
+	for ${1:i} in ${2:l_var}.first .. $2.last loop
+		${0: -- dbms_output.put_line($2($1)); }
+	end loop;
+# if
+snippet if
+	if ${1} then
+		${0}
+	end if;
+snippet ife
+	if ${1} then
+		${2}
+	else
+		${0}
+	end if;

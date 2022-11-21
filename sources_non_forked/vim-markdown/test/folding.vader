@@ -1,0 +1,53 @@
+Before:
+  source ../after/ftplugin/markdown.vim
+
+After:
+  setlocal foldexpr=0
+  setlocal foldmethod=manual
+
+Given markdown;
+# Title
+
+## Chapter 1
+
+```
+This is code block
+# This is just a comment
+```
+
+## Capter 2
+
+foobar
+
+Execute (fold level # in code block):
+  AssertEqual foldlevel(1), 0, '# Title'
+  AssertEqual foldlevel(3), 1, '## Chapter 1'
+  AssertEqual foldlevel(7), 2, '# This is just a comment'
+  AssertEqual foldlevel(8), 2, '```'
+  AssertEqual foldlevel(10), 1, '## Chapter 2'
+  AssertEqual foldlevel(12), 2, 'foobar'
+
+Given markdown;
+Fold Level 1
+============
+Fold Level 2
+------------
+
+Execute (fold level ==, --):
+  AssertEqual foldlevel(2), 1, '=='
+  AssertEqual foldlevel(4), 2, '--'
+
+Given markdown;
+# H1
+
+## H1.1
+
+## H1.2
+
+# H2
+
+Execute (fold level # in last line):
+  AssertEqual foldlevel(1), 0, '# H1'
+  AssertEqual foldlevel(3), 1, '## H1.1'
+  AssertEqual foldlevel(5), 1, '## H1.2'
+  AssertEqual foldlevel(7), 0, '# H2'

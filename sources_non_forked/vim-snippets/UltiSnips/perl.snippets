@@ -1,0 +1,139 @@
+priority -50
+
+###########################################################################
+#                            TextMate Snippets                            #
+###########################################################################
+snippet ife "Conditional if..else (ife)"
+if ($1) {
+	${2:# body...}
+}
+else {
+	${3:# else...}
+}
+
+endsnippet
+
+snippet ifee "Conditional if..elsif..else (ifee)"
+if ($1) {
+	${2:# body...}
+}
+elsif ($3) {
+	${4:# elsif...}
+}
+else {
+	${5:# else...}
+}
+
+endsnippet
+
+snippet xunless "Conditional one-line (unless)"
+${1:expression} unless ${2:condition};
+
+endsnippet
+
+snippet xif "Conditional one-line (xif)"
+${1:expression} if ${2:condition};
+
+endsnippet
+
+snippet sub "Function (sub)"
+sub ${1:function_name} {
+	${2:# body...}
+}
+
+endsnippet
+
+snippet xfore "Loop one-line (xforeach)"
+${1:expression} foreach @${2:array};
+
+endsnippet
+
+snippet xwhile "Loop one-line (xwhile)"
+${1:expression} while ${2:condition};
+
+endsnippet
+
+snippet test "Test"
+#!/usr/bin/env perl -w
+
+use strict;
+use Test::More tests => ${1:1};
+use ${2:ModuleName};
+
+ok(${3:assertion});
+
+endsnippet
+
+snippet class "class"
+package ${1:ClassName};
+
+${2:use parent qw(${3:ParentClass});}${2/.+/\n\n/}sub new {
+	my $class = shift;
+	$class = ref $class if ref $class;
+	my $self = bless {}, $class;
+	$self;
+}
+
+1;
+
+endsnippet
+
+snippet eval "eval"
+local $@;
+eval {
+	${1:# do something risky...}
+};
+if (my $${2:exception} = $@) {
+	${3:# handle failure...}
+}
+
+endsnippet
+
+snippet for "for"
+for (my $${1:var} = 0; $$1 < ${2:expression}; $$1++) {
+	${3:# body...}
+}
+
+endsnippet
+
+snippet fore "foreach"
+foreach ${1:my $${2:x}} (@${3:array}) {
+	${4:# body...}
+}
+
+endsnippet
+
+snippet if "if"
+if ($1) {
+	${2:# body...}
+}
+
+endsnippet
+
+snippet slurp "slurp"
+my $${1:var} = do { local $/ = undef; open my $fh, '<', ${2:$file}; <$fh> };
+
+endsnippet
+
+snippet unless "unless"
+unless ($1) {
+	${2:# body...}
+}
+
+endsnippet
+
+snippet while "while"
+while ($1) {
+	${2:# body...}
+}
+
+endsnippet
+
+snippet until "until"
+until ($1) {
+	${2:# body...}
+}
+
+endsnippet
+
+# vim:ft=snippets:

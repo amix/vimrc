@@ -1,0 +1,31 @@
+===============================================================================
+ALE Sass Integration                                         *ale-sass-options*
+
+
+===============================================================================
+sasslint                                                    *ale-sass-sasslint*
+
+See |ale-scss-sasslint| for information about the available options.
+
+
+===============================================================================
+stylelint                                                  *ale-sass-stylelint*
+
+g:ale_sass_stylelint_executable               *g:ale_sass_stylelint_executable*
+                                              *b:ale_sass_stylelint_executable*
+  Type: |String|
+  Default: `'stylelint'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_sass_stylelint_use_global               *g:ale_sass_stylelint_use_global*
+                                              *b:ale_sass_stylelint_use_global*
+  Type: |String|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

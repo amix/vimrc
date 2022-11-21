@@ -1,0 +1,45 @@
+===============================================================================
+ALE Zig Integration                                           *ale-zig-options*
+                                                          *ale-integration-zig*
+
+===============================================================================
+Integration Information
+
+  Currently, the only supported linter for zig is zls.
+
+
+===============================================================================
+zigfmt                                                         *ale-zig-zigfmt*
+
+g:ale_zig_zigfmt_executable                       *g:ale_zig_zigfmt_executable*
+                                                  *b:ale_zig_zigfmt_executable*
+  Type: |String|
+  Default: `'zig'`
+
+  The executable that will be run for the `zig fmt` fixer.
+
+
+===============================================================================
+zls                                                               *ale-zig-zls*
+
+g:ale_zig_zls_executable                             *g:ale_zig_zls_executable*
+                                                     *b:ale_zig_zls_executable*
+  Type: |String|
+  Default: `'zls'`
+
+  This variable can be modified to change the executable path for `zls`.
+
+
+g:ale_zig_zls_config                                     *g:ale_zig_zls_config*
+                                                         *b:ale_zig_zls_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  WARNING: As of writing, zls does not support receiving configuration
+  from the client. This variable is a PLACEHOLDER until it does.
+
+  Dictionary with configuration settings for zls.
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

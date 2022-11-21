@@ -1,0 +1,31 @@
+set nocompatible
+
+let $LANG='en_US'
+
+filetype off
+set runtimepath+=../
+set runtimepath+=../build/tabular/
+set runtimepath+=../build/vim-toml/
+set runtimepath+=../build/vim-json/
+set runtimepath+=../build/vader.vim/
+filetype on
+
+filetype plugin indent on
+syntax enable
+
+function! Markdown_GetScriptID(fname) abort
+    let l:snlist = ''
+    redir => l:snlist
+    silent! scriptnames
+    redir END
+    let l:mx = '^\s*\(\d\+\):\s*\(.*\)$'
+    for l:line in split(l:snlist, "\n")
+        if stridx(substitute(l:line, '\\', '/', 'g'), a:fname) >= 0
+            return substitute(l:line, l:mx, '\1', '')
+        endif
+    endfor
+endfunction
+
+function! Markdown_GetFunc(fname, funcname) abort
+    return function('<SNR>' . Markdown_GetScriptID(a:fname) . '_' . a:funcname)
+endfunction

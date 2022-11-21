@@ -1,0 +1,9 @@
+priority -50
+
+snippet impa "Qualified import"
+import ${1:Json.Encode} as ${0:`!p snip.rv = t[1].split(".")[-1]`}
+endsnippet
+
+snippet impae "Qualified import with exposing"
+import ${1:Json.Encode} as ${2:`!p snip.rv = t[1].split(".")[-1]`} exposing (${0:Value})
+endsnippet

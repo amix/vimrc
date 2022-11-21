@@ -1,0 +1,130 @@
+global !p
+def complete(t, opts):
+	if t:
+		opts = [ m[len(t):] for m in opts if m.startswith(t) ]
+	if len(opts) == 1:
+		return opts[0]
+	return '(' + '|'.join(opts) + ')'
+endglobal
+
+snippet status "Status" bA
+status $1`!p snip.rv = complete(t[1], ['build', 'ci', 'test', 'refactor', 'perf', 'improvement', 'docs', 'chore', 'feat', 'fix'])`
+endsnippet
+
+snippet fix "fix conventional commit"
+fix(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet feat "feat conventional commit"
+feat(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet chore "chore conventional commit"
+chore(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet docs "docs conventional commit"
+docs(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet improvement "improvement conventional commit"
+improvement(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet perf "perf conventional commit"
+perf(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet refactor "refactor conventional commit"
+refactor(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet test "test conventional commit"
+test(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet ci "ci conventional commit"
+ci(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet build "build conventional commit"
+build(${1:scope}): ${2:title}
+
+${0:${VISUAL}}
+endsnippet
+
+snippet sign "Signature"
+-------------------------------------------------------------------------------
+${1:Company Name}
+
+${2:Author Name}
+
+${3:Streetname 21}
+${4:City and Area}
+
+${5:Tel: 						+44 (0)987 / 888 8888}
+${6:Fax: 						+44 (0)987 / 888 8882}
+${7:Mail: 					Email}
+${8:Web: 						https://}
+-------------------------------------------------------------------------------
+$0
+endsnippet
+
+snippet t "Todo"
+TODO: ${1:What is it} (`date "+%b %d %Y %a (%H:%M:%S)"`, `echo $USER`)
+$0
+endsnippet
+
+snippet cmt "Commit Structure" bA
+${1:Summarize changes in around 50 characters or less}
+
+${2:More detailed explanatory text, if necessary. Wrap it to about 72
+characters or so. In some contexts, the first line is treated as the
+subject of the commit and the rest of the text as the body. The
+blank line separating the summary from the body is critical (unless
+you omit the body entirely); various tools like `log`, `shortlog`
+and `rebase` can get confused if you run the two together.}
+
+${3:Explain the problem that this commit is solving. Focus on why you
+are making this change as opposed to how (the code explains that).
+Are there side effects or other unintuitive consequences of this
+change? Here's the place to explain them.}
+
+${4:Further paragraphs come after blank lines.
+
+ - Bullet points are okay, too
+
+ - Typically a hyphen or asterisk is used for the bullet, preceded
+   by a single space, with blank lines in between, but conventions
+   vary here}
+
+${5:Status}
+
+${6:If you use an issue tracker, put references to them at the bottom,
+like this.}
+
+${7:Any todos}
+
+${8:Resolves: #123
+See also: #456, #789}
+
+${9:Signature}
+endsnippet

@@ -1,0 +1,151 @@
+snippet lang
+	{-# LANGUAGE ${0:OverloadedStrings} #-}
+snippet haddock
+	{-# OPTIONS_HADDOCK ${0:hide} #-}
+snippet ghc
+	{-# OPTIONS_GHC ${0:-fno-warn-unused-imports} #-}
+snippet inline
+	{-# INLINE ${0:name} #-}
+snippet info
+	-- |
+	-- Module      :  ${1:`substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`}
+	-- Copyright   :  ${2:Author} ${3:2011-2012}
+	-- License     :  ${4:BSD3}
+	--
+	-- Maintainer  :  ${5:email@something.com}
+	-- Stability   :  ${6:experimental}
+	-- Portability :  ${7:unknown}
+	--
+	-- ${0:Description}
+	--
+snippet imp
+	import ${0:Data.Text}
+snippet import
+	import ${0:Data.Text}
+snippet import2
+	import ${1:Data.Text} (${0:head})
+snippet impq
+	import qualified ${1:Data.Text} as ${0:T}
+snippet importq
+	import qualified ${1:Data.Text} as ${0:T}
+snippet inst
+	instance ${1:Monoid} ${2:Type} where
+		${0}
+snippet ty
+	type ${1:Type} = ${0:Type}
+snippet type
+	type ${1:Type} = ${0:Type}
+snippet da
+	data ${1:Type} = ${2:$1} ${0:Int}
+snippet data
+	data ${1:Type} = ${2:$1} ${0:Int}
+snippet newtype
+	newtype ${1:Type} = ${2:$1} ${0:Int}
+snippet class
+	class ${1:Class} a where
+		${0}
+snippet module
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` (
+	) where
+	`expand('%') =~ 'Main' ? "\nmain :: IO ()\nmain = undefined" : ""`
+
+snippet mod
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')`
+		( ${1}
+		) where
+
+	`expand('%') =~ 'Main' ? "\nmain :: IO ()\nmain = undefined" : ""`
+snippet main
+	main :: IO ()
+	main = ${0:undefined}
+snippet const
+	${1:name} :: ${2:a}
+	$1 = ${0:undefined}
+snippet fn
+	${1:fn} :: ${2:a} -> ${3:a}
+	$1 ${4} = ${0:undefined}
+snippet fn0
+	${1:fn} :: ${2:a}
+	$1 = ${0:undefined}
+snippet fn1
+	${1:fn} :: ${2:a} -> ${3:a}
+	$1 ${4} = ${0:undefined}
+snippet fn2
+	${1:fn} :: ${2:a} -> ${3:a} -> ${4:a}
+	$1 ${5} = ${0:undefined}
+snippet fn3
+	${1:fn} :: ${2:a} -> ${3:a} -> ${4:a} -> ${5:a}
+	$1 ${6} = ${0:undefined}
+snippet => "Type constraint"
+	(${1:Class} ${2:a}) => $2
+snippet ap
+	${1:map} ${2:fn} ${0:list}
+snippet \
+	\\${1:x} -> ${0:expression}
+snippet (\
+	(\\${1:x} -> ${0:expression})
+snippet <-
+	${1:a} <- ${0:m a}
+snippet ->
+	${1:m a} -> ${0:a}
+snippet tup
+	(${1:a}, ${0:b})
+snippet tup2
+	(${1:a}, ${2:b}, ${0:c})
+snippet tup3
+	(${1:a}, ${2:b}, ${3:c}, ${0:d})
+snippet rec
+	${1:Record} { ${2:recFieldA} = ${3:undefined}
+				, ${4:recFieldB} = ${0:undefined}
+				}
+snippet case
+	case ${1:something} of
+		${2} -> ${0}
+snippet let
+	let ${1} = ${2}
+	in ${3}
+snippet where
+	where
+		${1:fn} = ${0:undefined}
+snippet spec
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` (main, spec) where
+
+	import Test.Hspec
+	import Test.QuickCheck
+
+	main :: IO ()
+	main = hspec spec
+
+	spec :: Spec
+	spec =
+		describe "${1}" $ do
+			it "${2}" $
+				$0
+snippet specf
+	module `substitute(substitute(expand('%:r'), '[/\\]','.','g'),'^\%(\l*\.\)\?','','')` (main, spec) where
+
+	import Test.Hspec
+	import Test.Hspec.Runner (configFastFail, defaultConfig, hspecWith)
+
+	main :: IO ()
+	main = hspecWith defaultConfig {configFastFail = True} spec
+
+	spec :: Spec
+	spec =
+		describe "${1}" $ do
+			it "${2}" $
+				$0
+snippet desc
+	describe "${1}" $ do
+		$0
+snippet it
+	it "${1}" $
+		$0
+snippet itp
+	it "${1}" $ property $
+		$0
+snippet sb
+	\`shouldBe\` $0
+snippet doc
+	{-| ${0}
+	-}

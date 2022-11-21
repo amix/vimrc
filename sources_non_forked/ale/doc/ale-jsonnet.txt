@@ -1,0 +1,43 @@
+===============================================================================
+ALE Jsonnet Integration                                   *ale-jsonnet-options*
+
+
+===============================================================================
+jsonnetfmt                                             *ale-jsonnet-jsonnetfmt*
+
+g:ale_jsonnet_jsonnetfmt_executable       *g:ale_jsonnet_jsonnetfmt_executable*
+                                          *b:ale_jsonnet_jsonnetfmt_executable*
+  Type: |String|
+  Default: `'jsonnetfmt'`
+
+  This option can be changed to change the path for `jsonnetfmt`.
+
+
+g:ale_jsonnet_jsonnetfmt_options             *g:ale_jsonnet_jsonnetfmt_options*
+                                             *b:ale_jsonnet_jsonnetfmt_options*
+  Type: |String|
+  Default: `''`
+
+  This option can be changed to pass extra options to `jsonnetfmt`.
+
+
+===============================================================================
+jsonnet-lint                                         *ale-jsonnet-jsonnet-lint*
+
+g:ale_jsonnet_jsonnet_lint_executable   *g:ale_jsonnet_jsonnet_lint_executable*
+                                        *b:ale_jsonnet_jsonnet_lint_executable*
+  Type: |String|
+  Default: `'jsonnet-lint'`
+
+  This option can be changed to change the path for `jsonnet-lint`.
+
+
+g:ale_jsonnet_jsonnet_lint_options          *g:ale_jsonnet_jsonnet_lint_options*
+                                            *b:ale_jsonnet_jsonnet_lint_options*
+  Type: |String|
+  Default: `''`
+
+  This option can be changed to pass extra options to `jsonnet-lint`.
+
+
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:
