@@ -68,8 +68,8 @@ dracula https://github.com/dracula/vim
 
 GITHUB_ZIP = "%s/archive/master.zip"
 
-FALLBACK_SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked_fallback")
-SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked")
+FALLBACK_SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked")
+SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked_cache")
 
 
 def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
