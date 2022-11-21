@@ -9,11 +9,11 @@ except ImportError:
 import re
 import shutil
 import tempfile
+import urllib.request
 import zipfile
 from distutils.dir_util import copy_tree
+from io import BytesIO
 from os import path
-
-import requests
 
 # --- Globals ----------------------------------------------
 PLUGINS = """
@@ -73,16 +73,12 @@ SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked_cache")
 
 
 def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
-    temp_zip_path = path.join(temp_dir, plugin_name)
-
     # Download and extract file in temp dir
-    req = requests.get(zip_path)
-    open(temp_zip_path, "wb").write(req.content)
+    with urllib.request.urlopen(zip_path) as req:
+        zip_f = zipfile.ZipFile(BytesIO(req.read()))
+        zip_f.extractall(temp_dir)
+        content_disp = req.headers.get("Content-Disposition")
 
-    zip_f = zipfile.ZipFile(temp_zip_path)
-    zip_f.extractall(temp_dir)
-
-    content_disp = req.headers.get("Content-Disposition")
     filename = re.findall("filename=(.+).zip", content_disp)[0]
     plugin_temp_path = path.join(temp_dir, path.join(temp_dir, filename))
 
