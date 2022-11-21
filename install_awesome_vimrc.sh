@@ -17,5 +17,4 @@ try
 catch
 endtry' > ~/.vimrc
 
-python update_plugins.py || python3 update_plugins.py
 echo "Installed the Ultimate Vim configuration successfully! Enjoy :-)"
