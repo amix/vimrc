@@ -1,4 +1,4 @@
-source plugins_config.vim
+source ~/.vim_runtime/plugins_config.vim
 let mapleader = ";"
 
 set rnu
