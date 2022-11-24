@@ -12,7 +12,7 @@ import tempfile
 import urllib.request
 import zipfile
 from io import BytesIO
-from os import path
+from os import listdir, path
 
 # --- Globals ----------------------------------------------
 PLUGINS = """
@@ -105,7 +105,7 @@ def update(plugin):
 if __name__ == "__main__":
     temp_directory = tempfile.mkdtemp()
 
-    if not path.isdir(SOURCE_DIR):
+    if not path.isdir(SOURCE_DIR) or not listdir(SOURCE_DIR):
         shutil.copytree(FALLBACK_SOURCE_DIR, SOURCE_DIR)
 
     try:
