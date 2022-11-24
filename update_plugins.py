@@ -13,7 +13,6 @@ import urllib.request
 import zipfile
 from io import BytesIO
 from os import path
-from shutil import copytree
 
 # --- Globals ----------------------------------------------
 PLUGINS = """
@@ -107,7 +106,7 @@ if __name__ == "__main__":
     temp_directory = tempfile.mkdtemp()
 
     if not path.isdir(SOURCE_DIR):
-        copytree(FALLBACK_SOURCE_DIR, SOURCE_DIR)
+        shutil.copytree(FALLBACK_SOURCE_DIR, SOURCE_DIR)
 
     try:
         if futures:
