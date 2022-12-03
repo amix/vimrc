@@ -2767,6 +2767,7 @@ documented in additional help files.
     gnatpp................................|ale-ada-gnatpp|
     ada-language-server...................|ale-ada-language-server|
   ansible.................................|ale-ansible-options|
+    ansible-language-server...............|ale-ansible-language-server|
     ansible-lint..........................|ale-ansible-ansible-lint|
   apkbuild................................|ale-apkbuild-options|
     apkbuild-lint.........................|ale-apkbuild-apkbuild-lint|
@@ -2833,6 +2834,7 @@ documented in additional help files.
     flawfinder............................|ale-cpp-flawfinder|
     uncrustify............................|ale-cpp-uncrustify|
   c#......................................|ale-cs-options|
+    clang-format..........................|ale-cs-clangformat|
     csc...................................|ale-cs-csc|
     cspell................................|ale-cs-cspell|
     dotnet-format.........................|ale-cs-dotnet-format|
@@ -2847,9 +2849,9 @@ documented in additional help files.
     stylelint.............................|ale-css-stylelint|
     vscodecss.............................|ale-css-vscode|
   cuda....................................|ale-cuda-options|
-    nvcc..................................|ale-cuda-nvcc|
-    clangd................................|ale-cuda-clangd|
     clang-format..........................|ale-cuda-clangformat|
+    clangd................................|ale-cuda-clangd|
+    nvcc..................................|ale-cuda-nvcc|
   d.......................................|ale-d-options|
     dfmt..................................|ale-d-dfmt|
     dls...................................|ale-d-dls|
@@ -2974,6 +2976,7 @@ documented in additional help files.
     ispc..................................|ale-ispc-ispc|
   java....................................|ale-java-options|
     checkstyle............................|ale-java-checkstyle|
+    clang-format..........................|ale-java-clangformat|
     cspell................................|ale-java-cspell|
     javac.................................|ale-java-javac|
     google-java-format....................|ale-java-google-java-format|
@@ -2982,6 +2985,7 @@ documented in additional help files.
     eclipselsp............................|ale-java-eclipselsp|
     uncrustify............................|ale-java-uncrustify|
   javascript..............................|ale-javascript-options|
+    clang-format..........................|ale-javascript-clangformat|
     cspell................................|ale-javascript-cspell|
     deno..................................|ale-javascript-deno|
     dprint................................|ale-javascript-dprint|
@@ -2997,6 +3001,7 @@ documented in additional help files.
     standard..............................|ale-javascript-standard|
     xo....................................|ale-javascript-xo|
   json....................................|ale-json-options|
+    clang-format..........................|ale-json-clangformat|
     cspell................................|ale-json-cspell|
     dprint................................|ale-json-dprint|
     eslint................................|ale-json-eslint|
@@ -3064,10 +3069,11 @@ documented in additional help files.
   nroff...................................|ale-nroff-options|
     write-good............................|ale-nroff-write-good|
   objc....................................|ale-objc-options|
+    ccls..................................|ale-objc-ccls|
     clang.................................|ale-objc-clang|
+    clang-format..........................|ale-objc-clangformat|
     clangd................................|ale-objc-clangd|
     uncrustify............................|ale-objc-uncrustify|
-    ccls..................................|ale-objc-ccls|
   objcpp..................................|ale-objcpp-options|
     clang.................................|ale-objcpp-clang|
     clangd................................|ale-objcpp-clangd|
@@ -3126,6 +3132,7 @@ documented in additional help files.
   proto...................................|ale-proto-options|
     buf-format............................|ale-proto-buf-format|
     buf-lint..............................|ale-proto-buf-lint|
+    clang-format..........................|ale-proto-clangformat|
     protoc-gen-lint.......................|ale-proto-protoc-gen-lint|
     protolint.............................|ale-proto-protolint|
   pug.....................................|ale-pug-options|
@@ -3241,6 +3248,7 @@ documented in additional help files.
   sql.....................................|ale-sql-options|
     dprint................................|ale-sql-dprint|
     pgformatter...........................|ale-sql-pgformatter|
+    sqlfluff..............................|ale-sql-sqlfluff|
     sqlfmt................................|ale-sql-sqlfmt|
     sqlformat.............................|ale-sql-sqlformat|
   stylus..................................|ale-stylus-options|

@@ -494,7 +494,9 @@ endfunction
 function! s:SetexToAtx(line1, line2)
     let l:originalNumLines = line('$')
     execute 'silent! ' . a:line1 . ',' . a:line2 . 'substitute/\v(.*\S.*)\n\=+$/# \1/'
-    execute 'silent! ' . a:line1 . ',' . a:line2 . 'substitute/\v(.*\S.*)\n-+$/## \1/'
+
+    let l:changed = l:originalNumLines - line('$')
+    execute 'silent! ' . a:line1 . ',' . (a:line2 - l:changed) . 'substitute/\v(.*\S.*)\n-+$/## \1'
     return l:originalNumLines - line('$')
 endfunction
 
@@ -854,19 +856,23 @@ function! s:SyntaxInclude(filetype)
     return grouplistname
 endfunction
 
+function! s:IsHighlightSourcesEnabledForBuffer()
+    " Enable for markdown buffers, and for liquid buffers with markdown format
+    return &filetype =~# 'markdown' || get(b:, 'liquid_subtype', '') =~# 'markdown'
+endfunction
 
 function! s:MarkdownRefreshSyntax(force)
     " Use != to compare &syntax's value to use the same logic run on
     " $VIMRUNTIME/syntax/synload.vim.
     "
     " vint: next-line -ProhibitEqualTildeOperator
-    if &filetype =~# 'markdown' && line('$') > 1 && &syntax != 'OFF'
+    if s:IsHighlightSourcesEnabledForBuffer() && line('$') > 1 && &syntax != 'OFF'
         call s:MarkdownHighlightSources(a:force)
     endif
 endfunction
 
 function! s:MarkdownClearSyntaxVariables()
-    if &filetype =~# 'markdown'
+    if s:IsHighlightSourcesEnabledForBuffer()
         unlet! b:mkd_included_filetypes
     endif
 endfunction
