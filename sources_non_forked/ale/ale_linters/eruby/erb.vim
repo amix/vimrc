@@ -10,7 +10,7 @@ function! ale_linters#eruby#erb#GetCommand(buffer) abort
 
     " Rails-flavored eRuby does not comply with the standard as understood by
     " ERB, so we'll have to do some substitution. This does not reduce the
-    " effectiveness of the linter—the translated code is still evaluated.
+    " effectiveness of the linter-the translated code is still evaluated.
     return 'ruby -r erb -e ' . ale#Escape('puts ERB.new($stdin.read.gsub(%{<%=},%{<%}), nil, %{-}).src') . '< %t | ruby -c'
 endfunction
 
