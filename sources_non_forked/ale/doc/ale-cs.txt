@@ -7,6 +7,13 @@ with the OmniSharp plugin. See here: https://github.com/OmniSharp/omnisharp-vim
 
 
 ===============================================================================
+clang-format                                               *ale-cs-clangformat*
+
+See |ale-c-clangformat| for information about the available options.
+Note that the C options are also used for C#.
+
+
+===============================================================================
 csc                                                                *ale-cs-csc*
 
   The |ale-cs-csc| linter checks for semantic errors when files are opened or

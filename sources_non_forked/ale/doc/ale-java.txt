@@ -42,6 +42,13 @@ g:ale_java_checkstyle_options                   *g:ale_java_checkstyle_options*
 
 
 ===============================================================================
+clang-format                                             *ale-java-clangformat*
+
+See |ale-c-clangformat| for information about the available options.
+Note that the C options are also used for Java.
+
+
+===============================================================================
 cspell                                                        *ale-java-cspell*
 
 See |ale-cspell-options|

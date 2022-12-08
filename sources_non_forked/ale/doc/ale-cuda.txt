@@ -3,23 +3,11 @@ ALE CUDA Integration                                         *ale-cuda-options*
 
 
 ===============================================================================
-nvcc                                                            *ale-cuda-nvcc*
+clang-format                                              *ale-cuda-clangformat*
 
-g:ale_cuda_nvcc_executable                         *g:ale_cuda_nvcc_executable*
-                                                   *b:ale_cuda_nvcc_executable*
-  Type: |String|
-  Default: `'nvcc'`
+See |ale-c-clangformat| for information about the available options.
+Note that the C options are also used for CUDA.
 
-  This variable can be changed to use a different executable for nvcc.
-  Currently only nvcc 8.0 is supported.
-
-
-g:ale_cuda_nvcc_options                               *g:ale_cuda_nvcc_options*
-                                                      *b:ale_cuda_nvcc_options*
-  Type: |String|
-  Default: `'-std=c++11'`
-
-  This variable can be changed to modify flags given to nvcc.
 
 ===============================================================================
 clangd                                                        *ale-cuda-clangd*
@@ -39,11 +27,25 @@ g:ale_cuda_clangd_options                           *g:ale_cuda_clangd_options*
 
   This variable can be changed to modify flags given to clangd.
 
-===============================================================================
-clang-format                                              *ale-cuda-clangformat*
 
-See |ale-c-clangformat| for information about the available options.
-Note that the C options are also used for cuda.
+===============================================================================
+nvcc                                                            *ale-cuda-nvcc*
+
+g:ale_cuda_nvcc_executable                         *g:ale_cuda_nvcc_executable*
+                                                   *b:ale_cuda_nvcc_executable*
+  Type: |String|
+  Default: `'nvcc'`
+
+  This variable can be changed to use a different executable for nvcc.
+  Currently only nvcc 8.0 is supported.
+
+
+g:ale_cuda_nvcc_options                               *g:ale_cuda_nvcc_options*
+                                                      *b:ale_cuda_nvcc_options*
+  Type: |String|
+  Default: `'-std=c++11'`
+
+  This variable can be changed to modify flags given to nvcc.
 
 
 ===============================================================================

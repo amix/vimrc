@@ -1,6 +1,6 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Maintainer:
-"       Amir Salihefendic — @amix3k
+"       Amir Salihefendic - @amix3k
 "
 " Awesome_version:
 "       Get this config, nice color schemes and lots of plugins!

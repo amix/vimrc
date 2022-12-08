@@ -17,11 +17,20 @@ You should change the structure of your project from this: >
   /path/foo/.eslintrc.js # root: true
   /path/foo/bar/.eslintrc.js # root: false
 <
+
 To this: >
   /path/foo/.base-eslintrc.js # Base configuration here
   /path/foo/.eslintrc.js # extends: ["/path/foo/.base-eslintrc.js"]
   /path/foo/bar/.eslintrc.js # extends: ["/path/foo/.base-eslintrc.js"]
 <
+
+
+===============================================================================
+clang-format                                       *ale-javascript-clangformat*
+
+See |ale-c-clangformat| for information about the available options.
+Note that the C options are also used for JavaScript.
+
 
 ===============================================================================
 cspell                                                  *ale-javascript-cspell*

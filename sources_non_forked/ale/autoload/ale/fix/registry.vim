@@ -263,8 +263,8 @@ let s:default_registry = {
 \   },
 \   'clang-format': {
 \       'function': 'ale#fixers#clangformat#Fix',
-\       'suggested_filetypes': ['c', 'cpp', 'cuda'],
-\       'description': 'Fix C/C++ and cuda files with clang-format.',
+\       'suggested_filetypes': ['c', 'cpp', 'cs', 'cuda', 'java', 'javascript', 'json', 'objc', 'proto'],
+\       'description': 'Fix C, C++, C#, CUDA, Java, JavaScript, JSON, ObjectiveC and Protobuf files with clang-format.',
 \   },
 \   'cmakeformat': {
 \       'function': 'ale#fixers#cmakeformat#Fix',
@@ -385,6 +385,11 @@ let s:default_registry = {
 \       'function': 'ale#fixers#shfmt#Fix',
 \       'suggested_filetypes': ['sh'],
 \       'description': 'Fix sh files with shfmt.',
+\   },
+\   'sqlfluff': {
+\       'function': 'ale#fixers#sqlfluff#Fix',
+\       'suggested_filetypes': ['sql'],
+\       'description': 'Fix SQL files with sqlfluff.',
 \   },
 \   'sqlfmt': {
 \       'function': 'ale#fixers#sqlfmt#Fix',
