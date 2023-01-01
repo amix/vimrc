@@ -8,11 +8,17 @@ except ImportError:
 
 import re
 import shutil
+import sys
 import tempfile
-import urllib.request
 import zipfile
 from io import BytesIO
 from os import listdir, path
+
+if sys.version_info.major > 2:
+    import urllib2 as request
+else:
+    import urllib.request as request
+
 
 # --- Globals ----------------------------------------------
 PLUGINS = """
@@ -73,7 +79,7 @@ SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked_cache")
 
 def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     # Download and extract file in temp dir
-    with urllib.request.urlopen(zip_path) as req:
+    with request.urlopen(zip_path) as req:
         zip_f = zipfile.ZipFile(BytesIO(req.read()))
         zip_f.extractall(temp_dir)
         content_disp = req.headers.get("Content-Disposition")
