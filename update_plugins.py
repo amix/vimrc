@@ -110,10 +110,10 @@ def update(plugin):
 if __name__ == "__main__":
     temp_directory = tempfile.mkdtemp()
 
-    if not path.isdir(SOURCE_DIR) or not listdir(SOURCE_DIR):
-        shutil.copytree(FALLBACK_SOURCE_DIR, SOURCE_DIR)
-
     try:
+        if not path.isdir(SOURCE_DIR) or not listdir(SOURCE_DIR):
+            shutil.copytree(FALLBACK_SOURCE_DIR, SOURCE_DIR)
+
         if futures:
             with futures.ThreadPoolExecutor(16) as executor:
                 executor.map(update, PLUGINS.splitlines())
