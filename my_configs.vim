@@ -134,10 +134,10 @@ endif
 " echodoc 
 set noshowmode
 
-" for vim-gitgutter
-GitGutterEnable
-GitGutterLineHighlightsEnable
-GitGutterSignsEnable
+" " for vim-gitgutter
+" GitGutterEnable
+" GitGutterLineHighlightsEnable
+" GitGutterSignsEnable
 
 " for vim-easy-align
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -148,3 +148,13 @@ nmap ga <Plug>(EasyAlign)
 
 " for vim-autoformat
 noremap <F3> :Autoformat<CR>
+
+let g:snipMate = { 'snippet_version' : 1 }
+
+set foldenable              " 开始折叠
+set foldmethod=syntax       " 设置语法折叠
+set foldcolumn=0            " 设置折叠区域的宽度
+setlocal foldlevel=1        " 设置折叠层数为
+set foldlevelstart=99       " 打开文件是默认不折叠代码
+
+set foldclose=all          " 设置为自动关闭折叠  
