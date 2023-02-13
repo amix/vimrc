@@ -29,7 +29,8 @@ set guioptions-=L
 
 " Colorscheme
 set background=dark
-colorscheme dracula
+colorscheme onedark
+set termguicolors
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Fast editing and reloading of vimrc configs
