@@ -72,7 +72,7 @@ g:ale_perl_perlcritic_options                    *g:ale_perl_perlcritic_options*
 g:ale_perl_perlcritic_showrules               *g:ale_perl_perlcritic_showrules*
 
   Type: |Number|
-  Default: 0
+  Default: `0`
 
   Controls whether perlcritic rule names are shown after the error message.
   Defaults to off to reduce length of message.

@@ -124,11 +124,11 @@ is restarted.
 
                                             *g:EditorConfig_max_line_indicator*
 The way to show the line where the maximal length is reached. Accepted values
-are "line", "fill", otherwise there will be no max line indicator.
+are "line", "fill" and "exceeding", otherwise there will be no max line
+indicator.
 
     "line":      the right column of the max line length column will be
-                 highlighted, made possible by setting 'colorcolumn' to
-                 "max_line_length + 1".
+                 highlighted, made possible by adding "+1" to 'colorcolumn'.
 
     "fill":      all the columns to the right of the max line length column
                  will be highlighted, made possible by setting 'colorcolumn'
@@ -160,6 +160,23 @@ max_line_length is set:
  let g:EditorConfig_preserve_formatoptions = 1
 <
 This option defaults to 0.
+
+                                            *g:EditorConfig_softtabstop_space*
+When spaces are used for indent, Vim's 'softtabstop' feature will make the
+backspace key delete one indent level. If you turn off that feature (by
+setting the option to 0), only a single space will be deleted.
+This option defaults to 1, which enables 'softtabstop' and uses the
+'shiftwidth' value for it. You can also set this to -1 to automatically follow
+the current 'shiftwidth' value (since Vim 7.3.693). Or set this to [] if
+EditorConfig should not touch 'softtabstop' at all.
+
+                                            *g:EditorConfig_softtabstop_tab*
+When tabs are used for indent, Vim's 'softtabstop' feature only applies to
+backspacing over existing runs of spaces.
+This option defaults to 1, so backspace will delete one indent level worth of
+spaces; -1 does the same but automatically follows the current 'shiftwidth'
+value. Set this to 0 to have backspace delete just a single space character.
+Or set this to [] if EditorConfig should not touch 'softtabstop' at all.
 
                                             *g:EditorConfig_verbose*
 Set this to 1 if you want debug info printed:

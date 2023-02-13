@@ -70,6 +70,13 @@ support:
     git clone https://tpope.io/vim/surround.git
     vim -u NONE -c "helptags surround/doc" -c q
 
+## FAQ
+
+> How do I surround without adding a space?
+
+Only the opening brackets—`[`, `{`, and `(`—add a space.  Use a closing
+bracket, or the `b` (`(`) and `B` (`{`) aliases.
+
 ## Contributing
 
 See the contribution guidelines for

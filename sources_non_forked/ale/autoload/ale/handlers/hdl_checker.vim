@@ -13,7 +13,7 @@ function! ale#handlers#hdl_checker#IsDotGit(path) abort
     return ! empty(a:path) && isdirectory(a:path)
 endfunction
 
-" Sould return (in order of preference)
+" Should return (in order of preference)
 " 1. Nearest config file
 " 2. Nearest .git directory
 " 3. The current path

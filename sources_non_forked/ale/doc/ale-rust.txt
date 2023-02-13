@@ -261,8 +261,8 @@ g:ale_rust_ignore_error_codes                   *g:ale_rust_ignore_error_codes*
 
 g:ale_rust_ignore_secondary_spans           *g:ale_rust_ignore_secondary_spans*
                                             *b:ale_rust_ignore_secondary_spans*
-  Type: Number
-  Default: 0
+  Type: |Number|
+  Default: `0`
 
   When set to 1, instructs the Rust error reporting to ignore secondary spans.
   The problem with secondary spans is that they sometimes appear in error
@@ -286,6 +286,14 @@ g:ale_rust_rustfmt_options                         *g:ale_rust_rustfmt_options*
   Default: `''`
 
   This variable can be set to pass additional options to the rustfmt fixer.
+
+
+g:ale_rust_rustfmt_executable                   *g:ale_rust_rustfmt_executable*
+                                                *b:ale_rust_rustfmt_executable*
+  Type: |String|
+  Default: `'rustfmt'`
+
+  This variable can be modified to change the executable path for `rustfmt`.
 
 
 ===============================================================================

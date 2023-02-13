@@ -134,7 +134,7 @@ g:ale_verilog_yosys_options                       *g:ale_verilog_yosys_options*
   Default: `'-Q -T -p ''read_verilog %s'''`
 
   This variable can be changed to modify the flags/options passed to 'yosys'.
-  By default, Yosys is an interative program. To obtain linting functionality,
+  By default, Yosys is an interactive program. To obtain linting functionality,
   the `'read_verilog'` command is used.
 
 

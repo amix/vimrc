@@ -68,5 +68,5 @@ snippet fwrs
 	io.${1:stderr}:write("$0")
 snippet fwrf
 	io.${1:stderr}:write(string.format("${2:%s}"$0))
-snippet im
-	import "${1:import file}"
+snippet req
+	require('${1:mod}')

@@ -13,7 +13,7 @@ powershell                                          *ale-powershell-powershell*
 
 g:ale_powershell_powershell_executable *g:ale_powershell_powershell_executable*
                                        *b:ale_powershell_powershell_executable*
-  Type: String
+  Type: |String|
   Default: `'pwsh'`
 
   This variable can be changed to use a different executable for powershell.

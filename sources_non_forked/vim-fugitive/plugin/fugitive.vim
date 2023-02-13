@@ -140,7 +140,7 @@ function! FugitiveExecute(args, ...) abort
   return call('fugitive#Execute', [a:args] + a:000)
 endfunction
 
-" FugitiveShellCommand() turns an array of arugments into a Git command string
+" FugitiveShellCommand() turns an array of arguments into a Git command string
 " which can be executed with functions like system() and commands like :!.
 " Integer arguments will be treated as buffer numbers, and the appropriate
 " relative path inserted in their place.

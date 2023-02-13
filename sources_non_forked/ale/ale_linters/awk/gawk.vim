@@ -1,5 +1,5 @@
 " Author: kmarc <korondi.mark@gmail.com>
-" Description: This file adds support for using GNU awk with sripts.
+" Description: This file adds support for using GNU awk with scripts.
 
 call ale#Set('awk_gawk_executable', 'gawk')
 call ale#Set('awk_gawk_options', '')

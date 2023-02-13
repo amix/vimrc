@@ -68,10 +68,6 @@ Just do a git rebase!
     git pull --rebase
     python update_plugins.py  # use python3 if python is unavailable
 
-NOTE: If you get `ModuleNotFoundError: No module named 'requests'`, you must first install the `requests` python module using `pip`, `pip3`, or `easy_install`.
-
-    pip install requests
-
 ## Some screenshots
 
 Colors when editing a Python file:
@@ -109,7 +105,6 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [gist-vim](https://github.com/mattn/gist-vim) Easily create gists from Vim using the `:Gist` command
 * [vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides) Is a plugin for visually displaying indent levels in Vim
 * [editorconfig-vim](https://github.com/editorconfig/editorconfig-vim) EditorConfig helps maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs.
-* [jedi-vim](https://github.com/davidhalter/jedi-vim) A great Python autocompletion library for VIM.
 
 
 ## Included color schemes
@@ -357,14 +352,6 @@ Open [ctrlp.vim](https://github.com/kien/ctrlp.vim) plugin to quickly find a fil
 
     nnoremap <leader>v :.GBrowse!<CR>
     xnoremap <leader>v :'<'>GBrowse!<CR>
-
-[jedi-vim](https://github.com/davidhalter/jedi-vim) specific mappings (can be used to browse through Python code quickly):
-
-    let g:jedi#goto_assignments_command = "<leader>a"
-    let g:jedi#usages_command = "<leader>u"
-    let g:jedi#completions_command = "<C-Space>"
-    let g:jedi#rename_command = "<leader>r"
-
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:

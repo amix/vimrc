@@ -37,6 +37,16 @@ hadolint                                              *ale-dockerfile-hadolint*
   hadolint can be found at: https://github.com/hadolint/hadolint
 
 
+g:ale_dockerfile_hadolint_options           *g:ale_dockerfile_hadolint_options*
+                                            *b:ale_dockerfile_hadolint_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the hadolint
+  invocation. These arguments will be used whether docker is being used or not
+  (see below).
+
+
 g:ale_dockerfile_hadolint_use_docker     *g:ale_dockerfile_hadolint_use_docker*
                                          *b:ale_dockerfile_hadolint_use_docker*
   Type: |String|

@@ -52,6 +52,31 @@ g:ale_erlang_elvis_executable                   *g:ale_erlang_elvis_executable*
 
 
 -------------------------------------------------------------------------------
+erlang_ls                                                *ale-erlang-erlang_ls*
+
+g:ale_erlang_erlang_ls_executable           *g:ale_erlang_erlang_ls_executable*
+                                            *b:ale_erlang_erlang_ls_executable*
+  Type: |String|
+  Default: `'erlang_ls'`
+
+  This variable can be changed to specify the erlang_ls executable.
+
+g:ale_erlang_erlang_ls_log_dir                 *g:ale_erlang_erlang_ls_log_dir*
+                                               *b:ale_erlang_erlang_ls_log_dir*
+  Type: |String|
+  Default: `''`
+
+  If set this variable overrides default directory where logs will be written.
+
+g:ale_erlang_erlang_ls_log_level             *g:ale_erlang_erlang_ls_log_level*
+                                             *b:ale_erlang_erlang_ls_log_level*
+  Type: |String|
+  Default: `'info'`
+
+  This variable can be changed to specify log level.
+
+
+-------------------------------------------------------------------------------
 erlc                                                          *ale-erlang-erlc*
 
 g:ale_erlang_erlc_executable                     *g:ale_erlang_erlc_executable*

@@ -323,6 +323,7 @@ nnoremap <silent> <Plug>(ale_go_to_type_definition) :ALEGoToTypeDefinition<Retur
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_tab) :ALEGoToTypeDefinition -tab<Return>
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_split) :ALEGoToTypeDefinition -split<Return>
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_vsplit) :ALEGoToTypeDefinition -vsplit<Return>
+nnoremap <silent> <Plug>(ale_go_to_implementation) :ALEGoToImplementation<Return>
 nnoremap <silent> <Plug>(ale_go_to_implementation_in_tab) :ALEGoToImplementation -tab<Return>
 nnoremap <silent> <Plug>(ale_go_to_implementation_in_split) :ALEGoToImplementation -split<Return>
 nnoremap <silent> <Plug>(ale_go_to_implementation_in_vsplit) :ALEGoToImplementation -vsplit<Return>

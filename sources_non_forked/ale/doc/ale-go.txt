@@ -169,7 +169,7 @@ g:ale_go_golines_executable                         *g:ale_go_lines_executable*
 g:ale_go_golines_options                             *g:ale_go_golines_options*
                                                      *b:ale_go_golines_options*
   Type: |String|
-  Default: ''
+  Default: `''`
 
   Additional options passed to the golines command. By default golines has
   --max-length=100 (lines above 100 characters will be wrapped)

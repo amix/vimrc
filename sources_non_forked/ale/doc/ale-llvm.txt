@@ -9,7 +9,7 @@ g:ale_llvm_llc_executable                           *g:ale_llvm_llc_executable*
                                                     *b:ale_llvm_llc_executable*
 
   Type: |String|
-  Default: "llc"
+  Default: `"llc"`
 
   The command to use for checking. This variable is useful when llc command
   has suffix like "llc-5.0".

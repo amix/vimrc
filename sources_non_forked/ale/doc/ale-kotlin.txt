@@ -79,7 +79,7 @@ g:ale_kotlin_ktlint_executable                 *g:ale_kotlin_ktlint_executable*
 
 g:ale_kotlin_ktlint_rulesets                     *g:ale_kotlin_ktlint_rulesets*
   Type: |List| of |String|s
-  Default: []
+  Default: `[]`
 
   This list should contain paths to ruleset jars and/or strings of maven
   artifact triples. Example:

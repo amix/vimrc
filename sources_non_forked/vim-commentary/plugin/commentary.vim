@@ -18,7 +18,7 @@ function! s:strip_white_space(l,r,line) abort
   if l[-1:] ==# ' ' && stridx(a:line,l) == -1 && stridx(a:line,l[0:-2]) == 0
     let l = l[:-2]
   endif
-  if r[0] ==# ' ' && a:line[-strlen(r):] != r && a:line[1-strlen(r):] == r[1:]
+  if r[0] ==# ' ' && (' ' . a:line)[-strlen(r)-1:] != r && a:line[-strlen(r):] == r[1:]
     let r = r[1:]
   endif
   return [l, r]

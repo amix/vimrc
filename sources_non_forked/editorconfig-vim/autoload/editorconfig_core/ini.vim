@@ -60,23 +60,26 @@ lockvar s:SECTCRE s:OPTCRE s:MAX_SECTION_NAME s:MAX_PROPERTY_NAME s:MAX_PROPERTY
 " Read \p config_filename and return the options applicable to
 " \p target_filename.  This is the main entry point in this file.
 function! editorconfig_core#ini#read_ini_file(config_filename, target_filename)
-    let l:oldenc = &encoding
-
     if !filereadable(a:config_filename)
         return {}
     endif
 
-    try     " so &encoding will always be reset
-        let &encoding = 'utf-8'     " so readfile() will strip BOM
+    try
         let l:lines = readfile(a:config_filename)
+        if &encoding !=? 'utf-8'
+            " strip BOM
+            if len(l:lines) > 0 && l:lines[0][:2] ==# "\xEF\xBB\xBF"
+                let l:lines[0] = l:lines[0][3:]
+            endif
+            " convert from UTF-8 to 'encoding'
+            call map(l:lines, 'iconv(v:val, "utf-8", &encoding)')
+        endif
         let result = s:parse(a:config_filename, a:target_filename, l:lines)
     catch
-        let &encoding = l:oldenc
         " rethrow, but with a prefix since throw 'Vim...' fails.
         throw 'Could not read editorconfig file at ' . v:throwpoint . ': ' . string(v:exception)
     endtry
 
-    let &encoding = l:oldenc
     return result
 endfunction
 

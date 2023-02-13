@@ -68,6 +68,8 @@ endif
 " specification.
 " https://github.com/nvim-treesitter/nvim-treesitter/blob/master/plugin/nvim-treesitter.vim
 if exists('g:loaded_nvim_treesitter')
+  " deprecated TS* highlight groups
+  " see https://github.com/nvim-treesitter/nvim-treesitter/pull/3656
   " # Misc
   hi! link TSPunctSpecial Special
   " # Constants
@@ -97,6 +99,55 @@ if exists('g:loaded_nvim_treesitter')
   " HTML and JSX tag attributes. By default, this group is linked to TSProperty,
   " which in turn links to Identifer (white).
   hi! link TSTagAttribute DraculaGreenItalic
+
+  if has('nvim-0.8.1')
+    " # Misc
+    hi! link @punctuation.delimiter Delimiter
+    hi! link @punctuation.bracket Normal
+    hi! link @punctuation.special Special
+    " # Constants
+    hi! link @constant Constant
+    hi! link @constant.builtin Constant
+    hi! link @constant.macro Macro
+    hi! link @string.regex String
+    hi! link @string.escape Character
+    hi! link @symbol DraculaPurple
+    hi! link @annotation DraculaYellow
+    hi! link @attribute DraculaGreenItalic
+    hi! link @namespace Structure
+    " # Functions
+    hi! link @function.builtin DraculaCyan
+    hi! link @funcion.macro Function
+    hi! link @parameter DraculaOrangeItalic
+    hi! link @parameter.reference DraculaOrange
+    hi! link @field DraculaOrange
+    hi! link @property Normal
+    hi! link @constructor DraculaCyan
+    " # Keywords
+    hi! link @label DraculaPurpleItalic
+    hi! link @keyword.function DraculaPink
+    hi! link @keyword.operator Operator
+    hi! link @exception DraculaPurple
+    " # Variable
+    hi! link @variable Normal
+    hi! link @variable.builtin DraculaPurpleItalic
+    " # Text
+    hi! link @text Normal
+    hi! link @text.strong DraculaFgBold
+    hi! link @text.emphasis DraculaFg
+    hi! link @text.underline Underlined
+    hi! link @text.title DraculaYellow
+    hi! link @text.literal DraculaYellow
+    hi! link @text.uri DraculaYellow
+    hi! link @text.diff.add DiffAdd
+    hi! link @text.diff.delete DiffDelete
+    " # Tags
+    hi! link @tag DraculaCyan
+    hi! link @tag.delimiter Normal
+    " HTML and JSX tag attributes. By default, this group is linked to TSProperty,
+    " which in turn links to Identifer (white).
+    hi! link @tag.attribute DraculaGreenItalic
+  endif
 endif
 " }}}
 " nvim-cmp: {{{

@@ -2,6 +2,7 @@ Before:
   unlet! b:mkd_known_filetypes
   unlet! b:mkd_included_filetypes
   unlet! g:vim_markdown_math
+  unlet! b:liquid_subtype
 
 Given markdown;
 a **b** c
@@ -854,6 +855,17 @@ a
 
 Execute (fenced code block with extended info strings):
   AssertEqual SyntaxOf('a'), 'mkdCode'
+
+Given liquid;
+```vim
+let g:a = 1
+```
+
+Execute (fenced code block syntax in liquid file with markdown subtype):
+  let b:liquid_subtype = 'markdown'
+  let b:func = Markdown_GetFunc('vim-markdown/ftplugin/markdown.vim', 'MarkdownRefreshSyntax')
+  call b:func(0)
+  AssertEqual SyntaxOf('g:a'), 'vimVar'
 
 # Code Blocks in pre and code tag
 

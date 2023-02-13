@@ -24,7 +24,7 @@ g:ale_java_checkstyle_executable             *g:ale_java_checkstyle_executable*
                                              *b:ale_java_checkstyle_executable*
 
   Type: |String|
-  Default: 'checkstyle'
+  Default: `'checkstyle'`
 
   This variable can be changed to modify the executable used for checkstyle.
 
@@ -39,6 +39,13 @@ g:ale_java_checkstyle_options                   *g:ale_java_checkstyle_options*
 
   If a configuration file is specified with `-c`, it will be used instead of
   configuration files set with |g:ale_java_checkstyle_config|.
+
+
+===============================================================================
+clang-format                                             *ale-java-clangformat*
+
+See |ale-c-clangformat| for information about the available options.
+Note that the C options are also used for Java.
 
 
 ===============================================================================
@@ -124,8 +131,8 @@ pmd                                                              *ale-java-pmd*
 g:ale_java_pmd_options                                 *g:ale_java_pmd_options*
                                                        *b:ale_java_pmd_options*
 
-  Type: String
-  Default: '-R category/java/bestpractices'
+  Type: |String|
+  Default: `'-R category/java/bestpractices'`
 
   This variable can be changed to modify flags given to PMD. Do not specify -f
   and -d. They are added automatically.
@@ -173,7 +180,7 @@ g:ale_java_javalsp_config                           *g:ale_java_javalsp_config*
   Type: |Dictionary|
   Default: `{}`
 
-The javalsp linter automatically detects external depenencies for Maven and
+The javalsp linter automatically detects external dependencies for Maven and
 Gradle projects. In case the javalsp fails to detect some of them, you can
 specify them setting a dictionary to |g:ale_java_javalsp_config| variable.
 >

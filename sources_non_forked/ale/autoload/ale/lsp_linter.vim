@@ -434,7 +434,7 @@ function! ale#lsp_linter#StartLSP(buffer, linter, Callback) abort
     if empty(l:root) && a:linter.lsp isnot# 'tsserver'
         " If there's no project root, then we can't check files with LSP,
         " unless we are using tsserver, which doesn't use project roots.
-        call ale#lsp_linter#AddErrorMessage(a:linter.name, "Failed to find project root, language server wont't start.")
+        call ale#lsp_linter#AddErrorMessage(a:linter.name, "Failed to find project root, language server won't start.")
 
         return 0
     endif

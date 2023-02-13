@@ -18,7 +18,7 @@ if !exists('s:timer_args')
     let s:timer_args = {}
 endif
 
-" Return 1 if there is a buffer with buftype == 'quickfix' in bufffer list
+" Return 1 if there is a buffer with buftype == 'quickfix' in buffer list
 function! ale#list#IsQuickfixOpen() abort
     let l:res = getqflist({ 'winid' : winnr() })
 
@@ -190,7 +190,7 @@ function! s:RestoreViewIfNeeded(buffer) abort
         return
     endif
 
-    " Check wether the cursor has moved since linting was actually requested. If
+    " Check whether the cursor has moved since linting was actually requested. If
     " the user has indeed moved lines, do nothing
     let l:current_view = winsaveview()
 

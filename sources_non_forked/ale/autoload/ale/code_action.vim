@@ -216,7 +216,7 @@ function! s:UpdateCursor(cursor, start, end, offset) abort
             " to the end of the changes
             let l:cur_line = l:end_line + l:line_offset
             let l:cur_column = l:end_column + l:column_offset
-        " else is not necesary, it means modifications are happening
+        " else is not necessary, it means modifications are happening
         " after the cursor so no cursor updates need to be done
         endif
     endif
