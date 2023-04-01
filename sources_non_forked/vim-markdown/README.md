@@ -47,6 +47,8 @@ sudo make install
 vim-addon-manager install markdown
 ```
 
+If you are using a package manager with semver support (like [lazy.nvim](https://github.com/folke/lazy.nvim)) make sure you are following the master branch (see https://github.com/preservim/vim-markdown/issues/616).
+
 If you are not using any package manager, download the [tarball](https://github.com/preservim/vim-markdown/archive/master.tar.gz) and do this:
 
 ```sh

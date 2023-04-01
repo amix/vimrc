@@ -510,8 +510,10 @@ Stash maps ~
 czz                     Push stash.  Pass a [count] of 1 to add
                         `--include-untracked` or 2 to add `--all`.
 
-czw                     Push stash of worktree.  Like `czz` with
+czw                     Push stash of the work-tree.  Like `czz` with
                         `--keep-index`.
+
+czs                     Push stash of the stage.  Does not accept a count.
 
 czA                     Apply topmost stash, or stash@{count}.
 

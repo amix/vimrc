@@ -542,7 +542,7 @@ function! ale#util#SetBufferContents(buffer, lines) abort
 endfunction
 
 function! ale#util#GetBufferContents(buffer) abort
-    return join(getbufline(a:buffer, 1, '$'), '\n') . '\n'
+    return join(getbufline(a:buffer, 1, '$'), "\n") . "\n"
 endfunction
 
 function! ale#util#ToURI(resource) abort

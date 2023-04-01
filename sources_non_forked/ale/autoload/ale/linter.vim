@@ -51,7 +51,7 @@ let s:default_ale_linters = {
 \   'jsonc': [],
 \   'perl': ['perlcritic'],
 \   'perl6': [],
-\   'python': ['flake8', 'mypy', 'pylint', 'pyright'],
+\   'python': ['flake8', 'mypy', 'pylint', 'pyright', 'ruff'],
 \   'rust': ['cargo', 'rls'],
 \   'spec': [],
 \   'text': [],

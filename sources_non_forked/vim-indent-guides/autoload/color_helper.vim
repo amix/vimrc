@@ -1,5 +1,5 @@
 " Author:   Nate Kane <nathanaelkane AT gmail DOT com>
-" Homepage: http://github.com/nathanaelkane/vim-indent-guides
+" Homepage: http://github.com/preservim/vim-indent-guides
 
 "
 " Return hex string equivalent to given decimal string or number.
@@ -10,7 +10,7 @@
 " Example: color_helper#dec_to_hex(255, 5)
 " Returns: '000FF'
 "
-function! color_helper#dec_to_hex(arg, padding)
+function! color_helper#dec_to_hex(arg, padding) abort
   return toupper(printf('%0' . a:padding . 'x', a:arg + 0))
 endfunction
 
@@ -26,7 +26,7 @@ endfunction
 " Example: color_helper#hex_to_dec('00')
 " Returns: 0
 "
-function! color_helper#hex_to_dec(arg)
+function! color_helper#hex_to_dec(arg) abort
   return (a:arg =~? '^0x') ? a:arg + 0 : ('0x'.a:arg) + 0
 endfunction
 
@@ -36,7 +36,7 @@ endfunction
 " Example: color_helper#hex_color_to_rgb('#0088FF')
 " Returns: [0, 136, 255]
 "
-function! color_helper#hex_color_to_rgb(hex_color)
+function! color_helper#hex_color_to_rgb(hex_color) abort
   let l:rgb = []
 
   if a:hex_color =~ g:indent_guides_color_hex_pattern
@@ -55,7 +55,7 @@ endfunction
 " Example: color_helper#rgb_color_to_hex([0, 136, 255])
 " Returns: '#0088FF'
 "
-function! color_helper#rgb_color_to_hex(rgb_color)
+function! color_helper#rgb_color_to_hex(rgb_color) abort
   let l:hex_color  = '#'
   let l:hex_color .= color_helper#dec_to_hex(a:rgb_color[0], 2) " red
   let l:hex_color .= color_helper#dec_to_hex(a:rgb_color[1], 2) " green
@@ -71,7 +71,7 @@ endfunction
 " Example: color_helper#hex_color_lighten('#000000', 0.10)
 " Returns: '#191919'
 "
-function! color_helper#hex_color_lighten(color, percent)
+function! color_helper#hex_color_lighten(color, percent) abort
   let l:rgb = color_helper#hex_color_to_rgb(a:color)
   let l:rgb_lightened = []
 
@@ -89,7 +89,7 @@ endfunction
 " Example: color_helper#hex_color_darken('#FFFFFF', 0.10)
 " Returns: '#E5E5E5'
 "
-function! color_helper#hex_color_darken(color, percent)
+function! color_helper#hex_color_darken(color, percent) abort
   let l:rgb = color_helper#hex_color_to_rgb(a:color)
   let l:rgb_darkened = []
 
@@ -106,7 +106,7 @@ endfunction
 " Example: color_helper#color_name_to_hex('darkslategray')
 " Returns: '#2F4F4F'
 "
-function! color_helper#color_name_to_hex(color_name)
+function! color_helper#color_name_to_hex(color_name) abort
   let l:hex_code   = ''
   let l:color_name = tolower(a:color_name)
 

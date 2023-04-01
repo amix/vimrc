@@ -124,34 +124,47 @@ is restarted.
 
                                             *g:EditorConfig_max_line_indicator*
 The way to show the line where the maximal length is reached. Accepted values
-are "line", "fill" and "exceeding", otherwise there will be no max line
-indicator.
+are "line", "fill", "exceeding" and "fillexceeding", otherwise there will be
+no max line indicator.
 
-    "line":      the right column of the max line length column will be
-                 highlighted, made possible by adding "+1" to 'colorcolumn'.
+    "line":          the right column of the max line length column will be
+                     highlighted on all lines, by adding +1 to 'colorcolumn'.
 
-    "fill":      all the columns to the right of the max line length column
-                 will be highlighted, made possible by setting 'colorcolumn'
-                 to a list of numbers starting from "max_line_length + 1" to
-                 the number of columns on the screen.
+    "fill":          all the columns to the right of the max line length
+                     column will be highlighted on all lines, by setting
+                     'colorcolumn' to a list starting from "max_line_length +
+                     1" to the number of columns on the screen.
 
-    "exceeding": the right column of the max line length column will be
-                 highlighted on lines that exceed the max line length, made
-                 possible by adding a match for the ColorColumn group.
+    "exceeding":     the right column of the max line length column will be
+                     highlighted on lines that exceed the max line length, by
+                     adding a match for the ColorColumn group.
 
-    "none":      no max line length indicator will be shown. This is the
-                 recommended value when you do not want any indicator to be
-                 shown, but values other than "line" or "fill" would also work
-                 as "none".
+    "fillexceeding": all the columns to the right of the max line length
+                     column will be highlighted on lines that exceed the max
+                     line length, by adding a match for the ColorColumn group.
+
+    "none":          no max line length indicator will be shown. Recommended
+                     when you do not want any indicator to be shown, but any
+                     value other than those listed above also work as "none".
 
 To set this option, add any of the following lines to your |vimrc| file:
 >
  let g:EditorConfig_max_line_indicator = "line"
  let g:EditorConfig_max_line_indicator = "fill"
  let g:EditorConfig_max_line_indicator = "exceeding"
+ let g:EditorConfig_max_line_indicator = "fillexceeding"
  let g:EditorConfig_max_line_indicator = "none"
 <
 The default value is "line".
+
+                                            *g:EditorConfig_enable_for_new_buf*
+Set this to 1 if you want EditorConfig plugin to set options
+for new empty buffers too.
+Path to .editorconfig will be determined based on CWD (see |getcwd()|)
+>
+ let g:EditorConfig_enable_for_new_buf = 1
+<
+This option defaults to 0.
 
                                             *g:EditorConfig_preserve_formatoptions*
 Set this to 1 if you don't want your formatoptions modified when

@@ -528,7 +528,14 @@ Add `let g:gitgutter_preview_win_floating = 1` to your `~/.vimrc`.  Note that on
 
 #### The appearance of a floating/popup window for hunk previews
 
-Set `g:gitgutter_floating_window_options` to a dictionary of the options you want.  This dictionary is passed directly to `popup_create()` (Vim) / `nvim_open_win()` (Neovim).
+Either set `g:gitgutter_floating_window_options` to a dictionary of the options you want.  This dictionary is passed directly to `popup_create()` (Vim) / `nvim_open_win()` (Neovim).
+
+Or if you just want to override one or two of the defaults, you can do that with a file in an `after/` directory.  For example:
+
+```viml
+" ~/.vim/after/vim-gitgutter/overrides.vim
+let g:gitgutter_floating_window_options['border'] = 'single'
+```
 
 
 #### To load all hunks into the current window's location list instead of the quickfix list

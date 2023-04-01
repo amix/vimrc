@@ -15,6 +15,7 @@ CONTENTS                                             *ale-development-contents*
     4.2. Writing Fixer Tests..............|ale-development-fixer-tests|
     4.3. Running Tests in a Windows VM....|ale-development-windows-tests|
   5. Contributing.........................|ale-development-contributing|
+    5.1. Preparing a Release..............|ale-development-release|
 
 ===============================================================================
 1. Introduction                                  *ale-development-introduction*
@@ -154,7 +155,7 @@ ALE runs tests with the following versions of Vim in the following
 environments.
 
 1. Vim 8.0.0027 on Linux via GitHub Actions.
-2. Vim 9.0.0133 on Linux via GitHub Actions.
+2. Vim 9.0.0297 on Linux via GitHub Actions.
 3. NeoVim 0.2.0 on Linux via GitHub Actions.
 4. NeoVim 0.8.0 on Linux via GitHub Actions.
 6. Vim 8 (stable builds) on Windows via AppVeyor.
@@ -325,7 +326,6 @@ given the above setup are as follows.
 `AssertLSPProject project_root`    - Check the root given to an LSP server.
 `AssertLSPAddress address`         - Check the address to an LSP server.
 
-
 ===============================================================================
 4.2 Writing Fixer Tests                           *ale-development-fixer-tests*
 
@@ -366,7 +366,6 @@ given the above setup are as follows.
 `AssertFixerCwd cwd`               - Check the `cwd` for the fixer.
 `AssertFixer results`              - Check the fixer results
 `AssertFixerNotExecuted`           - Check that fixers will not be executed.
-
 
 ===============================================================================
 4.3 Running Tests in a Windows VM               *ale-development-windows-tests*
@@ -461,6 +460,77 @@ and profile settings. See: https://docs.github.com/en/account-and-profile/
 
 Unless configuring GitHub to expose contact details, commits will be rewritten
 to appear by `USERNAME <RANDOM_NUMBER+USERNAME@users.noreply.github.com>` .
+
+===============================================================================
+5.1 Preparing a Release                               *ale-development-release*
+
+ALE offers release packages through GitHub, for two reasons:
+
+1. Some users like to target specific release versions rather than simply
+   installing the plugin from `master`. This includes users who create Linux
+   distribution specific packages from GitHub releases.
+2. The releases provide a nice way to get an overview of what has changed in
+   ALE over time.
+
+ALE has no fixed release schedule. Release versions are created whenever the
+ALE developers feel the need to create one. ALE release versions follow the
+typical Semantic Versioning scheme. See: https://semver.org/
+
+Minor version releases for ALE should be the most common, followed by patch
+releases. Every minor version release should be followed by a `vA.B.x` branch
+such as `v2.0.x` for version `2.0.0` and every following patch version before
+`2.1.0`. The `git` branch strategy for patches is to first merge a bug fix to
+`master`, and then `git cherry-pick` a patch to a branch for a specific
+version. ALE developers do not generally support anything but `master` or the
+last minor version.
+
+Generally ALE releases hit a major version only when there are breaking
+changes to a public ALE setting or function. A "public" setting or function is
+defined as any setting or function documented in the `:help` |ale| text file.
+Major ALE versions ought to be so rare that they only come once a year at
+most. ALE should not typically introduce any breaking changes.
+
+If there are ever to be any breaking changes made for ALE, there should first
+come a minor version release for ALE documenting all of the coming breaking
+changes to ALE. It should be described how users can prepare for a breaking
+change that is coming before it is done.
+
+To create a release for ALE, you will need sufficient permissions in GitHub.
+Once you do, follow these steps.
+
+1. Create a new release draft, or edit an existing one. It helps to craft
+   drafts ahead of time and write the last commit ID checked for release notes
+   on the last update to a draft.
+   See the releases page: https://github.com/dense-analysis/ale/releases
+2. Examine `git log` and read changes made between the last ID checked, or the
+   git tag of the previous release, and the current commit in `master`.
+3. Write updates in separate sections (except where empty) for:
+  3.a. Breaking Changes
+  3.b. Deprecated Features
+  3.c. New Features
+  3.d. New Linters
+  3.e. New Fixers
+  3.f. Linter Enhancements
+  3.g. Fixer Enhancements
+  3.h. Bugs Fixed
+4. Once you've finished writing the draft for the release, bump
+   `s:current_ale_version` in `autoload/ale.vim` to the current version, and
+   add a line to `test/test_ale_has.vader` to test for the version. See
+   |ale#Has()| documentation for more information.
+5. Commit the changes after `./run-tests --fast -q` passes.
+6. Tag the release with `git tag vA.B.C`, replacing `A`, `B`, and `C` with the
+   version numbers. See `git tag --list` for examples.
+7. Run `git push` and `git push --tags` to push the commit and the tag.
+8. Edit the release draft in GitHub, select the tag you just pushed, and
+   publish the draft.
+9. If you're creating a new major or minor version: `git checkout -b vA.B.x`,
+   replacing `A` and `B` with the major and minor versions. `git push` the new
+   branch, and the GitHub branch protection settings should automatically
+   apply to the new release branch.
+10. You have already completed the last step.
+
+Have fun creating ALE releases. Drink responsibly, or not at all, which is the
+preference of w0rp.
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

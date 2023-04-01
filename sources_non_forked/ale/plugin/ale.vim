@@ -127,8 +127,8 @@ let g:ale_echo_cursor = get(g:, 'ale_echo_cursor', 1)
 " This flag can be set to 1 to automatically show errors in the preview window.
 let g:ale_cursor_detail = get(g:, 'ale_cursor_detail', 0)
 
-" This flag can be set to 1 to enable virtual text when the cursor moves.
-let g:ale_virtualtext_cursor = get(g:, 'ale_virtualtext_cursor', 0)
+" This flag can be changed to disable/enable virtual text.
+let g:ale_virtualtext_cursor = get(g:, 'ale_virtualtext_cursor', (has('nvim-0.3.2') || has('patch-9.0.0297') && has('textprop') && has('popupwin')) ? 'all' : 'disabled')
 
 " This flag can be set to 1 to enable LSP hover messages at the cursor.
 let g:ale_hover_cursor = get(g:, 'ale_hover_cursor', 1)
@@ -178,6 +178,10 @@ let g:ale_python_auto_pipenv = get(g:, 'ale_python_auto_pipenv', 0)
 " Enable automatic detection of poetry for Python linters.
 let g:ale_python_auto_poetry = get(g:, 'ale_python_auto_poetry', 0)
 
+" Enable automatic adjustment of environment variables for Python linters.
+" The variables are set based on ALE's virtualenv detection.
+let g:ale_python_auto_virtualenv = get(g:, 'ale_python_auto_virtualenv', 0)
+
 " This variable can be overridden to set the GO111MODULE environment variable.
 let g:ale_go_go111module = get(g:, 'ale_go_go111module', '')
 
@@ -186,6 +190,15 @@ let g:ale_deno_executable = get(g:, 'ale_deno_executable', 'deno')
 
 " If 1, enable a popup menu for commands.
 let g:ale_popup_menu_enabled = get(g:, 'ale_popup_menu_enabled', has('gui_running'))
+
+" If 1, disables ALE's built in error display. Instead, all errors are piped
+" to the diagnostics API.
+let g:ale_use_neovim_diagnostics_api = get(g:, 'ale_use_neovim_diagnostics_api', 0)
+
+if g:ale_use_neovim_diagnostics_api && !has('nvim-0.6')
+    " no-custom-checks
+    echoerr('Setting g:ale_use_neovim_diagnostics_api to 1 requires Neovim 0.6+.')
+endif
 
 if g:ale_set_balloons is 1 || g:ale_set_balloons is# 'hover'
     call ale#balloon#Enable()

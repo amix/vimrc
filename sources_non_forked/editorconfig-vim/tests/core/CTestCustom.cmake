@@ -32,3 +32,10 @@ if(WIN32 AND (NOT "$ENV{RUN_UTF8}"))
     set(CTEST_CUSTOM_TESTS_IGNORE ${CTEST_CUSTOM_TESTS_IGNORE} g_utf_8_char)
     set(CTEST_CUSTOM_TESTS_IGNORE ${CTEST_CUSTOM_TESTS_IGNORE} utf_8_char)
 endif()
+
+# Skip min_supported_value_length on Windows since that test seems to
+# cause Appveyor to hang.
+if(WIN32)
+    message(WARNING "Skipping min_supported_value_length test on this platform")
+    set(CTEST_CUSTOM_TESTS_IGNORE ${CTEST_CUSTOM_TESTS_IGNORE} min_supported_value_length)
+endif()

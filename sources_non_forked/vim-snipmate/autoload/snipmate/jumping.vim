@@ -109,7 +109,9 @@ function! s:state_update_changes() dict abort
 	let self.end_col += change_len
 	let col = col('.')
 
-	if line('.') != self.cur_stop.line || col < self.start_col || col > self.end_col
+	" Increase the endpoint by 1 for &sel = exclusive
+	if line('.') != self.cur_stop.line || col < self.start_col
+				\ || col > (self.end_col + (&sel == 'exclusive'))
 		return self.remove()
 	endif
 

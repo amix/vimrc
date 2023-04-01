@@ -96,12 +96,10 @@ test_script:
   # Run the core tests
   - ctest . --output-on-failure -C Debug
 
-  # CTestCustom specifies skipping UTF-8 tests on Windows.
-  - cmd: echo "Reminder - did not try UTF-8"
-  - sh: echo "Reminder - tried UTF-8"
+  # CTestCustom specifies skipping some tests on Windows.
+  - cmd: echo "Reminder - skipped some tests"
 
 on_failure:
   - echo "failed"
   - cmd: type tests\core\build\Testing\Temporary\LastTest.log
   - sh: cat tests/core/build/Testing/Temporary/LastTest.log
-

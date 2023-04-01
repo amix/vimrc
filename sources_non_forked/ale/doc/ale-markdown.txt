@@ -17,13 +17,13 @@ See |ale-dprint-options| and https://dprint.dev/plugins/markdown
 ===============================================================================
 markdownlint                                        *ale-markdown-markdownlint*
 
-g:ale_markdown_markdown_executable     *g:ale_markdown_markdownlint_executable*
+g:ale_markdown_markdownlint_executable *g:ale_markdown_markdownlint_executable*
                                        *b:ale_markdown_markdownlint_executable*
   Type: |String|
   Default: `'markdownlint'`
 
-  Override the invoked markdownlint binary. You can use other binaries such as
-  markdownlint-cli2.
+  Override the invoked `markdownlint` binary. You can use other binaries such as
+  `markdownlint-cli2`.
 
 
 g:ale_markdown_markdownlint_options       *g:ale_markdown_markdownlint_options*

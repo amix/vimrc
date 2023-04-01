@@ -139,7 +139,7 @@ function! ale#events#Init() abort
                 autocmd InsertLeave * if exists('*ale#engine#Cleanup') | call ale#cursor#EchoCursorWarning() | endif
             endif
 
-            if g:ale_virtualtext_cursor == 1
+            if g:ale_virtualtext_cursor is# 'current' || g:ale_virtualtext_cursor is# 1 || g:ale_virtualtext_cursor is# '1'
                 autocmd CursorMoved,CursorHold * if exists('*ale#engine#Cleanup') | call ale#virtualtext#ShowCursorWarningWithDelay() | endif
                 " Look for a warning to echo as soon as we leave Insert mode.
                 " The script's position variable used when moving the cursor will

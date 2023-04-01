@@ -44,6 +44,10 @@ snippet def
 	def ${1:method_name}
 		${0}
 	end
+snippet defm
+	def ${1:method}
+		@$1 ||= ${0}
+	end
 snippet deft
 	def test_${1:case_name}
 		${0}
@@ -372,6 +376,8 @@ snippet finad
 	end
 snippet gre
 	grep(${1:/pattern/}) { |${2:match}| ${0} }
+snippet grepv
+	select { |${1:line}| $1 !~ ${2:/pattern/} }${0}
 snippet sub
 	${1:g}sub(${2:/pattern/}) { |${3:match}| ${0} }
 snippet sca

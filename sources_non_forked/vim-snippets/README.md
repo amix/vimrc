@@ -245,7 +245,6 @@ This list is kept up-to-date on a best effort basis.
 * Python - [honza](http://github.com/honza)
 * Ruby - [taq](http://github.com/taq)
 * Scala - [gorodinskiy](https://github.com/gorodinskiy)
-* Supercollider - [lpil](https://github.com/lpil)
 
 License
 -------
