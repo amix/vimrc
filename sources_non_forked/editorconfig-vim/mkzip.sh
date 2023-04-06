@@ -1,3 +1,3 @@
 #!/bin/sh
 
-zip -r editorconfig-vim-$*.zip plugin/* autoload/* doc/*
+zip -r editorconfig-vim-$*.zip autoload/* doc/* ftdetect/* plugin/*

@@ -1,0 +1,125 @@
+snippet class
+	class $1 extends ${2:Reference}
+	\t$3
+
+
+snippet pr
+	print($1)
+
+
+snippet ready
+	func _ready():
+	\t${1:pass}
+
+
+snippet init
+	func _init():
+	\t${1:pass}
+
+
+snippet process
+	func _process(delta):
+	\t${1:pass}
+
+
+snippet input
+	func _input(event):
+	\t${1:pass}
+
+
+snippet inpute
+	func _input_event(event):
+	\t${1:pass}
+
+
+snippet draw
+	func _draw():
+	\t${1:pass}
+
+
+snippet guii
+	func _gui_input(event):
+	\t${1:pass}
+
+
+snippet for
+	for $1 in $2:
+	\t${3:pass}
+
+
+snippet for
+	for $1 in range(${2:start}{$3:,end}):
+	\t${4:pass}
+
+
+snippet if
+	if ${1:condition}:
+	\t${3:pass}
+	elif ${2:condition}:
+	\t${4:pass}
+	else:
+	\t${5:pass}
+
+
+snippet if
+	if ${1:condition}:
+	\t${2:pass}
+	else:
+	\t${3:pass}
+
+
+snippet if
+	if ${1:condition}:
+	\t${2:pass}
+
+
+snippet while
+	while ${1:condition}:
+	\t${2:pass}
+
+
+snippet func
+	func ${1:method}(${2:args}):
+	\t${3:pass}
+
+
+snippet signal
+	signal ${1:signalname}(${2:args})
+
+
+snippet export
+	export(${1:type}${2:,other_configs}) var ${3:name}${4: = default}${5: setget }
+
+
+snippet var
+	var ${1:name}${2: = default}${3: setget }
+
+
+snippet onready
+	onready var ${1:name} = get_node($2)
+
+
+snippet is
+	${1:instance} is ${2:class}
+
+
+snippet in
+	${1:element} in ${$2:array}
+
+
+snippet gdscript
+	extends ${1:BaseClass}
+
+	# class member variables go here, for example:
+	# var a = 2
+	# var b = \textvar\
+
+	func _ready():
+	\t# Called every time the node is added to the scene.
+	\t# Initialization here
+	\tpass
+
+
+
+# snippet pass  ##### do we really need this?
+# 	pass

@@ -16,12 +16,16 @@ endfunction
 
 function! ale_linters#python#jedils#GetCommand(buffer) abort
     let l:executable = ale_linters#python#jedils#GetExecutable(a:buffer)
-
     let l:exec_args = l:executable =~? 'pipenv$'
     \   ? ' run jedi-language-server'
     \   : ''
+    let l:env_string = ''
 
-    return ale#Escape(l:executable) . l:exec_args
+    if ale#Var(a:buffer, 'python_auto_virtualenv')
+        let l:env_string = ale#python#AutoVirtualenvEnvString(a:buffer)
+    endif
+
+    return l:env_string . ale#Escape(l:executable) . l:exec_args
 endfunction
 
 call ale#linter#Define('python', {

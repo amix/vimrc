@@ -547,6 +547,13 @@ Default:
 This dictionary is passed directly to |popup_create()| (Vim) or
 |nvim_open_win()| (Neovim).
 
+If you simply want to override one or two of the default values, create a file
+in an after/ directory.  For example:
+>
+    " ~/.vim/after/vim-gitgutter/overrides.vim
+    let g:gitgutter_floating_window_options['border'] = 'single'
+<
+
                                           *g:gitgutter_close_preview_on_escape*
 Default: 0
 

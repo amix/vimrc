@@ -1,4 +1,7 @@
-# Indent Guides (unmaintained)
+# Indent Guides
+
+[![Vint](https://github.com/preservim/vim-indent-guides/workflows/Vint/badge.svg)](https://github.com/preservim/vim-indent-guides/actions?workflow=Vint)
+
 Indent Guides is a plugin for visually displaying indent levels in Vim.
 
 <img src="http://i.imgur.com/ONgoj.png" width="448" height="448" alt="" />
@@ -24,7 +27,7 @@ If you have [Pathogen](http://www.vim.org/scripts/script.php?script_id=2332) ins
 
 ```bash
 cd ~/.vim/bundle
-git clone git://github.com/nathanaelkane/vim-indent-guides.git
+git clone git://github.com/preservim/vim-indent-guides.git
 ```
 
 ### Vundle

@@ -45,22 +45,24 @@ if !exists('g:editorconfig_core_vimscript_debug')
 endif
 " }}}1
 " === Regexes =========================================================== {{{1
-let s:LEFT_BRACE = '\v%(^|[^\\])\{'
+let s:LEFT_BRACE = '\v[\\]@8<!\{'
+" 8 is an arbitrary byte-count limit to the lookbehind (micro-optimization)
 "LEFT_BRACE = re.compile(
 "    r"""
 "
-"    (?: ^ | [^\\] )     # Beginning of string or a character besides "\"
+"    (?<! \\ ) # Not preceded by "\"
 "
 "    \{                  # "{"
 "
 "    """, re.VERBOSE
 ")
 
-let s:RIGHT_BRACE = '\v%(^|[^\\])\}'
+let s:RIGHT_BRACE = '\v[\\]@8<!\}'
+" 8 is an arbitrary byte-count limit to the lookbehind (micro-optimization)
 "RIGHT_BRACE = re.compile(
 "    r"""
 "
-"    (?: ^ | [^\\] )     # Beginning of string or a character besides "\"
+"    (?<! \\ ) # Not preceded by "\"
 "
 "    \}                  # "}"
 "

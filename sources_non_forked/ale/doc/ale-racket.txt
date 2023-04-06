@@ -1,0 +1,41 @@
+===============================================================================
+ALE Racket Integration                                       *ale-racket-options*
+
+===============================================================================
+racket_langserver                                         *ale-racket-langserver*
+
+1. Install racket-langserver as described here:
+   https://github.com/jeapostrophe/racket-langserver
+2. Have `racket` available in the `$PATH` environment variable, currently there
+   is no way to specify path to custom location of `racket`.
+3. set `racket_langserver` as a linter for `racket` like: >
+   let g:ale_linters['racket'] += ['racket_langserver']
+
+You should be able to see linter results and use LSP features of `ALE` like
+`ALEGoToDefinition` with `racket-langserver`.
+
+===============================================================================
+raco_fmt                                                    *ale-racket-raco-fmt*
+
+g:ale_racket_raco_fmt_executable               *g:ale_racket_raco_fmt_executable*
+                                               *b:ale_racket_raco_fmt_executable*
+  Type: |String|
+  Default: `'raco'`
+
+  If the `raco` excutable is not in the `$PATH` environment variable, or you
+  prefer to use one installed in a custom location, set this option to the
+  path to the specific `raco` executable.
+
+g:ale_racket_raco_fmt_options                     *g:ale_racket_raco_fmt_options*
+                                                  *b:ale_racket_raco_fmt_options*
+  Type: |String|
+  Default: `''`
+
+  Use this variable to pass command-line flags/parameters to `raco_fmt`
+
+  For example, set the page width limit to 40 >
+  let g:ale_racket_raco_fmt_options = '--width 40'
+
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

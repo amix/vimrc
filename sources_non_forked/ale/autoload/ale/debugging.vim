@@ -55,6 +55,7 @@ let s:global_variable_list = [
 \    'ale_sign_highlight_linenrs',
 \    'ale_statusline_format',
 \    'ale_type_map',
+\    'ale_use_neovim_diagnostics_api',
 \    'ale_use_global_executables',
 \    'ale_virtualtext_cursor',
 \    'ale_warn_about_trailing_blank_lines',

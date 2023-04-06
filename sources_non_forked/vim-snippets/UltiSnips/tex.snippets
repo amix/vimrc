@@ -160,9 +160,9 @@ snippet abs "abstract environment" b
 endsnippet
 
 snippet tab "tabular / array environment" b
-	\begin{${1:t}${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${2:c}}
-	$0${2/(?<=.)(c|l|r)|./(?1: & )/g}
-	\end{$1${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}
+\begin{${1:t}${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${2:c}}
+$0${2/(?<=.)(c|l|r)|./(?1: & )/g}
+\end{$1${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}
 endsnippet
 
 snippet table "Table environment" b
@@ -384,7 +384,7 @@ snippet nn "Tikz node" w
 $0
 endsnippet
 
-snippet lll "l" Aw
+snippet lll "l" w
 \ell
 endsnippet
 
@@ -400,7 +400,7 @@ snippet <! "normal" Aw
 \triangleleft 
 endsnippet
 
-snippet "(\d|\w)+invs" "inverse" Awr
+snippet "((\d|\w)+)invs" "inverse" Awr
 `!p snip.rv = match.group(1)`^{-1}
 endsnippet
 
@@ -518,6 +518,61 @@ endsnippet
 
 snippet subpar* "Sub Paragraph*" wi
 \subparagraph*{$1${VISUAL}}
+endsnippet
+
+snippet chapl "Chapter with label" wi
+\chapter{$1${VISUAL}}
+\label{cha:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet secl "Section with label" wi
+\section{$1${VISUAL}}
+\label{sec:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet sec*l "Section* with label" wi
+\section*{$1${VISUAL}}
+\label{sec:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet subl "Subsection with label" wi
+\subsection{$1${VISUAL}}
+\label{sub:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet sub*l "Subsection* with label" wi
+\subsection*{$1${VISUAL}}
+\label{sub:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet subsubl "Subsection with label" wi
+\subsubsection{$1${VISUAL}}
+\label{ssub:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet subsub*l "Subsubsection with label" wi
+\subsubsection*{$1${VISUAL}}
+\label{ssub:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet parl "Paragraph with label" wi
+\paragraph{$1${VISUAL}}
+\label{par:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet par*l "Paragraph* with label" wi
+\paragraph*{$1${VISUAL}}
+\label{par:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet subparl "Sub Paragraph with label" wi
+\subparagraph{$1${VISUAL}}
+\label{subp:${2:${1/\W+/-/g}}}
+endsnippet
+
+snippet subpar*l "Sub Paragraph* with label" wi
+\subparagraph*{$1${VISUAL}}
+\label{subp:${2:${1/\W+/-/g}}}
 endsnippet
 
 # vim:ft=snippets:

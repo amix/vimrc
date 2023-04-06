@@ -25,7 +25,7 @@ function! ale_linters#ansible#ansible_lint#Handle(buffer, version, lines) abort
 
     if '>=6.0.0' is# l:version_group
         let l:error_codes = { 'blocker': 'E', 'critical': 'E', 'major': 'W', 'minor': 'W', 'info': 'I' }
-        let l:linter_issues = json_decode(join(a:lines, ''))
+        let l:linter_issues = ale#util#FuzzyJSONDecode(a:lines, [])
 
         for l:issue in l:linter_issues
             if ale#path#IsBufferPath(a:buffer, l:issue.location.path)

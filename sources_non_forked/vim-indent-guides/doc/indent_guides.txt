@@ -171,8 +171,17 @@ Default: 0. Values: 0 or 1.
 <
 
 ------------------------------------------------------------------------------
+                                             *'indent_guides_exclude_buftype'*
+Use this option to try and disable the plugin on non-file buffers
+
+Default: 0. Values: 0 or 1
+>
+  let g:indent_guides_exclude_buftype = 0
+<
+------------------------------------------------------------------------------
                                              *'indent_guides_exclude_filetypes'*
-Use this option to specify a list of filetypes to disable the plugin for.
+Use this option to specify a list of filetypes to disable the plugin for. Use
+'' for files with no filetypes set.
 
 Default: ['help']. Values: list of strings.
 >
@@ -248,8 +257,8 @@ Why did I build this plugin?~
   * I wanted to learn me some VimL.
 
 Links:~
-  * Github:        https://github.com/nathanaelkane/vim-indent-guides
-  * Bugs & Issues: https://github.com/nathanaelkane/vim-indent-guides/issues
+  * Github:        https://github.com/preservim/vim-indent-guides
+  * Bugs & Issues: https://github.com/preservim/vim-indent-guides/issues
 
 Credits:~
   * Matt Wozniski (godlygeek) for letting me use the list of color names and
@@ -265,8 +274,9 @@ Bug reports, feedback, suggestions etc are welcomed.
 7. CHANGELOG                                           *indent-guides-changelog*
 
 1.8 (pending release)~
+  * Allow exclude files with no 'filetype' set (thanks @noscript).
   * Added option g:|indent_guides_soft_pattern| to control the pattern for
-    soft indentation (thanks @sergey-vlasov).
+    soft indentation (thanks @noscript).
   * Added option g:|indent_guides_default_mapping| to control whether the
     default mapping (<Leader>ig) gets set (thanks @suy).
   * Set size of indent guide to `tabstop` value when `shiftwidth=0` or

@@ -269,6 +269,21 @@ g:ale_go_gopls_options                                 *g:ale_go_gopls_options*
   Command-line options passed to the gopls executable. See `gopls -h`.
 
 
+g:ale_go_gopls_fix_executable                   *g:ale_go_gopls_fix_executable*
+                                                *b:ale_go_gopls_fix_executable*
+  Type: |String|
+  Default: `'gopls'`
+
+  Executable to run to use as the gopls fixer.
+
+g:ale_go_gopls_fix_options                         *g:ale_go_gopls_fix_options*
+                                                   *b:ale_go_gopls_fix_options*
+  Type: |String|
+  Default: `''`
+
+  Options to pass to the gopls fixer.
+
+
 g:ale_go_gopls_init_options                       *g:ale_go_gopls_init_options*
                                                   *b:ale_go_gopls_init_options*
   Type: |Dictionary|

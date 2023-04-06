@@ -14,8 +14,8 @@ To install this plugin, you can use one of the following ways:
 
 Download the [archive][] and extract it into your Vim runtime directory
 (`~/.vim` on UNIX/Linux and `$VIM_INSTALLATION_FOLDER\vimfiles` on windows).
-You should have 3 sub-directories in this runtime directory now: "autoload",
-"doc" and "plugin".
+You should have 4 sub-directories in this runtime directory now: "autoload",
+"doc", "ftdetect" and "plugin".
 
 ### Install as Vim8 plugin
 
