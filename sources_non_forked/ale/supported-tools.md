@@ -45,6 +45,7 @@ formatting.
   * [write-good](https://github.com/btford/write-good)
 * ASM
   * [gcc](https://gcc.gnu.org)
+  * [llvm-mc](https://llvm.org)
 * AVRA
   * [avra](https://github.com/Ro5bert/avra)
 * Awk
@@ -264,11 +265,13 @@ formatting.
   * [alex](https://github.com/get-alex/alex)
   * [angular](https://www.npmjs.com/package/@angular/language-server)
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
+  * [eslint](https://github.com/BenoitZugmeyer/eslint-plugin-html)
   * [fecs](http://fecs.baidu.com/)
   * [html-beautify](https://beautifier.io/)
   * [htmlhint](http://htmlhint.com/)
   * [prettier](https://github.com/prettier/prettier)
   * [proselint](http://proselint.com/)
+  * [rustywind](https://github.com/avencera/rustywind)
   * [tidy](http://www.html-tidy.org/)
   * [write-good](https://github.com/btford/write-good)
 * Idris
@@ -349,6 +352,7 @@ formatting.
 * Lua
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
   * [lua-format](https://github.com/Koihik/LuaFormatter)
+  * [lua-language-server](https://github.com/LuaLS/lua-language-server)
   * [luac](https://www.lua.org/manual/5.1/luac.html)
   * [luacheck](https://github.com/mpeterv/luacheck)
   * [luafmt](https://github.com/trixnz/lua-fmt)
@@ -386,6 +390,7 @@ formatting.
   * [nimlsp](https://github.com/PMunch/nimlsp)
   * nimpretty
 * nix
+  * [alejandra](https://github.com/kamadorueda/alejandra)
   * [nix-instantiate](http://nixos.org/nix/manual/#sec-nix-instantiate)
   * [nixfmt](https://github.com/serokell/nixfmt)
   * [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
@@ -490,6 +495,7 @@ formatting.
   * [isort](https://github.com/timothycrosley/isort)
   * [mypy](http://mypy-lang.org/)
   * [prospector](https://github.com/PyCQA/prospector) :warning: :floppy_disk:
+  * [pycln](https://github.com/hadialqattan/pycln)
   * [pycodestyle](https://github.com/PyCQA/pycodestyle) :warning:
   * [pydocstyle](https://www.pydocstyle.org/) :warning:
   * [pyflakes](https://github.com/PyCQA/pyflakes)
@@ -499,6 +505,7 @@ formatting.
   * [pylsp](https://github.com/python-lsp/python-lsp-server) :warning:
   * [pyre](https://github.com/facebook/pyre-check) :warning:
   * [pyright](https://github.com/microsoft/pyright)
+  * [refurb](https://github.com/dosisod/refurb) :floppy_disk:
   * [reorder-python-imports](https://github.com/asottile/reorder_python_imports)
   * [ruff](https://github.com/charliermarsh/ruff)
   * [unimport](https://github.com/hakancelik96/unimport)

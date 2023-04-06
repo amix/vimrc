@@ -103,6 +103,25 @@ See |ale-javascript-prettier| for information about the available options.
 
 
 ===============================================================================
+rustywind                                                  *ale-html-rustywind*
+
+g:ale_html_rustywind_executable               *g:ale_html_rustywind_executable*
+                                              *b:ale_html_rustywind_executable*
+  Type: |String|
+  Default: `'rustywind'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_html_rustywind_options                     *g:ale_html_rustywind_options*
+                                                 *b:ale_html_rustywind_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to rustywind.
+
+
+===============================================================================
 stylelint                                                  *ale-html-stylelint*
 
 g:ale_html_stylelint_executable               *g:ale_html_stylelint_executable*

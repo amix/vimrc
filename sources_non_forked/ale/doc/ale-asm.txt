@@ -22,4 +22,23 @@ g:ale_asm_gcc_options                                   *g:ale_asm_gcc_options*
 
 
 ===============================================================================
+llvm_mc                                                       *ale-asm-llvm_mc*
+
+g:ale_asm_clang_executable                       *g:ale_asm_llvm_mc_executable*
+                                                 *b:ale_asm_llvm_mc_executable*
+  Type: |String|
+  Default: `'llvm-mc'`
+
+This variable can be changed to use a different executable for llvm-mc.
+
+
+g:ale_asm_clang_options                             *g:ale_asm_llvm_mc_options*
+                                                    *b:ale_asm_llvm_mc_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to llvm-mc.
+
+
+===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

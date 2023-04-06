@@ -150,16 +150,15 @@ using the cr mapping (mnemonic: CoeRce) followed by one of the following
 characters:
 
   c:       camelCase
-  m:       MixedCase
+  p:       PascalCase
+  m:       MixedCase (aka PascalCase)
   _:       snake_case
   s:       snake_case
   u:       SNAKE_UPPERCASE
   U:       SNAKE_UPPERCASE
-  -:       dash-case (not usually reversible; see |abolish-coercion-reversible|)
   k:       kebab-case (not usually reversible; see |abolish-coercion-reversible|)
+  -:       dash-case (aka kebab-case)
   .:       dot.case (not usually reversible; see |abolish-coercion-reversible|)
-  <space>: space case (not usually reversible; see |abolish-coercion-reversible|)
-  t:       Title Case (not usually reversible; see |abolish-coercion-reversible|)
 
 For example, cru on a lowercase word is a slightly easier to type equivalent
 to gUiw.

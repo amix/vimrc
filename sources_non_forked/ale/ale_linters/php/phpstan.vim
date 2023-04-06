@@ -26,10 +26,8 @@ function! ale_linters#php#phpstan#GetCommand(buffer, version) abort
     \   : ''
 
     let l:level =  ale#Var(a:buffer, 'php_phpstan_level')
-    let l:config_file_exists = ale#path#FindNearestFile(a:buffer, 'phpstan.neon')
-    let l:dist_config_file_exists = ale#path#FindNearestFile(a:buffer, 'phpstan.neon.dist')
 
-    if empty(l:level) && empty(l:config_file_exists) && empty(l:dist_config_file_exists)
+    if empty(l:level) && empty(ale_linters#php#phpstan#FindConfigFile(a:buffer))
         " if no configuration file is found, then use 4 as a default level
         let l:level = '4'
     endif
@@ -70,6 +68,22 @@ function! ale_linters#php#phpstan#Handle(buffer, lines) abort
     return l:output
 endfunction
 
+function! ale_linters#php#phpstan#GetCwd(buffer) abort
+    let l:result = ale#path#Dirname(ale_linters#php#phpstan#FindConfigFile(a:buffer))
+
+    return empty(l:result) ? v:null : l:result
+endfunction
+
+function! ale_linters#php#phpstan#FindConfigFile(buffer) abort
+    let l:result = ale#path#FindNearestFile(a:buffer, 'phpstan.neon')
+
+    if empty(l:result)
+        let l:result = ale#path#FindNearestFile(a:buffer, 'phpstan.neon.dist')
+    endif
+
+    return l:result
+endfunction
+
 call ale#linter#Define('php', {
 \   'name': 'phpstan',
 \   'executable': {buffer -> ale#path#FindExecutable(buffer, 'php_phpstan', [
@@ -86,4 +100,5 @@ call ale#linter#Define('php', {
 \       function('ale_linters#php#phpstan#GetCommand'),
 \   )},
 \   'callback': 'ale_linters#php#phpstan#Handle',
+\   'cwd': function('ale_linters#php#phpstan#GetCwd'),
 \})

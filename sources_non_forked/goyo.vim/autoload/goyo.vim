@@ -37,12 +37,14 @@ function! s:set_color(group, attr, color)
   execute printf('hi %s %s%s=%s', a:group, gui ? 'gui' : 'cterm', a:attr, a:color)
 endfunction
 
+nnoremap <silent> <Plug>(goyo-off) :call <sid>goyo_off()<cr>
+
 function! s:blank(repel)
   if bufwinnr(t:goyo_pads.r) <= bufwinnr(t:goyo_pads.l) + 1
     \ || bufwinnr(t:goyo_pads.b) <= bufwinnr(t:goyo_pads.t) + 3
-    call s:goyo_off()
+    call feedkeys("\<Plug>(goyo-off)")
   endif
-  execute 'wincmd' a:repel
+  execute 'noautocmd wincmd' a:repel
 endfunction
 
 function! s:init_pad(command)

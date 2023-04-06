@@ -3,6 +3,8 @@
 # Flutter stateless widget
 snippet stless
 	class $1 extends StatelessWidget {
+		const $1({super.key});
+
 		@override
 		Widget build(BuildContext context) {
 			return Container(
@@ -14,8 +16,10 @@ snippet stless
 # Flutter stateful widget
 snippet stful
 	class $1 extends StatefulWidget {
+		const $1({super.key});
+
 		@override
-		_$1State createState() => _$1State();
+		State<$1> createState() => _$1State();
 	}
 
 	class _$1State extends State<$1> {
@@ -30,8 +34,10 @@ snippet stful
 # Flutter widget with AnimationController
 snippet stanim
 	class $1 extends StatefulWidget {
+		const $1({super.key});
+
 		@override
-		_$1State createState() => _$1State();
+		State<$1> createState() => _$1State();
 	}
 
 	class _$1State extends State<$1>
@@ -85,5 +91,3 @@ snippet fsa
 			);
 		}
 	}
-
-

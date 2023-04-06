@@ -28,6 +28,30 @@ g:ale_lua_lua_format_options                     *g:ale_lua_lua_format_options*
 
 
 ===============================================================================
+lua-language-server                               *ale-lua-lua-language-server*
+                                                      *ale-lua-language-server*
+
+g:ale_lua_language_server_executable     *g:ale_lua_language_server_executable*
+                                         *b:ale_lua_language_server_executable*
+  Type: |String|
+  Default: `'lua-language-server'`
+
+  This variable can be changed to set the path to lua-language-server.
+
+  If you have compiled the language server yourself in `/some/path`, the path
+  will be `'/some/path/bin/lua-language-server'`.
+
+
+g:ale_lua_lua_language_server_config     *g:ale_lua_lua_language_server_config*
+                                         *b:ale_lua_lua_language_server_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Dictionary containing configuration settings that will be passed to the
+  language server.
+
+
+===============================================================================
 luac                                                             *ale-lua-luac*
 
 g:ale_lua_luac_executable                           *g:ale_lua_luac_executable*

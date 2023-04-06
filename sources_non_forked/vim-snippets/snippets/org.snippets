@@ -1,0 +1,135 @@
+# Org Mode Snippets Imported from (https://github.com/doomemacs/snippets/)
+# Imported by ybenel (github.com/m1ndo)
+
+# Begin 
+snippet begin
+	#+begin_${1:type} ${2:options}
+	$0
+	#+end_$1
+# Begin Center
+snippet <C
+	#+begin_center
+	$0
+	#+end_center
+# Begin Comment
+snippet <c
+	#+begin_comment
+	$0
+	#+end_comment
+# Begin Example
+snippet <e
+	#+begin_example
+	$0
+	#+end_example
+# Begin Export Ascii
+snippet <a
+	#+begin_export ascii
+	$0
+	#+end_export
+# Begin export html
+snippet <h
+	#+begin_export html
+	$0
+	#+end_export
+# Begin export Latex
+snippet <l
+	#+begin_export latex
+	$0
+	#+end_export
+# Begin export python 
+snippet <p
+	#+begin_export python
+	$0
+	#+end_export
+# Begin export shell
+snippet <s
+	#+begin_export shell
+	$0
+	#+end_export
+# dot
+snippet dot
+	#+begin_src dot :file ${1:file}.${2:svg} :results file graphics
+	$0
+	#+end_src
+# elisp
+snippet elisp
+	#+begin_src emacs-lisp :tangle yes
+	$0
+	#+end_src
+# Entry
+snippet entry
+	#+begin_html
+	---
+	layout: ${1:default}
+	title: ${2:title}
+	---
+	#+end_html
+	$0
+# Begin example
+snippet ex
+	#+begin_example
+	$0
+	#+end_example
+# Begin export
+snippet export
+	#+begin_export ${1:type}
+	$0
+	#+end_export
+# Figure
+snippet fig
+	#+caption: ${1:caption}
+	#+attr_latex: ${2:scale=0.75}
+	#+name: fig-${3:label}
+# Org Header
+snippet head
+	#+title:     ${1:untitled document}
+	#+author:    ${2:user-full-name}
+	#+email:     ${3:user-mail-address}
+# Image
+snippet img
+	#+attr_html: :alt $2 :align ${3:left} :class img
+	[[${1:src}]${4:[${5:title}]}]
+	$0
+# Inline 
+snippet inl
+	src_${1:language}${2:[${3::exports code}]}{${4:code}}
+# Inline source
+snippet srci
+	src_${1:language}[${2:header}]{${0:body}}
+# Jupyter
+snippet jupyter
+	#+begin_src jupyter-${1:$$(yas-choose-value '("python" "julia" "R"))}${2: :session $3}${4: :async yes}
+	$0
+	#+end_src
+# Matrix (latex)
+snippet matrix
+	\left \(
+	\begin{array}{${1:ccc}}
+	${2:v1 & v2} \\
+	$0
+	\end{array}
+	\right \)
+# Name
+snippet name
+	#+name: $0
+# Quote
+snippet quote
+	#+begin_quote
+	$0
+	#+end_quote
+# Source
+snippet src
+	#+begin_src $1
+	$0
+	#+end_src
+# Todo
+snippet todo
+	TODO ${1:task description}
+# Verse
+snippet verse
+	#+begin_verse
+	$0
+	#+end_verse
+# Atrribute Width
+snippet #+attr_html:width
+	#+attr_html: :width ${1:500px}

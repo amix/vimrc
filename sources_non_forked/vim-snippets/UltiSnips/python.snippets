@@ -127,14 +127,18 @@ def triple_quotes_handle_trailing(snip, quoting_style):
 	if not snip.c:
 		# Do this only once, otherwise the following error would happen:
 		# RuntimeError: The snippets content did not converge: …
-		_, col = vim.current.window.cursor
-		line = vim.current.line
+		row, col = vim.current.window.cursor
+
+		# before ultisnip expansion, chars ahead cursor is at row - 1, col
+		# after ultisnip expansion, they are pushed to row + 1, col - 1
+		# when this function is run, it's already after ultisni expansion
+		line = snip.buffer[row + 1]
 
 		# Handle already existing quote chars after the trigger.
 		_ret = quoting_style * 3
 		while True:
 			try:
-				nextc = line[col]
+				nextc = line[col - 1]
 			except IndexError:
 				break
 			if nextc == quoting_style and len(_ret):

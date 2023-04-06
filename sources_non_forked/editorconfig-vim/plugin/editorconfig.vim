@@ -60,6 +60,10 @@ if !exists('g:EditorConfig_disable_rules')
     let g:EditorConfig_disable_rules = []
 endif
 
+if !exists('g:EditorConfig_enable_for_new_buf')
+    let g:EditorConfig_enable_for_new_buf = 0
+endif
+
 if !exists('g:EditorConfig_softtabstop_space')
     let g:EditorConfig_softtabstop_space = 1
 endif
@@ -203,9 +207,20 @@ endfunction " }}}1
 function! s:UseConfigFiles() abort " Apply config to the current buffer {{{1
     let b:editorconfig_tried = 1
     let l:buffer_name = expand('%:p')
-    " ignore buffers without a name
-    if empty(l:buffer_name)
+
+    " Only process normal buffers (do not treat help files as '.txt' files)
+    " When starting Vim with a directory, the buftype might not yet be set:
+    " Therefore, also check if buffer_name is a directory.
+    if index(['', 'acwrite'], &buftype) == -1 || isdirectory(l:buffer_name)
         return
+    endif
+
+    if empty(l:buffer_name)
+        if g:EditorConfig_enable_for_new_buf
+            let l:buffer_name = getcwd() . "/."
+        else
+            return
+        endif
     endif
 
     if exists("b:EditorConfig_disable") && b:EditorConfig_disable
@@ -247,11 +262,11 @@ function! s:UseConfigFiles() abort " Apply config to the current buffer {{{1
     endfor
 
     if s:editorconfig_core_mode ==? 'vim_core'
-        if s:UseConfigFiles_VimCore() == 0
+        if s:UseConfigFiles_VimCore(l:buffer_name) == 0
             let b:editorconfig_applied = 1
         endif
     elseif s:editorconfig_core_mode ==? 'external_command'
-        call s:UseConfigFiles_ExternalCommand()
+        call s:UseConfigFiles_ExternalCommand(l:buffer_name)
         let b:editorconfig_applied = 1
     else
         echohl Error |
@@ -269,6 +284,7 @@ function! s:EditorConfigEnable(should_enable)
         autocmd!
         if a:should_enable
             autocmd BufNewFile,BufReadPost,BufFilePost * call s:UseConfigFiles()
+            autocmd VimEnter,BufNew * call s:UseConfigFiles()
         endif
     augroup END
 endfunction
@@ -285,21 +301,15 @@ command! EditorConfigReload call s:UseConfigFiles() " Reload EditorConfig files
 " On startup, enable the autocommands
 call s:EditorConfigEnable(1)
 
-" Always set the filetype for .editorconfig files
-augroup editorconfig_dosini
-    autocmd!
-    autocmd BufNewFile,BufRead .editorconfig set filetype=dosini
-augroup END
-
 " }}}1
 
 " UseConfigFiles function for different modes {{{1
 
-function! s:UseConfigFiles_VimCore()
+function! s:UseConfigFiles_VimCore(target)
 " Use the vimscript EditorConfig core
     try
         let l:config = editorconfig_core#handler#get_configurations(
-            \ { 'target': expand('%:p') } )
+            \ { 'target': a:target } )
         call s:ApplyConfig(l:config)
         return 0    " success
     catch
@@ -307,17 +317,17 @@ function! s:UseConfigFiles_VimCore()
     endtry
 endfunction
 
-function! s:UseConfigFiles_ExternalCommand()
+function! s:UseConfigFiles_ExternalCommand(target)
 " Use external EditorConfig core (e.g., the C core)
 
     call s:DisableShellSlash()
     let l:exec_path = shellescape(s:editorconfig_exec_path)
     call s:ResetShellSlash()
 
-    call s:SpawnExternalParser(l:exec_path)
+    call s:SpawnExternalParser(l:exec_path, a:target)
 endfunction
 
-function! s:SpawnExternalParser(cmd) " {{{2
+function! s:SpawnExternalParser(cmd, target) " {{{2
 " Spawn external EditorConfig. Used by s:UseConfigFiles_ExternalCommand()
 
     let l:cmd = a:cmd
@@ -329,7 +339,7 @@ function! s:SpawnExternalParser(cmd) " {{{2
     let l:config = {}
 
     call s:DisableShellSlash()
-    let l:cmd = l:cmd . ' ' . shellescape(expand('%:p'))
+    let l:cmd = l:cmd . ' ' . shellescape(a:target)
     call s:ResetShellSlash()
 
     let l:parsing_result = split(system(l:cmd), '\v[\r\n]+')
@@ -375,11 +385,6 @@ endfunction " }}}2
 " }}}1
 
 function! s:ApplyConfig(config) abort " Set the buffer options {{{1
-    " Only process normal buffers (do not treat help files as '.txt' files)
-    if index(['', 'acwrite'], &buftype) == -1
-        return
-    endif
-
     if g:EditorConfig_verbose
         echo 'Options: ' . string(a:config)
     endif
@@ -502,6 +507,15 @@ function! s:ApplyConfig(config) abort " Set the buffer options {{{1
                     endfor
                     call matchadd('ColorColumn',
                         \ '\%' . (l:max_line_length + 1) . 'v.', 100)
+                elseif g:EditorConfig_max_line_indicator == 'fillexceeding'
+                    let &l:colorcolumn = ''
+                    for l:match in getmatches()
+                        if get(l:match, 'group', '') == 'ColorColumn'
+                            call matchdelete(get(l:match, 'id'))
+                        endif
+                    endfor
+                    call matchadd('ColorColumn',
+                        \ '\%'. (l:max_line_length + 1) . 'v.\+', -1)
                 endif
             endif
         endif

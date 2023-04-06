@@ -607,7 +607,7 @@ if exists(':Gdelete') != 2 && get(g:, 'fugitive_legacy_commands', 0)
   exe 'command! -bar -bang -nargs=0 Gdelete exe fugitive#DeleteCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)'
         \ '|echohl WarningMSG|echomsg ":Gdelete is deprecated in favor of :GDelete"|echohl NONE'
 elseif exists(':Gdelete') != 2 && !exists('g:fugitive_legacy_commands')
-  exe 'command! -bar -bang -nargs=0 Gdelete echoerr ":Gremove has been removed in favor of :GRemove"'
+  exe 'command! -bar -bang -nargs=0 Gdelete echoerr ":Gdelete has been removed in favor of :GDelete"'
 endif
 if exists(':Gmove') != 2 && get(g:, 'fugitive_legacy_commands', 0)
   exe 'command! -bar -bang -nargs=1 -complete=customlist,fugitive#CompleteObject Gmove   exe fugitive#MoveCommand(  <line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>)'

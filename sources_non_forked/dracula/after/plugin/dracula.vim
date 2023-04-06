@@ -103,7 +103,7 @@ if exists('g:loaded_nvim_treesitter')
   if has('nvim-0.8.1')
     " # Misc
     hi! link @punctuation.delimiter Delimiter
-    hi! link @punctuation.bracket Normal
+    hi! link @punctuation.bracket DraculaFg
     hi! link @punctuation.special Special
     " # Constants
     hi! link @constant Constant
@@ -121,7 +121,7 @@ if exists('g:loaded_nvim_treesitter')
     hi! link @parameter DraculaOrangeItalic
     hi! link @parameter.reference DraculaOrange
     hi! link @field DraculaOrange
-    hi! link @property Normal
+    hi! link @property DraculaFg
     hi! link @constructor DraculaCyan
     " # Keywords
     hi! link @label DraculaPurpleItalic
@@ -129,10 +129,10 @@ if exists('g:loaded_nvim_treesitter')
     hi! link @keyword.operator Operator
     hi! link @exception DraculaPurple
     " # Variable
-    hi! link @variable Normal
+    hi! link @variable DraculaFg
     hi! link @variable.builtin DraculaPurpleItalic
     " # Text
-    hi! link @text Normal
+    hi! link @text DraculaFg
     hi! link @text.strong DraculaFgBold
     hi! link @text.emphasis DraculaFg
     hi! link @text.underline Underlined
@@ -143,7 +143,7 @@ if exists('g:loaded_nvim_treesitter')
     hi! link @text.diff.delete DiffDelete
     " # Tags
     hi! link @tag DraculaCyan
-    hi! link @tag.delimiter Normal
+    hi! link @tag.delimiter DraculaFg
     " HTML and JSX tag attributes. By default, this group is linked to TSProperty,
     " which in turn links to Identifer (white).
     hi! link @tag.attribute DraculaGreenItalic
