@@ -6,6 +6,12 @@
 
 
 """"""""""""""""""""""""""""""
+" => Enable native vim packages as described in the README
+""""""""""""""""""""""""""""""
+set packpath+=~/.vim_runtime
+
+
+""""""""""""""""""""""""""""""
 " => Load pathogen paths
 """"""""""""""""""""""""""""""
 let s:vim_runtime = expand('<sfile>:p:h')."/.."
