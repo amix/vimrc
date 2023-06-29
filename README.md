@@ -110,6 +110,8 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 
 ## Included color schemes
 
+Type `:colorscheme <Tab>` to try out color schemes on the fly or add the command to **my_configs.vim** (see below), for example `colorscheme pyte`.
+
 * [peaksea](https://github.com/vim-scripts/peaksea): The default
 * [dracula](https://github.com/dracula/vim)
 * [vim-colors-solarized](https://github.com/altercation/vim-colors-solarized)
