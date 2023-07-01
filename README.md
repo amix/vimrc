@@ -60,6 +60,7 @@ If you have vim aliased as `vi` instead of `vim`, make sure to either alias it: 
 
 ## How to update to latest version?
 
+    cd ~/.vim_runtime
     git pull
     python3 update_plugins.py || python update_plugins.py  # use python if python3 is unavailable
 
