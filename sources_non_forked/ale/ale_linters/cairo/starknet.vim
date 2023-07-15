@@ -1,5 +1,6 @@
 " Author: 0xHyoga <0xHyoga@gmx.com>
-" Description: Report starknet-compile errors in cairo code
+" Description: Report starknet-compile errors in cairo code (pre-starknet
+" 1.0). This is deprecated but kept for backwards compatability.
 
 call ale#Set('cairo_starknet_executable', 'starknet-compile')
 call ale#Set('cairo_starknet_options', '')
@@ -35,3 +36,4 @@ call ale#linter#Define('cairo', {
 \   'callback': 'ale_linters#cairo#starknet#Handle',
 \   'output_stream': 'stderr',
 \})
+

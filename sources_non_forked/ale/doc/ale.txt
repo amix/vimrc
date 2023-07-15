@@ -1641,7 +1641,8 @@ g:ale_linters                                                   *g:ale_linters*
   \   'apkbuild': ['apkbuild_lint', 'secfixes_check'],
   \   'csh': ['shell'],
   \   'elixir': ['credo', 'dialyxir', 'dogma'],
-  \   'go': ['gofmt', 'golint', 'gopls', 'govet'],
+  \   'go': ['gofmt', 'gopls', 'govet'],
+  \   'groovy': ['npm-groovy-lint'],
   \   'hack': ['hack'],
   \   'help': [],
   \   'inko': ['inko'],
@@ -2858,6 +2859,7 @@ documented in additional help files.
     bibclean..............................|ale-bib-bibclean|
   bicep...................................|ale-bicep-options|
     bicep.................................|ale-bicep-bicep|
+    az_bicep..............................|ale-bicep-az_bicep|
   bitbake.................................|ale-bitbake-options|
     oelint-adv............................|ale-bitbake-oelint_adv|
   c.......................................|ale-c-options|
@@ -2939,6 +2941,7 @@ documented in additional help files.
     dhall-lint............................|ale-dhall-lint|
   dockerfile..............................|ale-dockerfile-options|
     dockerfile_lint.......................|ale-dockerfile-dockerfile_lint|
+    dockerlinter..........................|ale-dockerfile-dockerlinter|
     dprint................................|ale-dockerfile-dprint|
     hadolint..............................|ale-dockerfile-hadolint|
   elixir..................................|ale-elixir-options|
@@ -2984,7 +2987,6 @@ documented in additional help files.
     golangci-lint.........................|ale-go-golangci-lint|
     golangserver..........................|ale-go-golangserver|
     golines...............................|ale-go-golines|
-    golint................................|ale-go-golint|
     gometalinter..........................|ale-go-gometalinter|
     gopls.................................|ale-go-gopls|
     govet.................................|ale-go-govet|
@@ -2994,6 +2996,8 @@ documented in additional help files.
     eslint................................|ale-graphql-eslint|
     gqlint................................|ale-graphql-gqlint|
     prettier..............................|ale-graphql-prettier|
+  groovy..................................|ale-groovy-options|
+    npm-groovy-lint.......................|ale-groovy-npm-groovy-lint|
   hack....................................|ale-hack-options|
     hack..................................|ale-hack-hack|
     hackfmt...............................|ale-hack-hackfmt|
@@ -3018,6 +3022,7 @@ documented in additional help files.
     stylish-haskell.......................|ale-haskell-stylish-haskell|
     hie...................................|ale-haskell-hie|
     ormolu................................|ale-haskell-ormolu|
+    fourmolu..............................|ale-haskell-fourmolu|
   hcl.....................................|ale-hcl-options|
     packer-fmt............................|ale-hcl-packer-fmt|
     terraform-fmt.........................|ale-hcl-terraform-fmt|

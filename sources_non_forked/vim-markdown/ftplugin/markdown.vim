@@ -656,7 +656,12 @@ endfunction
 function! s:OpenUrlUnderCursor()
     let l:url = s:Markdown_GetUrlForPosition(line('.'), col('.'))
     if l:url !=# ''
-        call s:VersionAwareNetrwBrowseX(l:url)
+      if l:url =~? 'http[s]\?:\/\/[[:alnum:]%\/_#.-]*'
+        "Do nothing
+      else
+        let l:url = expand(expand('%:h').'/'.l:url)
+      endif
+      call s:VersionAwareNetrwBrowseX(l:url)
     else
         echomsg 'The cursor is not on a link.'
     endif

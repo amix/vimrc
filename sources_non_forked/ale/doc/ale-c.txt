@@ -198,8 +198,8 @@ g:ale_c_ccls_init_options                           *g:ale_c_ccls_init_options*
     \   },
     \ }
 <
-  Visit https://github.com/MaskRay/ccls/wiki/Initialization-options for all
-  available options and explanations.
+  For all available options and explanations, visit
+  https://github.com/MaskRay/ccls/wiki/Customization#initialization-options.
 
 
 ===============================================================================

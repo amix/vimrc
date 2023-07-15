@@ -1,7 +1,7 @@
-*bufexplorer.txt*              Buffer Explorer       Last Change: 20 Sept 2022
+*bufexplorer.txt*              Buffer Explorer       Last Change: 01 May 2023
 
 Buffer Explorer                                *buffer-explorer* *bufexplorer*
-                                Version 7.4.25
+                                Version 7.4.26
 
 Plugin for easily exploring (or browsing) Vim|:buffers|.
 
@@ -263,6 +263,15 @@ The default is 1.
 ===============================================================================
 CHANGE LOG                                              *bufexplorer-changelog*
 
+7.4.26   May 01, 2023
+     What's Changed
+       - wipe explorer buffer on hide by @basharh in
+         https://github.com/jlanzarotta/bufexplorer/pull/111
+     New Contributors
+       - @basharh made their first contribution in
+         https://github.com/jlanzarotta/bufexplorer/pull/111
+     Full Changelog
+       https://github.com/jlanzarotta/bufexplorer/compare/v.7.4.25...v7.4.26
 7.4.25   September 20, 2022
      What's Changed
      - Fix MRU sort order after loading vim session by @mmrwoods in

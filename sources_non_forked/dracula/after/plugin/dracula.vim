@@ -56,9 +56,10 @@ if has('nvim-0.5') && luaeval("pcall(require, 'gitsigns')")
   hi! link GitSignsChange   DiffChange
   hi! link GitSignsChangeLn DiffChange
   hi! link GitSignsChangeNr DiffChange
-  hi! link GitSignsDelete   DiffDelete
-  hi! link GitSignsDeleteLn DiffDelete
-  hi! link GitSignsDeleteNr DiffDelete
+
+  hi! link GitSignsDelete   DraculaRed
+  hi! link GitSignsDeleteLn DraculaRed
+  hi! link GitSignsDeleteNr DraculaRed
 endif
 " }}}
 " Tree-sitter: {{{
