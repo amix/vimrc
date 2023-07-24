@@ -6,8 +6,8 @@ ALE Go Integration                                             *ale-go-options*
 Integration Information
 
 The `gometalinter` linter is disabled by default. ALE enables `gofmt`,
-`golint` and `go vet` by default. It also supports `staticcheck`, `go
-build`,  `gosimple`, `golangserver`.
+`gopls`, and `go vet` by default. It also supports `staticcheck, `go
+build`, `gosimple`, `golangserver`, and `golangci-lint`.
 
 To enable `gometalinter`, update |g:ale_linters| as appropriate:
 >
@@ -120,7 +120,7 @@ g:ale_go_golangci_lint_executable           *g:ale_go_golangci_lint_executable*
 g:ale_go_golangci_lint_options                 *g:ale_go_golangci_lint_options*
                                                *b:ale_go_golangci_lint_options*
   Type: |String|
-  Default: `'--enable-all'`
+  Default: `''`
 
   This variable can be changed to alter the command-line arguments to the
   golangci-lint invocation.
@@ -173,25 +173,6 @@ g:ale_go_golines_options                             *g:ale_go_golines_options*
 
   Additional options passed to the golines command. By default golines has
   --max-length=100 (lines above 100 characters will be wrapped)
-
-
-===============================================================================
-golint                                                          *ale-go-golint*
-
-g:ale_go_golint_executable                         *g:ale_go_golint_executable*
-                                                   *b:ale_go_golint_executable*
-  Type: |String|
-  Default: `'golint'`
-
-  This variable can be set to change the golint executable path.
-
-
-g:ale_go_golint_options                               *g:ale_go_golint_options*
-                                                      *b:ale_go_golint_options*
-  Type: |String|
-  Default: `''`
-
-  This variable can be set to pass additional options to the golint linter.
 
 
 ===============================================================================

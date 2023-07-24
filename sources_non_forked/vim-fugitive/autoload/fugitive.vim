@@ -3188,12 +3188,12 @@ function! fugitive#BufReadCmd(...) abort
         setlocal bufhidden=delete
       endif
       let &l:modifiable = modifiable
+      call fugitive#MapJumps()
       if b:fugitive_type !=# 'blob'
-        setlocal filetype=git
         call s:Map('n', 'a', ":<C-U>let b:fugitive_display_format += v:count1<Bar>exe fugitive#BufReadCmd(@%)<CR>", '<silent>')
         call s:Map('n', 'i', ":<C-U>let b:fugitive_display_format -= v:count1<Bar>exe fugitive#BufReadCmd(@%)<CR>", '<silent>')
+        setlocal filetype=git
       endif
-      call fugitive#MapJumps()
     endtry
 
     setlocal modifiable
@@ -4265,7 +4265,7 @@ function! s:ReloadStatusBuffer(...) abort
   endif
   let original_lnum = a:0 ? a:1 : line('.')
   let info = s:StageInfo(original_lnum)
-  call fugitive#BufReadStatus(0)
+  exe fugitive#BufReadStatus(0)
   call setpos('.', [0, s:StageSeek(info, original_lnum), 1, 0])
   return ''
 endfunction

@@ -54,8 +54,12 @@ endfunction
 function SetUp()
   call system("git init ".s:test_repo.
         \ " && cd ".s:test_repo.
+        \ " && cp ../.gitconfig .".
+        \ " && cp ../.gitattributes .".
+        \ " && cp ../fixture.foo .".
         \ " && cp ../fixture.txt .".
         \ " && cp ../fixture_dos.txt .".
+        \ " && cp ../fixture_dos_noeol.txt .".
         \ " && git add . && git commit -m 'initial'".
         \ " && git config diff.mnemonicPrefix false")
   execute ':cd' s:test_repo
@@ -348,6 +352,21 @@ function Test_untracked_file_square_brackets_within_repo()
 endfunction
 
 
+function Test_file_unknown_in_base()
+  let starting_branch = system('git branch --show-current')
+  let starting_branch = 'main'
+  call system('git checkout -b some-feature')
+  let tmp = 'file-on-this-branch-only.tmp'
+  call system('echo "hi" > '.tmp.' && git add '.tmp)
+  execute 'edit '.tmp
+  let g:gitgutter_diff_base = starting_branch
+  GitGutter
+  let expected = [{'lnum': 1, 'name': 'GitGutterLineAdded', 'group': 'gitgutter', 'priority': 10}]
+  call s:assert_signs(expected, tmp)
+  let g:gitgutter_diff_base = ''
+endfunction
+
+
 function Test_hunk_outside_noop()
   5
   GitGutterStageHunk
@@ -390,6 +409,12 @@ function Test_preview_dos()
 endfunction
 
 
+function Test_dos_noeol()
+  edit! fixture_dos_noeol.txt
+  GitGutter
+
+  call s:assert_signs([], 'fixture_dos_noeol.txt')
+endfunction
 
 
 function Test_hunk_stage()
@@ -752,7 +777,7 @@ endfunction
 
 
 function Test_overlapping_hunk_op()
-  func Answer(char)
+  func! Answer(char)
     call feedkeys(a:char."\<CR>")
   endfunc
 
@@ -1163,4 +1188,30 @@ function Test_assume_unchanged()
   normal ggo*
   call s:trigger_gitgutter()
   call s:assert_signs([], 'fixture.txt')
+endfunction
+
+
+function Test_clean_smudge_filter()
+  call system("git config --local include.path ../.gitconfig")
+  call system("rm fixture.foo && git checkout fixture.foo")
+
+  func! Answer(char)
+    call feedkeys(a:char."\<CR>")
+  endfunc
+
+  edit fixture.foo
+  call setline(2, ['A'])
+  call setline(4, ['B'])
+  call s:trigger_gitgutter()
+  normal! 2G
+  call timer_start(100, {-> Answer('y')} )
+  GitGutterStageHunk
+  call s:trigger_gitgutter()
+
+  let expected = [
+        \ {'lnum': 2, 'id': 23, 'name': 'GitGutterLineModified', 'priority': 10, 'group': 'gitgutter'},
+        \ {'lnum': 4, 'id': 24, 'name': 'GitGutterLineModified', 'priority': 10, 'group': 'gitgutter'}
+        \ ]
+  " call s:assert_signs(expected, 'fixture.foo')
+  call s:assert_signs([], 'fixture.foo')
 endfunction

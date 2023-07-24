@@ -46,6 +46,8 @@ function! gitgutter#process_buffer(bufnr, force) abort
         call gitgutter#debug#log('Not tracked: '.gitgutter#utility#file(a:bufnr))
       catch /gitgutter assume unchanged/
         call gitgutter#debug#log('Assume unchanged: '.gitgutter#utility#file(a:bufnr))
+      catch /gitgutter file unknown in base/
+        let diff = gitgutter#diff#hunk_header_showing_every_line_added(a:bufnr)
       catch /gitgutter diff failed/
         call gitgutter#debug#log('Diff failed: '.gitgutter#utility#file(a:bufnr))
         call gitgutter#hunk#reset(a:bufnr)
@@ -116,6 +118,16 @@ function! gitgutter#buffer_toggle(...) abort
 endfunction
 
 " }}}
+
+
+function! gitgutter#git()
+  if empty(g:gitgutter_git_args)
+    return g:gitgutter_git_executable
+  else
+    return g:gitgutter_git_executable.' '.g:gitgutter_git_args
+  endif
+endfunction
+
 
 function! gitgutter#setup_maps()
   if !g:gitgutter_map_keys
@@ -193,14 +205,14 @@ endfunction
 " - it ignores unsaved changes in buffers
 " - it does not change to the repo root
 function! gitgutter#quickfix(current_file)
-  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' rev-parse --show-cdup'
+  let cmd = gitgutter#git().' rev-parse --show-cdup'
   let path_to_repo = get(systemlist(cmd), 0, '')
   if !empty(path_to_repo) && path_to_repo[-1:] != '/'
     let path_to_repo .= '/'
   endif
 
   let locations = []
-  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager'.
+  let cmd = gitgutter#git().' --no-pager'.
         \ ' diff --no-ext-diff --no-color -U0'.
         \ ' --src-prefix=a/'.path_to_repo.' --dst-prefix=b/'.path_to_repo.' '.
         \ g:gitgutter_diff_args. ' '. g:gitgutter_diff_base
@@ -249,7 +261,7 @@ function! gitgutter#difforig()
   if g:gitgutter_diff_relative_to ==# 'index'
     let index_name = gitgutter#utility#get_diff_base(bufnr).':'.path
     let cmd = gitgutter#utility#cd_cmd(bufnr,
-          \ g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager show '.index_name
+          \ gitgutter#git().' --no-pager show '.index_name
           \ )
     " NOTE: this uses &shell to execute cmd.  Perhaps we should use instead
     " gitgutter#utility's use_known_shell() / restore_shell() functions.

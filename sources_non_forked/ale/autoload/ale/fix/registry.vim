@@ -561,6 +561,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['haskell'],
 \       'description': 'A formatter for Haskell source code.',
 \   },
+\   'fourmolu': {
+\       'function': 'ale#fixers#fourmolu#Fix',
+\       'suggested_filetypes': ['haskell'],
+\       'description': 'A formatter for Haskell source code.',
+\   },
 \   'jsonnetfmt': {
 \       'function': 'ale#fixers#jsonnetfmt#Fix',
 \       'suggested_filetypes': ['jsonnet'],
@@ -605,6 +610,11 @@ let s:default_registry = {
 \       'function': 'ale#fixers#rustywind#Fix',
 \       'suggested_filetypes': ['html'],
 \       'description': 'Sort Tailwind CSS classes',
+\   },
+\   'npm-groovy-lint': {
+\       'function': 'ale#fixers#npmgroovylint#Fix',
+\       'suggested_filetypes': ['groovy'],
+\       'description': 'Fix Groovy files with npm-groovy-fix.',
 \   }
 \}
 
