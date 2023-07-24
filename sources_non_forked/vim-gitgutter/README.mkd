@@ -23,6 +23,7 @@ Features:
 * Provides fold text showing whether folded lines have been changed.
 * Can load all hunk locations into quickfix list or the current window's location list.
 * Handles line endings correctly, even with repos that do CRLF conversion.
+* Handles clean/smudge filters.
 * Optional line highlighting.
 * Optional line number highlighting. (Only available in Neovim 0.3.2 or higher)
 * Fully customisable (signs, sign column, line (number) highlights, mappings, extra git-diff arguments, etc).
@@ -54,7 +55,7 @@ In the screenshot above you can see:
 
 ### Installation
 
-Install using your favourite package manager, or use Vim's built-in package support.
+First, install using your favourite package manager, or use Vim's built-in package support.
 
 Vim:
 
@@ -67,13 +68,18 @@ vim -u NONE -c "helptags vim-gitgutter/doc" -c q
 
 Neovim:
 
-
 ```
 mkdir -p ~/.config/nvim/pack/airblade/start
 cd ~/.config/nvim/pack/airblade/start
 git clone https://github.com/airblade/vim-gitgutter.git
 nvim -u NONE -c "helptags vim-gitgutter/doc" -c q
 ```
+
+Second, ensure your `updatetime` and `signcolumn` options are set appropriately.
+
+When you make a change to a file tracked by git, the diff markers should appear automatically after a short delay.  The delay is governed by vim's `updatetime` option; the default value is `4000`, i.e. 4 seconds, but I suggest reducing it to around 100ms (add `set updatetime=100` to your vimrc).  Note `updatetime` also controls the delay before vim writes its swap file (see `:help updatetime`).
+
+The `signcolumn` option can have any value except `'off'`.
 
 
 ### Windows
@@ -92,7 +98,7 @@ Unfortunately I don't know the correct escaping for the path - if you do, please
 
 ### Getting started
 
-When you make a change to a file tracked by git, the diff markers should appear automatically.  The delay is governed by vim's `updatetime` option; the default value is `4000`, i.e. 4 seconds, but I suggest reducing it to around 100ms (add `set updatetime=100` to your vimrc).  Note `updatetime` also controls the delay before vim writes its swap file (see `:help updatetime`).
+When you make a change to a file tracked by git, the diff markers should appear automatically after a short delay.
 
 You can jump between hunks with `[c` and `]c`.  You can preview, stage, and undo hunks with `<leader>hp`, `<leader>hs`, and `<leader>hu` respectively.
 
@@ -375,7 +381,7 @@ Similarly to the signs' colours, set up the following highlight groups in your c
 GitGutterAddLine          " default: links to DiffAdd
 GitGutterChangeLine       " default: links to DiffChange
 GitGutterDeleteLine       " default: links to DiffDelete
-GitGutterChangeDeleteLine " default: links to GitGutterChangeLineDefault, i.e. DiffChange
+GitGutterChangeDeleteLine " default: links to GitGutterChangeLine, i.e. DiffChange
 ```
 
 For example, in some colorschemes the `DiffText` highlight group is easier to read than `DiffChange`.  You could use it like this:
@@ -395,7 +401,7 @@ Similarly to the signs' colours, set up the following highlight groups in your c
 GitGutterAddLineNr          " default: links to CursorLineNr
 GitGutterChangeLineNr       " default: links to CursorLineNr
 GitGutterDeleteLineNr       " default: links to CursorLineNr
-GitGutterChangeDeleteLineNr " default: links to CursorLineNr
+GitGutterChangeDeleteLineNr " default: links to GitGutterChangeLineNr
 ```
 
 Maybe you think `CursorLineNr` is a bit annoying.  For example, you could use `Underlined` for this:
@@ -747,5 +753,4 @@ Copyright Andrew Stewart, AirBlade Software Ltd.  Released under the MIT licence
 
   [pathogen]: https://github.com/tpope/vim-pathogen
   [siv]: http://pluralsight.com/training/Courses/TableOfContents/smash-into-vim
-  [airblade]: http://airbladesoftware.com/peepcode-vim
   [terminus]: https://github.com/wincent/terminus

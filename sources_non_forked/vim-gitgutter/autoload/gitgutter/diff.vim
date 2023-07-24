@@ -6,7 +6,7 @@ let s:hunk_re = '^@@ -\(\d\+\),\?\(\d*\) +\(\d\+\),\?\(\d*\) @@'
 
 " True for git v1.7.2+.
 function! s:git_supports_command_line_config_override() abort
-  call gitgutter#utility#system(g:gitgutter_git_executable.' '.g:gitgutter_git_args.' -c foo.bar=baz --version')
+  call gitgutter#utility#system(gitgutter#git().' -c foo.bar=baz --version')
   return !v:shell_error
 endfunction
 
@@ -81,6 +81,20 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     throw 'gitgutter assume unchanged'
   endif
 
+  " If we are diffing against a specific branch/commit, handle the case
+  " where a file exists on the current branch but not in/at the diff base.
+  " We have to handle it here because the approach below (using git-show)
+  " doesn't work for this case.
+  if !empty(g:gitgutter_diff_base)
+    let index_name = gitgutter#utility#get_diff_base(a:bufnr).':'.gitgutter#utility#repo_path(a:bufnr, 1)
+    let cmd = gitgutter#git().' --no-pager show '.index_name
+    let cmd = gitgutter#utility#cd_cmd(a:bufnr, cmd)
+    call gitgutter#utility#system(cmd)
+    if v:shell_error
+      throw 'gitgutter file unknown in base'
+    endif
+  endif
+
   " Wrap compound commands in parentheses to make Windows happy.
   " bash doesn't mind the parentheses.
   let cmd = '('
@@ -124,14 +138,14 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
 
     " Write file from index to temporary file.
     let index_name = gitgutter#utility#get_diff_base(a:bufnr).':'.gitgutter#utility#repo_path(a:bufnr, 1)
-    let cmd .= g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager show '.index_name.' > '.from_file.' && '
+    let cmd .= gitgutter#git().' --no-pager show --textconv '.index_name.' > '.from_file.' && '
 
   elseif a:from ==# 'working_tree'
     let from_file = gitgutter#utility#repo_path(a:bufnr, 1)
   endif
 
   " Call git-diff.
-  let cmd .= g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager'
+  let cmd .= gitgutter#git().' --no-pager'
   if s:c_flag
     let cmd .= ' -c "diff.autorefreshindex=0"'
     let cmd .= ' -c "diff.noprefix=false"'
@@ -376,6 +390,12 @@ function! gitgutter#diff#hunk_diff(bufnr, full_diff, ...)
 endfunction
 
 
+function! gitgutter#diff#hunk_header_showing_every_line_added(bufnr)
+  let buf_line_count = getbufinfo(a:bufnr)[0].linecount
+  return '@@ -0,0 +1,'.buf_line_count.' @@'
+endfunction
+
+
 function! s:write_buffer(bufnr, file)
   let bufcontents = getbufline(a:bufnr, 1, '$')
 
@@ -387,7 +407,13 @@ function! s:write_buffer(bufnr, file)
   endif
 
   if getbufvar(a:bufnr, '&fileformat') ==# 'dos'
-    call map(bufcontents, 'v:val."\r"')
+    if getbufvar(a:bufnr, '&endofline')
+      call map(bufcontents, 'v:val."\r"')
+    else
+      for i in range(len(bufcontents) - 1)
+        let bufcontents[i] = bufcontents[i] . "\r"
+      endfor
+    endif
   endif
 
   if getbufvar(a:bufnr, '&endofline')

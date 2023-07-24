@@ -23,7 +23,7 @@ function! FugitiveGitDir(...) abort
       return g:fugitive_event
     endif
     let dir = get(b:, 'git_dir', '')
-    if empty(dir) && (empty(bufname('')) || &buftype =~# '^\%(nofile\|acwrite\|quickfix\|terminal\|prompt\)$')
+    if empty(dir) && (empty(bufname('')) && &filetype !=# 'netrw' || &buftype =~# '^\%(nofile\|acwrite\|quickfix\|terminal\|prompt\)$')
       return FugitiveExtractGitDir(getcwd())
     elseif (!exists('b:git_dir') || b:git_dir =~# s:bad_git_dir) && &buftype =~# '^\%(nowrite\)\=$'
       let b:git_dir = FugitiveExtractGitDir(bufnr(''))
@@ -425,6 +425,9 @@ function! FugitiveExtractGitDir(path) abort
     return get(a:path, 'fugitive_dir', get(a:path, 'git_dir', ''))
   elseif type(a:path) == type(0)
     let path = s:Slash(a:path > 0 ? bufname(a:path) : bufname(''))
+    if getbufvar(a:path, '&filetype') ==# 'netrw'
+      let path = s:Slash(getbufvar(a:path, 'netrw_curdir', path))
+    endif
   else
     let path = s:Slash(a:path)
   endif

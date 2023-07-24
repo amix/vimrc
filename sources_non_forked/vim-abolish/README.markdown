@@ -117,9 +117,9 @@ There's also a variant for searching and a variant for grepping.
 ## Coercion
 
 Want to turn `fooBar` into `foo_bar`?  Press `crs` (coerce to
-snake\_case).  MixedCase (`crm`), camelCase (`crc`), UPPER\_CASE (`cru`), 
-dash-case (`cr-`), dot.case (`cr.`), space case (`cr<space>`), and 
-Title Case (`crt`) are all just 3 keystrokes away.
+snake\_case).  MixedCase (`crm`), camelCase (`crc`), UPPER\_CASE
+(`cru`), dash-case (`cr-`), and dot.case (`cr.`) are all just 3
+keystrokes away.
 
 ## Installation
 
