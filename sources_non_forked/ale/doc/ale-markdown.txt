@@ -35,6 +35,17 @@ g:ale_markdown_markdownlint_options       *g:ale_markdown_markdownlint_options*
 
 
 ===============================================================================
+marksman                                                *ale-markdown-marksman*
+
+g:ale_markdown_marksman_executable         *g:ale_markdown_marksman_executable*
+                                           *b:ale_markdown_marksman_executable*
+  Type: |String|
+  Default: `'marksman'`
+
+  Override the invoked `marksman` binary.
+
+
+===============================================================================
 mdl                                                          *ale-markdown-mdl*
 
 g:ale_markdown_mdl_executable                   *g:ale_markdown_mdl_executable*

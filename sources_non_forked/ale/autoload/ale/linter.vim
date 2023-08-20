@@ -42,7 +42,7 @@ let s:default_ale_linters = {
 \   'apkbuild': ['apkbuild_lint', 'secfixes_check'],
 \   'csh': ['shell'],
 \   'elixir': ['credo', 'dialyxir', 'dogma'],
-\   'go': ['gofmt', 'gopls', 'govet'],
+\   'go': ['gofmt', 'golangci-lint', 'gopls', 'govet'],
 \   'groovy': ['npm-groovy-lint'],
 \   'hack': ['hack'],
 \   'help': [],

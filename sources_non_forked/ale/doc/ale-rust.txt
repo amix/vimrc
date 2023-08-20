@@ -60,8 +60,20 @@ g:ale_rust_analyzer_config                         *g:ale_rust_analyzer_config*
   Type: |Dictionary|
   Default: `{}`
 
-  Dictionary with configuration settings for rust-analyzer.
+  Dictionary with configuration settings for rust-analyzer. Keys of the
+  dictionary are components of configuration keys. For example:
+>
+    let g:ale_rust_analyzer_config = {
+    \  'server': {
+    \    'extraEnv': { 'RUSTUP_TOOLCHAIN': 'stable' },
+    \  }
+    \}
+<
+  corresponds to `rust-analyzer.server.extraEnv = { 'RUSTUP_TOOLCHAIN': 'stable' }`
 
+  For available configuration parameters, see the `rust-analyzer` manual:
+
+  https://rust-analyzer.github.io/manual.html#configuration
 
 ===============================================================================
 cargo                                                          *ale-rust-cargo*

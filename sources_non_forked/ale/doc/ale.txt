@@ -1641,7 +1641,7 @@ g:ale_linters                                                   *g:ale_linters*
   \   'apkbuild': ['apkbuild_lint', 'secfixes_check'],
   \   'csh': ['shell'],
   \   'elixir': ['credo', 'dialyxir', 'dogma'],
-  \   'go': ['gofmt', 'gopls', 'govet'],
+  \   'go': ['gofmt', 'golangci-lint', 'gopls', 'govet'],
   \   'groovy': ['npm-groovy-lint'],
   \   'hack': ['hack'],
   \   'help': [],
@@ -2409,7 +2409,7 @@ g:ale_virtualenv_dir_names                         *g:ale_virtualenv_dir_names*
   Default: `['.env', '.venv', 'env', 've-py3', 've', 'virtualenv', 'venv']`
 
   A list of directory names to be used when searching upwards from Python
-  files to discover virtulenv directories with.
+  files to discover virtualenv directories with.
 
   For directory named `'foo'`, ALE will search for `'foo/bin/activate'`
   (`foo\Scripts\activate\` on Windows) in all directories on and above the
@@ -2963,6 +2963,7 @@ documented in additional help files.
     erlfmt................................|ale-erlang-erlfmt|
     syntaxerl.............................|ale-erlang-syntaxerl|
   eruby...................................|ale-eruby-options|
+    erb-formatter.........................|ale-eruby-erbformatter|
     erblint...............................|ale-eruby-erblint|
     ruumba................................|ale-eruby-ruumba|
   fish....................................|ale-fish-options|
@@ -2987,7 +2988,6 @@ documented in additional help files.
     golangci-lint.........................|ale-go-golangci-lint|
     golangserver..........................|ale-go-golangserver|
     golines...............................|ale-go-golines|
-    gometalinter..........................|ale-go-gometalinter|
     gopls.................................|ale-go-gopls|
     govet.................................|ale-go-govet|
     revive................................|ale-go-revive|
@@ -3123,6 +3123,7 @@ documented in additional help files.
     cspell................................|ale-markdown-cspell|
     dprint................................|ale-markdown-dprint|
     markdownlint..........................|ale-markdown-markdownlint|
+    marksman..............................|ale-markdown-marksman|
     mdl...................................|ale-markdown-mdl|
     pandoc................................|ale-markdown-pandoc|
     prettier..............................|ale-markdown-prettier|
@@ -3426,6 +3427,7 @@ documented in additional help files.
     swaglint..............................|ale-yaml-swaglint|
     yaml-language-server..................|ale-yaml-language-server|
     yamlfix...............................|ale-yaml-yamlfix|
+    yamlfmt...............................|ale-yaml-yamlfmt|
     yamllint..............................|ale-yaml-yamllint|
     gitlablint............................|ale-yaml-gitlablint|
   yang....................................|ale-yang-options|

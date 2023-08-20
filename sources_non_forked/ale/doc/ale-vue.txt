@@ -50,7 +50,7 @@ g:ale_vue_volar_executable                         *g:ale_vue_volar_executable*
 g:ale_vue_volar_use_global                         *g:ale_vue_volar_use_global*
                                                    *b:ale_vue_volar_use_global*
   Type: |Number|
-  Default: `get(g:, 'ale_use_global_executables', 0)`
+  Default: `1`
 
   See |ale-integrations-local-executables|
 
@@ -58,7 +58,7 @@ g:ale_vue_volar_use_global                         *g:ale_vue_volar_use_global*
 g:vue_volar_init_options                         *g:ale_vue_volar_init_options*
                                                  *b:ale_vue_volar_init_options*
   Type: |Dictionary|
-  Default: `{ ... }`
+  Default: `{ 'typescript': 'tsdk': '' }`
 
   Default is too long to show here, take a look at it over
   `ale_linters/vue/volar.vim`

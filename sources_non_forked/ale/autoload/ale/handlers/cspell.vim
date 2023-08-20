@@ -24,14 +24,19 @@ endfunction
 function! ale#handlers#cspell#Handle(buffer, lines) abort
     " Look for lines like the following:
     "
-    " /home/user/repos/ale/README.md:723:48 - Unknown word (stylelint)
-    let l:pattern = '\v^.*:(\d+):(\d+) - (.*)$'
+    " /home/user/repos/ale/README.md:3:128 - Unknown word (Neovim)
+    " match1: 3
+    " match2: 128
+    " match3: Unknown word (Neovim)
+    " match4: Neovim
+    let l:pattern = '\v^.*:(\d+):(\d+) - ([^\(]+\(([^\)]+)\).*)$'
     let l:output = []
 
     for l:match in ale#util#GetMatches(a:lines, l:pattern)
         call add(l:output, {
         \   'lnum': l:match[1] + 0,
         \   'col': l:match[2] + 0,
+        \   'end_col': l:match[2] + len(l:match[4]) - 1,
         \   'text': l:match[3],
         \   'type': 'W',
         \})

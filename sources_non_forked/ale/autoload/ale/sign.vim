@@ -87,7 +87,7 @@ execute 'sign define ALEInfoSign text=' . s:EscapeSignText(g:ale_sign_info)
 \   . ' texthl=ALEInfoSign linehl=ALEInfoLine'
 sign define ALEDummySign text=\  texthl=SignColumn
 
-if g:ale_sign_highlight_linenrs && has('nvim-0.3.2')
+if g:ale_sign_highlight_linenrs && (has('nvim-0.3.2') || has('patch-8.2.3874'))
     if !hlexists('ALEErrorSignLineNr')
         highlight link ALEErrorSignLineNr CursorLineNr
     endif

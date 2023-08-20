@@ -1,5 +1,5 @@
 " Author: Jon Parise <jon@indelible.org>
-" Description: ElixirLS integration (https://github.com/JakeBecker/elixir-ls)
+" Description: ElixirLS integration (https://github.com/elixir-lsp/elixir-ls)
 
 call ale#Set('elixir_elixir_ls_release', 'elixir-ls')
 call ale#Set('elixir_elixir_ls_config', {})

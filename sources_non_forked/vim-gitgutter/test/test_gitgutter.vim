@@ -251,6 +251,35 @@ function Test_filename_umlaut()
 endfunction
 
 
+function Test_file_cmd()
+  normal ggo*
+
+  file other.txt
+
+  call s:trigger_gitgutter()
+  call assert_equal(1, b:gitgutter.enabled)
+  call assert_equal('', b:gitgutter.path)
+  call s:assert_signs([], 'other.txt')
+
+  write
+
+  call s:trigger_gitgutter()
+  call assert_equal(-2, b:gitgutter.path)
+endfunction
+
+
+function Test_saveas()
+  normal ggo*
+
+  saveas other.txt
+
+  call s:trigger_gitgutter()
+  call assert_equal(1, b:gitgutter.enabled)
+  call assert_equal(-2, b:gitgutter.path)
+  call s:assert_signs([], 'other.txt')
+endfunction
+
+
 " FIXME: this test fails when it is the first (or only) test to be run
 function Test_follow_symlink()
   let tmp = 'symlink'

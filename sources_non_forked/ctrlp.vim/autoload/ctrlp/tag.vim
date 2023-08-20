@@ -116,10 +116,14 @@ fu! ctrlp#tag#accept(mode, str)
 		if cmd != ''
 			exe cmd
 		en
-		let save_cst = &cst
-		set cst&
+		if exists('&cst')
+			let save_cst = &cst
+			set cst&
+		en
 		cal feedkeys(":".( utg ? fdcnt[2] : "" )."ta ".tg."\r", 'nt')
-		let &cst = save_cst
+		if exists('&cst')
+			let &cst = save_cst
+		en
 	el
 		let ext = ""
 		if fdcnt[1] < 2 && fdcnt[2]

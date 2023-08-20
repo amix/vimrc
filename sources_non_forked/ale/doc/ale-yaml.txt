@@ -47,6 +47,7 @@ g:ale_yaml_actionlint_options                   *g:ale_yaml_actionlint_options*
 <
   Please note that passing `-format` as option is not supported at the moment.
 
+
 ===============================================================================
 circleci                                                    *ale-yaml-circleci*
 
@@ -236,6 +237,44 @@ g:ale_yaml_yamlfix_options                         *g:ale_yaml_yamlfix_options*
 
 g:ale_yaml_yamlfix_use_global                   *g:ale_yaml_yamlfix_use_global*
                                                 *b:ale_yaml_yamlfix_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+===============================================================================
+yamlfmt                                                      *ale-yaml-yamlfmt*
+
+Website: https://github.com/google/yamlfmt
+
+
+Installation
+-------------------------------------------------------------------------------
+
+Install yamlfmt:
+
+  See the website.
+
+Options
+-------------------------------------------------------------------------------
+g:ale_yaml_yamlfmt_executable                   *g:ale_yaml_yamlfmt_executable*
+                                                *b:ale_yaml_yamlfmt_executable*
+  Type: |String|
+  Default: `'yamlfmt'`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_yaml_yamlfmt_options                         *g:ale_yaml_yamlfmt_options*
+                                                   *b:ale_yaml_yamlfmt_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass extra options to yamlfmt.
+
+g:ale_yaml_yamlfmt_use_global                   *g:ale_yaml_yamlfmt_use_global*
+                                                *b:ale_yaml_yamlfmt_use_global*
   Type: |Number|
   Default: `get(g:, 'ale_use_global_executables', 0)`
 

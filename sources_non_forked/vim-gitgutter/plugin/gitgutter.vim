@@ -265,6 +265,35 @@ function! s:next_tick(cmd)
   call timer_start(1, {-> execute(a:cmd)})
 endfunction
 
+function! s:on_buffilepre(bufnr)
+  if !exists('s:renaming')
+    let s:renaming = []
+    let s:gitgutter_was_enabled = gitgutter#utility#getbufvar(a:bufnr, 'enabled')
+  endif
+
+  let s:renaming += [a:bufnr]
+endfunction
+
+function! s:on_buffilepost(bufnr)
+  if len(s:renaming) > 1
+    if s:renaming[0] != a:bufnr
+      throw 'gitgutter rename error' s:renaming[0] a:bufnr
+    endif
+    unlet s:renaming[0]
+    return
+  endif
+
+  " reset cached values
+  GitGutterBufferDisable
+
+  if s:gitgutter_was_enabled
+    GitGutterBufferEnable
+  endif
+
+  unlet s:renaming
+  unlet s:gitgutter_was_enabled
+endfunction
+
 " Autocommands {{{
 
 augroup gitgutter
@@ -309,8 +338,8 @@ augroup gitgutter
 
   autocmd ColorScheme * call gitgutter#highlight#define_highlights()
 
-  autocmd BufFilePre  * let b:gitgutter_was_enabled = gitgutter#utility#getbufvar(expand('<abuf>'), 'enabled') | GitGutterBufferDisable
-  autocmd BufFilePost * if b:gitgutter_was_enabled | GitGutterBufferEnable | endif | unlet b:gitgutter_was_enabled
+  autocmd BufFilePre  * call s:on_buffilepre(expand('<abuf>'))
+  autocmd BufFilePost * call s:on_buffilepost(expand('<abuf>'))
 
   autocmd QuickFixCmdPre  *vimgrep* let b:gitgutter_was_enabled = gitgutter#utility#getbufvar(expand('<abuf>'), 'enabled') | GitGutterBufferDisable
   autocmd QuickFixCmdPost *vimgrep* if b:gitgutter_was_enabled | GitGutterBufferEnable | endif | unlet b:gitgutter_was_enabled

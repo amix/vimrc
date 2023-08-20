@@ -37,15 +37,21 @@ function! s:NvimShow(lines, options) abort
     endif
 
     " Execute commands in window context
-    let l:parent_window = nvim_get_current_win()
+    if exists('*win_execute')
+        for l:command in get(a:options, 'commands', [])
+            call win_execute(w:preview['id'], l:command)
+        endfor
+    else
+        let l:parent_window = nvim_get_current_win()
 
-    call nvim_set_current_win(w:preview['id'])
+        call nvim_set_current_win(w:preview['id'])
 
-    for l:command in get(a:options, 'commands', [])
-        call execute(l:command)
-    endfor
+        for l:command in get(a:options, 'commands', [])
+            call execute(l:command)
+        endfor
 
-    call nvim_set_current_win(l:parent_window)
+        call nvim_set_current_win(l:parent_window)
+    endif
 
     " Return to parent context on move
     augroup ale_floating_preview_window

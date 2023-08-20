@@ -2884,6 +2884,24 @@ function! fugitive#BufReadStatus(...) abort
       endfor
     endif
 
+    let sequencing = []
+    if filereadable(fugitive#Find('.git/sequencer/todo'))
+      for line in reverse(readfile(fugitive#Find('.git/sequencer/todo')))
+        let match = matchlist(line, '^\(\l\+\)\s\+\(\x\{4,\}\)\s\+\(.*\)')
+        if len(match) && match[1] !~# 'exec\|merge\|label'
+          call add(sequencing, {'type': 'Rebase', 'status': get(s:rebase_abbrevs, match[1], match[1]), 'commit': match[2], 'subject': match[3]})
+        endif
+      endfor
+    elseif filereadable(fugitive#Find('.git/MERGE_MSG'))
+      if filereadable(fugitive#Find('.git/CHERRY_PICK_HEAD'))
+        let pick_head = fugitive#Execute(['rev-parse', '--short', 'CHERRY_PICK_HEAD', '--']).stdout[0]
+        call add(sequencing, {'type': 'Rebase', 'status': 'pick', 'commit': pick_head, 'subject': get(readfile(fugitive#Find('.git/MERGE_MSG')), 0, '')})
+      elseif filereadable(fugitive#Find('.git/REVERT_HEAD'))
+        let pick_head = fugitive#Execute(['rev-parse', '--short', 'REVERT_HEAD', '--']).stdout[0]
+        call add(sequencing, {'type': 'Rebase', 'status': 'revert', 'commit': pick_head, 'subject': get(readfile(fugitive#Find('.git/MERGE_MSG')), 0, '')})
+      endif
+    endif
+
     let b:fugitive_diff = diff
     if get(a:, 1, v:cmdbang)
       unlet! b:fugitive_expanded
@@ -2910,6 +2928,7 @@ function! fugitive#BufReadStatus(...) abort
     endif
 
     call s:AddSection('Rebasing ' . rebasing_head, rebasing)
+    call s:AddSection(get(get(sequencing, 0, {}), 'status', '') ==# 'revert' ? 'Reverting' : 'Cherry Picking', sequencing)
     call s:AddSection('Untracked', untracked)
     call s:AddSection('Unstaged', unstaged)
     let unstaged_end = len(unstaged) ? line('$') : 0

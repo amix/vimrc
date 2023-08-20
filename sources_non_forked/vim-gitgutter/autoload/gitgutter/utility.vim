@@ -19,7 +19,8 @@ function! gitgutter#utility#setbufvar(buffer, varname, val)
 endfunction
 
 function! gitgutter#utility#getbufvar(buffer, varname, ...)
-  let ggvars = getbufvar(a:buffer, 'gitgutter')
+  let buffer = +a:buffer
+  let ggvars = getbufvar(buffer, 'gitgutter')
   if type(ggvars) == type({}) && has_key(ggvars, a:varname)
     return ggvars[a:varname]
   endif
