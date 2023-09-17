@@ -140,9 +140,9 @@ for example `colorscheme pyte`.
 ## How to include your own stuff?
 
 After you have installed the setup,
-create a `~/.vim_runtime/my_configs.vim` file for further customization.
-The file's syntax matches `vimrc` syntax.
-Start with a blank file and add lines like `set number` as you see fit.
+create an empty `~/.vim_runtime/my_configs.vim` file for further customization.
+This file's syntax matches `vimrc` syntax,
+and add `vimrc` lines like `set number` as needed.
 
 For instance, my `my_configs.vim` looks like this:
 
