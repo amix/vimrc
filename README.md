@@ -137,9 +137,14 @@ Type `:colorscheme <Tab>` to try out color schemes on the fly or add the command
 
 ## How to include your own stuff?
 
-After you have installed the setup, you can create **~/.vim_runtime/my_configs.vim** to fill in any configurations that are important for you. For instance, my **my_configs.vim** looks like this:
+After you have installed the setup,
+create a `~/.vim_runtime/my_configs.vim` file for further customization.
+The file's syntax matches `vimrc` syntax.
+Start with a blank file and add lines like `set number` as you see fit.
 
-	~/.vim_runtime (master)> cat my_configs.vim
+For instance, my `my_configs.vim` looks like this:
+
+	~/.vim_runtime > cat my_configs.vim
 	map <leader>ct :cd ~/Desktop/Todoist/todoist<cr>
 	map <leader>cw :cd ~/Desktop/Wedoist/wedoist<cr> 
 
