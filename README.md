@@ -111,7 +111,9 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 
 ## Included color schemes
 
-Type `:colorscheme <Tab>` to try out color schemes on the fly or add the command to **my_configs.vim** (see below), for example `colorscheme pyte`.
+Type `:colorscheme <Tab>` to try out color schemes on the fly,
+or add the command to `~/.vim_runtime/my_configs.vim` (see [below](#how-to-include-your-own-stuff)),
+for example `colorscheme pyte`.
 
 * [peaksea](https://github.com/vim-scripts/peaksea): The default
 * [dracula](https://github.com/dracula/vim)
