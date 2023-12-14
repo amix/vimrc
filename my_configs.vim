@@ -1,0 +1,3 @@
+colorscheme dracula 
+set relativenumber
+
