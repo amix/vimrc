@@ -332,6 +332,7 @@ nmap <C-n> <Plug>yankstack_substitute_newer_paste
 let g:ctrlp_map = '<C-f>'
 map <leader>j :CtrlP<cr>
 map <C-b> :CtrlPBuffer<cr>
+```
 
 [vim-snipmate](https://github.com/garbas/vim-snipmate) mappings to autocomplete via snippets:
 ```vim
