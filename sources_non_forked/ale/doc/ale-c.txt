@@ -25,10 +25,10 @@ g:ale_c_build_dir_names                               *g:ale_c_build_dir_names*
   Type: |List|
   Default: `['build', 'bin']`
 
-  A list of directory names to be used when searching upwards from cpp files
+  A list of directory names to be used when searching upwards from C files
   to discover compilation databases with. For directory named `'foo'`, ALE
   will search for `'foo/compile_commands.json'` in all directories on and
-  above the directory containing the cpp file to find path to compilation
+  above the directory containing the C file to find path to compilation
   database.  This feature is useful for the clang tools wrapped around
   LibTooling (namely here, clang-tidy)
 
@@ -200,6 +200,37 @@ g:ale_c_ccls_init_options                           *g:ale_c_ccls_init_options*
 <
   For all available options and explanations, visit
   https://github.com/MaskRay/ccls/wiki/Customization#initialization-options.
+
+
+===============================================================================
+clangcheck                                                   *ale-c-clangcheck*
+
+`clang-check` will be run only when files are saved to disk, so that
+`compile_commands.json` files can be used. It is recommended to use this
+linter in combination with `compile_commands.json` files.
+Therefore, `clang-check` linter reads the options |g:ale_c_build_dir| and
+|g:ale_c_build_dir_names|. Also, setting |g:ale_c_build_dir| actually
+overrides |g:ale_c_build_dir_names|.
+
+
+g:ale_c_clangcheck_executable                   *g:ale_c_clangcheck_executable*
+                                                *b:ale_c_clangcheck_executable*
+  Type: |String|
+  Default: `'clang-check'`
+
+  This variable can be changed to use a different executable for clangcheck.
+
+
+g:ale_c_clangcheck_options                         *g:ale_c_clangcheck_options*
+                                                   *b:ale_c_clangcheck_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to clang-check.
+
+  This variable should not be set to point to build subdirectory with
+  `-p path/to/build` option, as it is handled by the |g:ale_c_build_dir|
+  option.
 
 
 ===============================================================================
@@ -378,7 +409,7 @@ g:ale_c_cquery_executable                           *g:ale_c_cquery_executable*
   This variable can be changed to use a different executable for cquery.
 
 
-g:ale_cpp_cquery_cache_directory               *g:ale_c_cquery_cache_directory*
+g:ale_c_cquery_cache_directory                 *g:ale_c_cquery_cache_directory*
                                                *b:ale_c_cquery_cache_directory*
   Type: |String|
   Default: `'~/.cache/cquery'`

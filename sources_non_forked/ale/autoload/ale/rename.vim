@@ -85,7 +85,7 @@ function! ale#rename#HandleTSServerResponse(conn_id, response) abort
     \   },
     \   {
     \       'conn_id': a:conn_id,
-    \       'should_save': !&hidden,
+    \       'should_save': g:ale_save_hidden || !&hidden,
     \   },
     \)
 endfunction
@@ -118,7 +118,7 @@ function! ale#rename#HandleLSPResponse(conn_id, response) abort
         \   },
         \   {
         \       'conn_id': a:conn_id,
-        \       'should_save': !&hidden,
+        \       'should_save': g:ale_save_hidden || !&hidden,
         \   },
         \)
     endif
@@ -178,15 +178,9 @@ function! s:ExecuteRename(linter, options) abort
 endfunction
 
 function! ale#rename#Execute() abort
-    let l:lsp_linters = []
+    let l:linters = ale#lsp_linter#GetEnabled(bufnr(''))
 
-    for l:linter in ale#linter#Get(&filetype)
-        if !empty(l:linter.lsp)
-            call add(l:lsp_linters, l:linter)
-        endif
-    endfor
-
-    if empty(l:lsp_linters)
+    if empty(l:linters)
         call s:message('No active LSPs')
 
         return
@@ -201,8 +195,8 @@ function! ale#rename#Execute() abort
         return
     endif
 
-    for l:lsp_linter in l:lsp_linters
-        call s:ExecuteRename(l:lsp_linter, {
+    for l:linter in l:linters
+        call s:ExecuteRename(l:linter, {
         \   'old_name': l:old_name,
         \   'new_name': l:new_name,
         \})

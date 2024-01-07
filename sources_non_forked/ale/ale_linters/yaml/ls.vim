@@ -26,6 +26,7 @@ endfunction
 
 call ale#linter#Define('yaml', {
 \   'name': 'yaml-language-server',
+\   'aliases': ['yamlls'],
 \   'lsp': 'stdio',
 \   'executable': function('ale_linters#yaml#ls#GetExecutable'),
 \   'command': function('ale_linters#yaml#ls#GetCommand'),

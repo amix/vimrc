@@ -42,8 +42,8 @@ g:ale_deno_unstable                                       *g:ale_deno_unstable*
   Enable or disable unstable Deno features and APIs.
 
 
-g:ale_deno_importMap                                     *g:ale_deno_importMap*
-                                                         *b:ale_deno_importMap*
+g:ale_deno_import_map                                   *g:ale_deno_import_map*
+                                                        *b:ale_deno_import_map*
   Type: |String|
   Default: `'import_map.json'`
 

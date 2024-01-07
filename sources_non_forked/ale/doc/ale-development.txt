@@ -48,7 +48,7 @@ documented functions and options, until a major version is planned. Breaking
 changes should be preceded by a deprecation phase complete with warnings.
 Changes required for security may be an exception.
 
-ALE supports Vim 8 and above, and NeoVim 0.2.0 or newer. These are the
+ALE supports Vim 8 and above, and NeoVim 0.6.0 or newer. These are the
 earliest versions of Vim and NeoVim which support |job|, |timer|, |closure|,
 and |lambda| features. All ALE code should be written so it is compatible with
 these versions of Vim, or with version checks so particular features can
@@ -156,7 +156,7 @@ environments.
 
 1. Vim 8.0.0027 on Linux via GitHub Actions.
 2. Vim 9.0.0297 on Linux via GitHub Actions.
-3. NeoVim 0.2.0 on Linux via GitHub Actions.
+3. NeoVim 0.6.0 on Linux via GitHub Actions.
 4. NeoVim 0.8.0 on Linux via GitHub Actions.
 6. Vim 8 (stable builds) on Windows via AppVeyor.
 

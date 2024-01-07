@@ -12,7 +12,8 @@ function! ale_linters#elixir#elixir_ls#GetExecutable(buffer) abort
 endfunction
 
 call ale#linter#Define('elixir', {
-\   'name': 'elixir-ls',
+\   'name': 'elixir_ls',
+\   'aliases': ['elixir-ls', 'elixirls'],
 \   'lsp': 'stdio',
 \   'executable': function('ale_linters#elixir#elixir_ls#GetExecutable'),
 \   'command': function('ale_linters#elixir#elixir_ls#GetExecutable'),

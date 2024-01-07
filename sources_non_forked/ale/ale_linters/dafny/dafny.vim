@@ -1,4 +1,5 @@
 " Author: Taylor Blau <me@ttaylorr.com>
+call ale#Set('dafny_dafny_timelimit', 10)
 
 function! ale_linters#dafny#dafny#Handle(buffer, lines) abort
     let l:pattern = '\v(.*)\((\d+),(\d+)\): (.*): (.*)'
@@ -31,7 +32,6 @@ function! ale_linters#dafny#dafny#GetCommand(buffer) abort
     return printf('dafny %%s /compile:0 /timeLimit:%d', ale#Var(a:buffer, 'dafny_dafny_timelimit'))
 endfunction
 
-call ale#Set('dafny_dafny_timelimit', 10)
 call ale#linter#Define('dafny', {
 \    'name': 'dafny',
 \    'executable': 'dafny',

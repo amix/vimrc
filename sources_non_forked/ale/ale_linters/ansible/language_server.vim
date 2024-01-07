@@ -4,17 +4,17 @@
 call ale#Set('ansible_language_server_executable', 'ansible-language-server')
 call ale#Set('ansible_language_server_config', {})
 
-function! ale_linters#ansible#ansible_language_server#Executable(buffer) abort
+function! ale_linters#ansible#language_server#Executable(buffer) abort
     return ale#Var(a:buffer, 'ansible_language_server_executable')
 endfunction
 
-function! ale_linters#ansible#ansible_language_server#GetCommand(buffer) abort
-    let l:executable = ale_linters#ansible#ansible_language_server#Executable(a:buffer)
+function! ale_linters#ansible#language_server#GetCommand(buffer) abort
+    let l:executable = ale_linters#ansible#language_server#Executable(a:buffer)
 
     return ale#Escape(l:executable) . ' --stdio'
 endfunction
 
-function! ale_linters#ansible#ansible_language_server#FindProjectRoot(buffer) abort
+function! ale_linters#ansible#language_server#FindProjectRoot(buffer) abort
     let l:dir = fnamemodify(
     \   ale#path#FindNearestFile(a:buffer, 'ansible.cfg'),
     \   ':h'
@@ -37,10 +37,11 @@ function! ale_linters#ansible#ansible_language_server#FindProjectRoot(buffer) ab
 endfunction
 
 call ale#linter#Define('ansible', {
-\   'name': 'ansible-language-server',
+\   'name': 'language_server',
+\   'aliases': ['ansible_language_server', 'ansible-language-server'],
 \   'lsp': 'stdio',
-\   'executable': function('ale_linters#ansible#ansible_language_server#Executable'),
-\   'command': function('ale_linters#ansible#ansible_language_server#GetCommand'),
-\   'project_root': function('ale_linters#ansible#ansible_language_server#FindProjectRoot'),
+\   'executable': function('ale_linters#ansible#language_server#Executable'),
+\   'command': function('ale_linters#ansible#language_server#GetCommand'),
+\   'project_root': function('ale_linters#ansible#language_server#FindProjectRoot'),
 \   'lsp_config': {b -> ale#Var(b, 'ansible_language_server_config')}
 \})

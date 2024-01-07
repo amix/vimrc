@@ -65,6 +65,25 @@ function! s:Path.cacheDisplayString() abort
         let self.cachedDisplayString = self.addDelimiter(self.cachedDisplayString) . ' -> ' . self.symLinkDest
     endif
 
+    if !self.isDirectory && b:NERDTree.ui.getShowFileLines() != 0
+        let l:bufname = self.str({'format': 'Edit'})
+        let l:lines = 0
+        if executable('wc') 
+            let l:lines = split(system('wc -l "'.l:bufname.'"'))[0]
+        elseif nerdtree#runningWindows()
+            let l:lines = substitute(system('type "'.l:bufname.'" | find /c /v ""'), '\n', '', 'g')
+        else 
+            let s:lines = readfile(l:bufname)
+            let l:lines = 0
+            for s:line in s:lines
+                let l:lines += 1
+                if l:lines >= 20000 
+                    break
+                endif
+            endfor
+        endif
+        let self.cachedDisplayString = self.addDelimiter(self.cachedDisplayString) . ' ('.l:lines.')'
+    endif
     if self.isReadOnly
         let self.cachedDisplayString = self.addDelimiter(self.cachedDisplayString) . ' ['.g:NERDTreeGlyphReadOnly.']'
     endif
@@ -530,7 +549,7 @@ function! s:Path.isUnder(parent)
         return 0
     endif
     for i in range(0, l:that_count-1)
-        if self.pathSegments[i] !=# a:parent.pathSegments[i]
+        if !nerdtree#pathEquals(self.pathSegments[i], a:parent.pathSegments[i])
             return 0
         endif
     endfor
@@ -554,11 +573,7 @@ endfunction
 " Args:
 " path: the other path obj to compare this with
 function! s:Path.equals(path)
-    if nerdtree#runningWindows()
-        return self.str() ==? a:path.str()
-    else
-        return self.str() ==# a:path.str()
-    endif
+    return nerdtree#pathEquals(self.str(), a:path.str())
 endfunction
 
 " FUNCTION: Path.New(pathStr) {{{1

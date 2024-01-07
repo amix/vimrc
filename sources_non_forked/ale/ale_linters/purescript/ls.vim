@@ -41,6 +41,7 @@ endfunction
 
 call ale#linter#Define('purescript', {
 \   'name': 'purescript-language-server',
+\   'aliases': ['purescriptls'],
 \   'lsp': 'stdio',
 \   'executable': function('ale_linters#purescript#ls#GetExecutable'),
 \   'command': function('ale_linters#purescript#ls#GetCommand'),

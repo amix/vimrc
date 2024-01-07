@@ -14,41 +14,34 @@ Originally authored by [Michael Sanders][msanders], SnipMate was forked in 2011
 after a stagnation in development. This fork is currently maintained by [Rok
 Garbas][garbas], [Marc Weber][marcweber], and [Adnan Zafar][ajzafar].
 
-
 ## Installing SnipMate ##
 
-We recommend one of the following methods for installing SnipMate and its
-dependencies. SnipMate depends on [vim-addon-mw-utils][mw-utils] and
-[tlib][tlib].
+SnipMate can be installed using a package manager or using Vim's built-in
+package handling. It does depend on [vim-addon-mw-utils][mw-utils] and
+optionally [tlib][tlib]. For example, to use Vim's built-in support,
+
+    % mkdir -p ~/.vim/pack/SnipMate/start
+    % cd ~/.vim/pack/SnipMate/start
+    % git clone https://github.com/garbas/vim-snipmate.git
+    % git clone https://github.com/MarcWeber/vim-addon-mw-utils.git
+
+    # Optional:
+    % git clone https://github.com/tomtom/tlib_vim.git
+    % git clone https://github.com/honza/vim-snippets.git
 
 > **NOTE:** SnipMate does not ship with any snippets out of the box. We suggest
 looking at the [vim-snippets][vim-snippets] repository.
 
-* Using [VAM][vam], add `vim-snippets` to the list of packages to be installed.
+If tlib is enabled, it is used for multisnip (`:h SnipMate-multisnip`). It's
+also required for the `:SnipMateOpenSnippetFiles` command.
 
-* Using [Pathogen][pathogen], run the following commands:
-
-        % cd ~/.vim/bundle
-        % git clone https://github.com/tomtom/tlib_vim.git
-        % git clone https://github.com/MarcWeber/vim-addon-mw-utils.git
-        % git clone https://github.com/garbas/vim-snipmate.git
-
-        # Optional:
-        % git clone https://github.com/honza/vim-snippets.git
-
-* Using [Vundle][vundle], add the following to your `vimrc` then run
-  `:PluginInstall`
-
-        Plugin 'MarcWeber/vim-addon-mw-utils'
-        Plugin 'tomtom/tlib_vim'
-        Plugin 'garbas/vim-snipmate'
-
-        " Optional:
-        Plugin 'honza/vim-snippets'
+Remember to run `:helptags ALL` once your Vim has loaded SnipMate!
 
 ## Using SnipMate ##
-Press <tab> and try :SnipMateOpenSnippetFiles for starting.
-Also see doc/SnipMate.txt to learn all SnipMate
+
+Install and create some snippets (see `:h SnipMate-snippets`). Then type in the
+trigger for one in the correct filetype and hit the expansion key (by default
+bound to `<Tab>`).
 
 ## FAQ ##
 
@@ -115,6 +108,22 @@ new features to only exist for version 1 users. A full list of differences can
 be found in the docs at `:h SnipMate-parser-versions`.
 
 ## Release Notes ##
+
+Some changes listed here were contributed by non-maintainers. A full list can be
+found at [Contributors.md](Contributors.md).
+
+### Current ###
+
+- Make tlib an optional dependency.
+- Add SnipLookupPre and SnipLookupPost autocommand events
+- Make version 1 of the snippet parser the default with no message
+
+### 0.90 - 2023-12-29 ###
+
+- Remove empty lines at the end of a `${VISUAL}` expansion
+- Fix code for opening folds when expanding a snippet
+- Deprecate legacy snippet parser
+- Fix jumps when `&sel == 'exclusive'`
 
 ### 0.89 - 2016-05-29 ###
 

@@ -67,6 +67,7 @@ Notes:
   * `ccls`
   * `clang` (`cc`)
   * `clang-format`
+  * `clangcheck`!!
   * `clangd`
   * `clangtidy`!!
   * `cppcheck`
@@ -101,6 +102,7 @@ Notes:
   * `gcc` (`cc`)
   * `uncrustify`
 * Cairo
+  * `scarb`!!
   * `starknet`
 * Chef
   * `cookstyle`
@@ -168,6 +170,7 @@ Notes:
   * `dialyxir`
   * `dogma`!!
   * `elixir-ls`
+  * `lexical`
   * `mix`!!
 * Elm
   * `elm-format`
@@ -380,6 +383,8 @@ Notes:
   * `mmc`!!
 * NASM
   * `nasm`!!
+* Nickel
+  * `nickel_format`
 * Nim
   * `nim check`!!
   * `nimlsp`
@@ -504,6 +509,7 @@ Notes:
   * `refurb`
   * `reorder-python-imports`
   * ruff
+  * ruff-format
   * `unimport`
   * `vulture`!!
   * `yapf`
@@ -546,6 +552,7 @@ Notes:
   * `brakeman`!!
   * `cspell`
   * `debride`
+  * `packwerk`!!
   * `prettier`
   * `rails_best_practices`!!
   * `reek`
@@ -586,6 +593,7 @@ Notes:
 * SML
   * `smlnj`
 * Solidity
+  * `forge`
   * `solc`
   * `solhint`
   * `solium`

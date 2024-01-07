@@ -32,7 +32,7 @@ function! ale#fix#ApplyQueuedFixes(buffer) abort
                 endif
             endif
         endif
-    catch /E21/
+    catch /E21\|E5555/
         " If we cannot modify the buffer now, try again later.
         let g:ale_fix_buffer_data[a:buffer] = l:data
 

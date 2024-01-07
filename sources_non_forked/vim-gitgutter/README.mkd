@@ -18,6 +18,7 @@ Features:
 * Stage partial hunks.
 * Provides a hunk text object.
 * Diffs against index (default) or any commit.
+* Handles file moves / renames.
 * Heeds git's "assume unchanged" bit.
 * Allows folding all unchanged text.
 * Provides fold text showing whether folded lines have been changed.
@@ -29,6 +30,7 @@ Features:
 * Fully customisable (signs, sign column, line (number) highlights, mappings, extra git-diff arguments, etc).
 * Can be toggled on/off, globally or per buffer.
 * Preserves signs from other plugins.
+* Does the right thing when viewing revisions with [fugitive](https://github.com/tpope/vim-fugitive)'s `:0Gclog`.
 * Easy to integrate diff stats into status line; built-in integration with [vim-airline](https://github.com/bling/vim-airline/).
 * Works with fish shell (in addition to the usual shells).
 

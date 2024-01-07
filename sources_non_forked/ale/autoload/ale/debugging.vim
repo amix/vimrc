@@ -1,6 +1,8 @@
 " Author: w0rp <devw0rp@gmail.com>
 " Description: This file implements debugging information for ALE
 
+let g:ale_info_default_mode = get(g:, 'ale_info_default_mode', 'preview')
+
 let s:global_variable_list = [
 \    'ale_cache_executable_check_failures',
 \    'ale_change_sign_column_color',
@@ -18,6 +20,7 @@ let s:global_variable_list = [
 \    'ale_fix_on_save',
 \    'ale_fixers',
 \    'ale_history_enabled',
+\    'ale_info_default_mode',
 \    'ale_history_log_output',
 \    'ale_keep_list_window_open',
 \    'ale_lint_delay',
@@ -53,7 +56,6 @@ let s:global_variable_list = [
 \    'ale_sign_style_warning',
 \    'ale_sign_warning',
 \    'ale_sign_highlight_linenrs',
-\    'ale_statusline_format',
 \    'ale_type_map',
 \    'ale_use_neovim_diagnostics_api',
 \    'ale_use_global_executables',
@@ -199,11 +201,42 @@ function! s:EchoLSPErrorMessages(all_linter_names) abort
     endfor
 endfunction
 
-function! ale#debugging#Info() abort
+function! s:GetIgnoredLinters(buffer, enabled_linters) abort
+    let l:filetype = &filetype
+    let l:ignore_config = ale#Var(a:buffer, 'linters_ignore')
+    let l:disable_lsp = ale#Var(a:buffer, 'disable_lsp')
+
+    if (
+    \   !empty(l:ignore_config)
+    \   || l:disable_lsp is 1
+    \   || l:disable_lsp is v:true
+    \   || (l:disable_lsp is# 'auto' && get(g:, 'lspconfig', 0))
+    \)
+        let l:non_ignored = ale#engine#ignore#Exclude(
+        \   l:filetype,
+        \   a:enabled_linters,
+        \   l:ignore_config,
+        \   l:disable_lsp,
+        \)
+    else
+        let l:non_ignored = copy(a:enabled_linters)
+    endif
+
+    call map(l:non_ignored, 'v:val.name')
+
+    return filter(
+    \   copy(a:enabled_linters),
+    \   'index(l:non_ignored, v:val.name) < 0'
+    \)
+endfunction
+
+function! ale#debugging#Info(...) abort
+    let l:options = (a:0 > 0) ? a:1 : {}
+    let l:show_preview_info = get(l:options, 'preview')
+
     let l:buffer = bufnr('')
     let l:filetype = &filetype
 
-    " We get the list of enabled linters for free by the above function.
     let l:enabled_linters = deepcopy(ale#linter#Get(l:filetype))
 
     " But have to build the list of available linters ourselves.
@@ -227,13 +260,10 @@ function! ale#debugging#Info() abort
     let l:fixers = uniq(sort(l:fixers[0] + l:fixers[1]))
     let l:fixers_string = join(map(copy(l:fixers), '"\n  " . v:val'), '')
 
-    let l:non_ignored_names = map(
-    \   copy(ale#linter#RemoveIgnored(l:buffer, l:filetype, l:enabled_linters)),
-    \   'v:val[''name'']',
-    \)
-    let l:ignored_names = filter(
-    \   copy(l:enabled_names),
-    \   'index(l:non_ignored_names, v:val) < 0'
+    " Get the names of ignored linters.
+    let l:ignored_names = map(
+    \   s:GetIgnoredLinters(l:buffer, l:enabled_linters),
+    \   'v:val.name'
     \)
 
     call s:Echo(' Current Filetype: ' . l:filetype)
@@ -241,13 +271,31 @@ function! ale#debugging#Info() abort
     call s:EchoLinterAliases(l:all_linters)
     call s:Echo('  Enabled Linters: ' . string(l:enabled_names))
     call s:Echo('  Ignored Linters: ' . string(l:ignored_names))
-    call s:Echo(' Suggested Fixers: ' . l:fixers_string)
-    call s:Echo(' Linter Variables:')
-    call s:Echo('')
-    call s:EchoLinterVariables(l:variable_list)
+    call s:Echo(' Suggested Fixers:' . l:fixers_string)
+    " We use this line with only a space to know where to end highlights.
+    call s:Echo(' ')
+
+    " Only show Linter Variables directive if there are any.
+    if !empty(l:variable_list)
+        call s:Echo(' Linter Variables:')
+
+        if l:show_preview_info
+            call s:Echo('" Press Space to read :help for a setting')
+        endif
+
+        call s:EchoLinterVariables(l:variable_list)
+        " We use this line with only a space to know where to end highlights.
+        call s:Echo(' ')
+    endif
+
     call s:Echo(' Global Variables:')
-    call s:Echo('')
+
+    if l:show_preview_info
+        call s:Echo('" Press Space to read :help for a setting')
+    endif
+
     call s:EchoGlobalVariables()
+    call s:Echo(' ')
     call s:EchoLSPErrorMessages(l:all_names)
     call s:Echo('  Command History:')
     call s:Echo('')
@@ -274,4 +322,42 @@ function! ale#debugging#InfoToFile(filename) abort
 
     call writefile(split(l:output, "\n"), l:expanded_filename)
     call s:Echo('ALEInfo written to ' . l:expanded_filename)
+endfunction
+
+function! ale#debugging#InfoToPreview() abort
+    let l:output = execute('call ale#debugging#Info({''preview'': 1})')
+
+    call ale#preview#Show(split(l:output, "\n"), {
+    \   'filetype': 'ale-info',
+    \})
+endfunction
+
+function! ale#debugging#InfoCommand(...) abort
+    if len(a:000) > 1
+        " no-custom-checks
+        echom 'Invalid ALEInfo arguments!'
+
+        return
+    endif
+
+    " Get 'echo' from '-echo', if there's an argument.
+    let l:mode = get(a:000, '')[1:]
+
+    if empty(l:mode)
+        let l:mode = ale#Var(bufnr(''), 'info_default_mode')
+    endif
+
+    if l:mode is# 'echo'
+        call ale#debugging#Info()
+    elseif l:mode is# 'clip' || l:mode is# 'clipboard'
+        call ale#debugging#InfoToClipboard()
+    else
+        call ale#debugging#InfoToPreview()
+    endif
+endfunction
+
+function! ale#debugging#InfoToClipboardDeprecatedCommand() abort
+    " no-custom-checks
+    echom 'ALEInfoToClipboard is deprecated. Use ALEInfo -clipboard instead.'
+    call ale#debugging#InfoToClipboard()
 endfunction

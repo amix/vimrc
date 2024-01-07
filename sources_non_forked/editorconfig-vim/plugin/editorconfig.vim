@@ -101,14 +101,14 @@ function! s:DisableShellSlash(bufnr) " {{{2
     let l:shell = getbufvar(a:bufnr, '&shell')
     if has('win32') && empty(matchstr(l:shell, 'sh'))
         let s:old_shellslash = getbufvar(a:bufnr, '&shellslash')
-        setbufvar(a:bufnr, '&shellslash', 0)
+        call setbufvar(a:bufnr, '&shellslash', 0)
     endif
 endfunction " }}}2
 
 function! s:ResetShellSlash(bufnr) " {{{2
     " reset shellslash to the user-set value, if any
     if exists('s:old_shellslash')
-        setbufvar(a:bufnr, '&shellslash', s:old_shellslash)
+        call setbufvar(a:bufnr, '&shellslash', s:old_shellslash)
         unlet! s:old_shellslash
     endif
 endfunction " }}}2
@@ -454,7 +454,8 @@ function! s:ApplyConfig(bufnr, config) abort
         endif
     endif
 
-    if s:IsRuleActive('tab_width', a:config)
+    " Set tabstop.  Skip this for terminal buffers, e.g., :FZF (#224).
+    if s:IsRuleActive('tab_width', a:config) && bufname(a:bufnr) !~# '^!\w*sh$'
         let l:tabstop = str2nr(a:config["tab_width"])
         call setbufvar(a:bufnr, '&tabstop', l:tabstop)
     else

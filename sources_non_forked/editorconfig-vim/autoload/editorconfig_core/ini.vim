@@ -190,7 +190,7 @@ function! s:parse(config_filename, target_filename, lines)
     endif
 
     return {'root': l:is_root, 'options': l:options}
-endfunction!
+endfunction
 
 " }}}1
 " === Helpers =========================================================== {{{1

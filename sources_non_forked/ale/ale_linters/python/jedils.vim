@@ -30,6 +30,7 @@ endfunction
 
 call ale#linter#Define('python', {
 \   'name': 'jedils',
+\   'aliases': ['jedi_language_server'],
 \   'lsp': 'stdio',
 \   'executable': function('ale_linters#python#jedils#GetExecutable'),
 \   'command': function('ale_linters#python#jedils#GetCommand'),

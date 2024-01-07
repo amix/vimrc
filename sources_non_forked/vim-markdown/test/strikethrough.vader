@@ -1,0 +1,41 @@
+Before:
+  let g:vim_markdown_strikethrough = 1
+  syn off | syn on
+
+After:
+  unlet! g:vim_markdown_strikethrough
+
+Given markdown;
+a ~~b~~ c
+
+Execute (strikethrough):
+  AssertNotEqual SyntaxOf('a'), 'mkdStrike'
+  AssertEqual SyntaxOf('b'), 'mkdStrike'
+  AssertNotEqual SyntaxOf('c'), 'mkdStrike'
+
+Given markdown;
+# ~~h1~~
+## ~~h2~~
+### ~~h3~~
+#### ~~h4~~
+##### ~~h5~~
+###### ~~h6~~
+
+Execute (strikethrough in atx headings):
+  AssertEqual SyntaxOf('h1'), 'mkdStrike'
+  AssertEqual SyntaxOf('h2'), 'mkdStrike'
+  AssertEqual SyntaxOf('h3'), 'mkdStrike'
+  AssertEqual SyntaxOf('h4'), 'mkdStrike'
+  AssertEqual SyntaxOf('h5'), 'mkdStrike'
+  AssertEqual SyntaxOf('h6'), 'mkdStrike'
+
+Given markdown;
+~~h1~~
+=
+
+~~h2~~
+-
+
+Execute (strikethrough in setext headings):
+  AssertEqual SyntaxOf('h1'), 'mkdStrike'
+  AssertEqual SyntaxOf('h2'), 'mkdStrike'

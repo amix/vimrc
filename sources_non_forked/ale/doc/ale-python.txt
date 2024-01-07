@@ -1323,6 +1323,70 @@ g:ale_python_ruff_auto_poetry                   *g:ale_python_ruff_auto_poetry*
 
 
 ===============================================================================
+ruff-format                                            *ale-python-ruff-format*
+
+g:ale_python_ruff_format_change_directory
+                                    *g:ale_python_ruff_format_change_directory*
+                                    *b:ale_python_ruff_format_change_directory*
+  Type: |Number|
+  Default: `1`
+
+  If set to `1`, `ruff` will be run from a detected project root, per
+  |ale-python-root|. if set to `0` or no project root detected,
+  `ruff` will be run from the buffer's directory.
+
+
+g:ale_python_ruff_format_executable       *g:ale_python_ruff_format_executable*
+                                          *b:ale_python_ruff_format_executable*
+  Type: |String|
+  Default: `'ruff'`
+
+  See |ale-integrations-local-executables|
+
+  Set this to `'pipenv'` to invoke `'pipenv` `run` `ruff'`.
+  Set this to `'poetry'` to invoke `'poetry` `run` `ruff'`.
+
+
+g:ale_python_ruff_format_options             *g:ale_python_ruff_format_options*
+                                             *b:ale_python_ruff_format_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to add command-line arguments to the ruff
+  invocation.
+
+  For example, to select/enable and/or disable some error codes,
+  you may want to set >
+  let g:ale_python_ruff_format_options = '--ignore F401'
+
+
+g:ale_python_ruff_format_use_global       *g:ale_python_ruff_format_use_global*
+                                          *b:ale_python_ruff_format_use_global*
+  Type: |Number|
+  Default: `get(g:, 'ale_use_global_executables', 0)`
+
+  See |ale-integrations-local-executables|
+
+
+g:ale_python_ruff_format_auto_pipenv     *g:ale_python_ruff_format_auto_pipenv*
+                                         *b:ale_python_ruff_format_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_ruff_format_auto_poetry     *g:ale_python_ruff_format_auto_poetry*
+                                         *b:ale_python_ruff_format_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+===============================================================================
 unimport                                                  *ale-python-unimport*
 
 `unimport` will be run from a detected project root, per |ale-python-root|.

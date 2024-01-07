@@ -1302,3 +1302,227 @@ Execute (HTML tag in text):
   AssertEqual SyntaxOf('span'), 'htmlTagName'
   AssertEqual SyntaxOf('<span>'), 'htmlTag'
   AssertEqual SyntaxOf('</span>'), 'htmlEndTag'
+
+Given markdown;
+# _h1_
+
+## _h2_
+
+### _h3_
+
+#### _h4_
+
+##### _h5_
+
+###### _h6_
+
+Execute (underscore italic text in atx headings):
+  AssertEqual SyntaxOf('h1'), 'htmlItalic'
+  AssertEqual SyntaxOf('h2'), 'htmlItalic'
+  AssertEqual SyntaxOf('h3'), 'htmlItalic'
+  AssertEqual SyntaxOf('h4'), 'htmlItalic'
+  AssertEqual SyntaxOf('h5'), 'htmlItalic'
+  AssertEqual SyntaxOf('h6'), 'htmlItalic'
+
+Given markdown;
+# *h1*
+
+## *h2*
+
+### *h3*
+
+#### *h4*
+
+##### *h5*
+
+###### *h6*
+
+Execute (asterisk italic text in atx headings):
+  AssertEqual SyntaxOf('h1'), 'htmlItalic'
+  AssertEqual SyntaxOf('h2'), 'htmlItalic'
+  AssertEqual SyntaxOf('h3'), 'htmlItalic'
+  AssertEqual SyntaxOf('h4'), 'htmlItalic'
+  AssertEqual SyntaxOf('h5'), 'htmlItalic'
+  AssertEqual SyntaxOf('h6'), 'htmlItalic'
+
+Given markdown;
+_h1_
+=
+
+_h2_
+-
+
+Execute (underscore italic text in setext headings):
+  AssertEqual SyntaxOf('h1'), 'htmlItalic'
+  AssertEqual SyntaxOf('h2'), 'htmlItalic'
+
+Given markdown;
+*h1*
+=
+
+*h2*
+-
+
+Execute (asterisk italic text in setext headings):
+  AssertEqual SyntaxOf('h1'), 'htmlItalic'
+  AssertEqual SyntaxOf('h2'), 'htmlItalic'
+
+Given markdown;
+# __h1__
+
+## __h2__
+
+### __h3__
+
+#### __h4__
+
+##### __h5__
+
+###### __h6__
+
+Execute (underscore bold text in atx headings):
+  AssertEqual SyntaxOf('h1'), 'htmlBold'
+  AssertEqual SyntaxOf('h2'), 'htmlBold'
+  AssertEqual SyntaxOf('h3'), 'htmlBold'
+  AssertEqual SyntaxOf('h4'), 'htmlBold'
+  AssertEqual SyntaxOf('h5'), 'htmlBold'
+  AssertEqual SyntaxOf('h6'), 'htmlBold'
+
+Given markdown;
+# **h1**
+
+## **h2**
+
+### **h3**
+
+#### **h4**
+
+##### **h5**
+
+###### **h6**
+
+Execute (asterisk bold text in atx headings):
+  AssertEqual SyntaxOf('h1'), 'htmlBold'
+  AssertEqual SyntaxOf('h2'), 'htmlBold'
+  AssertEqual SyntaxOf('h3'), 'htmlBold'
+  AssertEqual SyntaxOf('h4'), 'htmlBold'
+  AssertEqual SyntaxOf('h5'), 'htmlBold'
+  AssertEqual SyntaxOf('h6'), 'htmlBold'
+
+Given markdown;
+__h1__
+=
+
+__h2__
+-
+
+Execute (underscore bold text in setext headings):
+  AssertEqual SyntaxOf('h1'), 'htmlBold'
+  AssertEqual SyntaxOf('h2'), 'htmlBold'
+
+Given markdown;
+**h1**
+=
+
+**h2**
+-
+
+Execute (asterisk bold text in setext headings):
+  AssertEqual SyntaxOf('h1'), 'htmlBold'
+  AssertEqual SyntaxOf('h2'), 'htmlBold'
+
+Given markdown;
+# ___h1___
+
+## ___h2___
+
+### ___h3___
+
+#### ___h4___
+
+##### ___h5___
+
+###### ___h6___
+
+Execute (underscore bold italic text in atx headings):
+  AssertEqual SyntaxOf('h1'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h2'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h3'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h4'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h5'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h6'), 'htmlBoldItalic'
+
+Given markdown;
+# ***h1***
+
+## ***h2***
+
+### ***h3***
+
+#### ***h4***
+
+##### ***h5***
+
+###### ***h6***
+
+Execute (asterisk bold italic text in atx headings):
+  AssertEqual SyntaxOf('h1'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h2'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h3'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h4'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h5'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h6'), 'htmlBoldItalic'
+
+Given markdown;
+___h1___
+=
+
+___h2___
+-
+
+Execute (underscore bold italic text in setext headings):
+  AssertEqual SyntaxOf('h1'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h2'), 'htmlBoldItalic'
+
+Given markdown;
+***h1***
+=
+
+***h2***
+-
+
+Execute (asterisk bold italic text in setext headings):
+  AssertEqual SyntaxOf('h1'), 'htmlBoldItalic'
+  AssertEqual SyntaxOf('h2'), 'htmlBoldItalic'
+
+Given markdown;
+# [^h1]
+
+## [^h2]
+
+### [^h3]
+
+#### [^h4]
+
+##### [^h5]
+
+###### [^h6]
+
+Execute (footnotes in atx headings):
+  AssertEqual SyntaxOf('h1'), 'mkdFootnotes'
+  AssertEqual SyntaxOf('h2'), 'mkdFootnotes'
+  AssertEqual SyntaxOf('h3'), 'mkdFootnotes'
+  AssertEqual SyntaxOf('h4'), 'mkdFootnotes'
+  AssertEqual SyntaxOf('h5'), 'mkdFootnotes'
+  AssertEqual SyntaxOf('h6'), 'mkdFootnotes'
+
+Given markdown;
+[^h1]
+=
+
+[^h2]
+-
+
+Execute (footnotes in setext headings):
+  AssertEqual SyntaxOf('h1'), 'mkdFootnotes'
+  AssertEqual SyntaxOf('h2'), 'mkdFootnotes'

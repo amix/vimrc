@@ -195,9 +195,19 @@ snippet par \paragraph
 	\\paragraph{${1:paragraph name}}%
 	\\label{par:${2:$1}}
 	${0}
+# Paragraph*
+snippet par* \paragraph*
+	\\paragraph*{${1:paragraph name}}%
+	\\label{par:${2:$1}}
+	${0}
 # Sub Paragraph
 snippet subp \subparagraph
 	\\subparagraph{${1:subparagraph name}}%
+	\\label{subp:${2:$1}}
+	${0}
+# Sub Paragraph*
+snippet subp* \subparagraph*
+	\\subparagraph*{${1:subparagraph name}}%
 	\\label{subp:${2:$1}}
 	${0}
 snippet ni \noindent

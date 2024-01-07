@@ -46,22 +46,26 @@ function! ale_linters#python#ruff#GetCommand(buffer, version) abort
     \   : ''
 
     " NOTE: ruff version `0.0.69` supports liniting input from stdin
-    return ale#Escape(l:executable) . l:exec_args
+    " NOTE: ruff version `0.1.0` deprecates `--format text`
+    return ale#Escape(l:executable) . l:exec_args . ' -q'
     \   . ale#Pad(ale#Var(a:buffer, 'python_ruff_options'))
-    \   . ' --format text'
-    \   .  (ale#semver#GTE(a:version, [0, 0, 69]) ? ' --stdin-filename %s -' : ' %s')
+    \   . (ale#semver#GTE(a:version, [0, 1, 0]) ? ' --output-format json-lines' : ' --format json-lines')
+    \   . (ale#semver#GTE(a:version, [0, 0, 69]) ? ' --stdin-filename %s -' : ' %s')
 endfunction
 
 function! ale_linters#python#ruff#Handle(buffer, lines) abort
-    "Example: path/to/file.py:10:5: E999 SyntaxError: unexpected indent
-    let l:pattern = '\v^[a-zA-Z]?:?[^:]+:(\d+):(\d+)?:? (.+)$'
     let l:output = []
 
-    for l:match in ale#util#GetMatches(a:lines, l:pattern)
+    for l:line in a:lines
+        let l:item = json_decode(l:line)
         call add(l:output, {
-        \   'lnum': l:match[1] + 0,
-        \   'col': l:match[2] + 0,
-        \   'text': l:match[3],
+        \   'lnum': l:item.location.row,
+        \   'col': l:item.location.column,
+        \   'end_lnum': l:item.end_location.row,
+        \   'end_col': l:item.end_location.column - 1,
+        \   'code': l:item.code,
+        \   'text': l:item.message,
+        \   'type': l:item.code =~? '\vE\d+' ? 'E' : 'W',
         \})
     endfor
 

@@ -16,12 +16,7 @@ function! ale_linters#handlebars#embertemplatelint#GetCommand(buffer, version) a
         return '%e --format=json --filename %s'
     endif
 
-    if ale#semver#GTE(a:version, [1, 6, 0])
-        " Reading from stdin was introduced in ember-template-lint@1.6.0
-        return '%e --json --filename %s'
-    endif
-
-    return '%e --json %t'
+    return '%e --json --filename %s'
 endfunction
 
 function! ale_linters#handlebars#embertemplatelint#GetCommandWithVersionCheck(buffer) abort

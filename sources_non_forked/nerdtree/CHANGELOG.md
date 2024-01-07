@@ -3,7 +3,37 @@
      PATCH versions are listed from newest to oldest under their respective MAJOR.MINOR
      version in an unordered list.  The format is:
         - **.PATCH**: Pull Request Title (PR Author) [PR Number](Link to PR)
+            or
+        - **.PATCH**:
+            - Pull Request Title 1 (PR Author) [PR Number](Link to PR)
+            - Pull Request Title 2 (PR Author) [PR Number](Link to PR)
+                .
+                .
+                .
+            - Pull Request Title n (PR Author) [PR Number](Link to PR)
 -->
+#### 7.1
+- **.0**:
+    - fix: typo in the docs. (bl4kraven) [#1390](https://github.com/preservim/nerdtree/pull/1390)
+    - feat: add NERDTreeExplore command. (msibal6) [#1389](https://github.com/preservim/nerdtree/pull/1389)
+    - fix: mapping description in NERDTree.txt. (roccomao) [#1393](https://github.com/preservim/nerdtree/pull/1393)
+#### 7.0
+- **.1**:
+    - Fix NERDTreeFind to handle directory case sensitivity. (dangibson) [#1387](https://github.com/preservim/nerdtree/pull/1387)
+    - New Show file lines toggle. (hsnks100) [#1384](https://github.com/preservim/nerdtree/pull/1384)
+    - Add case sensitivity for refreshing nodes. (rzvxa) [#1382](https://github.com/preservim/nerdtree/pull/1382)
+    - Clarified the NERDTreeChangePermissions prompt. (rzvxa) [#1381](https://github.com/preservim/nerdtree/pull/1381)
+    - New reveal functionality for Windows. (rzvxa) [#1366](https://github.com/preservim/nerdtree/pull/1366)
+    - Fix bracket escaping in path names. (kai-patel) [#1359](https://github.com/preservim/nerdtree/pull/1359)
+    - Fix Case Sensitive Move Operation. (rzvxa) [#1375](https://github.com/preservim/nerdtree/pull/1375)
+    - New menu command for changing selected node permissions. (mjkloeckner) [#1348](https://github.com/preservim/nerdtree/pull/1348)
+    - Fix documentation errors. (BubuDavid) [#1372](https://github.com/preservim/nerdtree/pull/1372)
+    - Fix typo in nerdtree.vim file. (SandeshPyakurel) [#1380](https://github.com/preservim/nerdtree/pull/1380)
+- **.0**:
+    - Now we warn about invalid files instead of ignoring them silently. (rmonico) [#1365](https://github.com/preservim/nerdtree/pull/1365)
+    - New g:NERDTreeWinPos options for top and bottom. (rzvxa) [#1363](https://github.com/preservim/nerdtree/pull/1363)
+    - Fix error in README. (nickspoons) [#1330](https://github.com/preservim/nerdtree/pull/1330)
+    - Fix typo in the documentation. (chapeupreto) [#1306](https://github.com/preservim/nerdtree/pull/1306)
 #### 6.10
 - **.16**: Fix documentation errors. (lifecrisis) [#1269](https://github.com/preservim/nerdtree/pull/1269)
 - **.15**: Ensure backward compatible testing of types. (lifecrisis) [#1266](https://github.com/preservim/nerdtree/pull/1266)

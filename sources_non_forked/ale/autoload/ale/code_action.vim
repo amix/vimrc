@@ -339,17 +339,7 @@ function! ale#code_action#GetCodeActions(options) abort
     silent! aunmenu PopUp.Refactor\.\.\.
 
     " Only display the menu items if there's an LSP server.
-    let l:has_lsp = 0
-
-    for l:linter in ale#linter#Get(&filetype)
-        if !empty(l:linter.lsp)
-            let l:has_lsp = 1
-
-            break
-        endif
-    endfor
-
-    if l:has_lsp
+    if len(ale#lsp_linter#GetEnabled(bufnr(''))) > 0
         if !empty(expand('<cword>'))
             silent! anoremenu <silent> PopUp.Rename :ALERename<CR>
         endif

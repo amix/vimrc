@@ -6,7 +6,7 @@ import vim
 # Set g:ultisnips_php_scalar_types to 1 if you'd like to enable PHP 7's scalar types for return values
 def isPHPScalarTypesEnabled():
 	isEnabled = vim.eval("get(g:, 'ultisnips_php_scalar_types', 0)") == "1"
-	return isEnabled or re.match('<\?php\s+declare\(strict_types=[01]\);', '\n'.join(vim.current.window.buffer))
+	return isEnabled or re.match(r'<\?php\s+declare\(strict_types=[01]\);', '\n'.join(vim.current.window.buffer))
 endglobal
 
 ## Snippets from SnipMate, taken from

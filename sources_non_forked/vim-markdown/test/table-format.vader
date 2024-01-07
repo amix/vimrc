@@ -68,3 +68,18 @@ Expect (preserve colons to align text):
     | left | right | center |   |
     |:-----|------:|:------:|:--|
     | left | right | center |   |
+
+Given markdown (borderless table);
+   left |right|  center 
+   :- | --: |:---:
+   left |right|  center  
+
+Execute (format borderless table):
+  let g:vim_markdown_borderless_table = 1
+  TableFormat
+  unlet g:vim_markdown_borderless_table
+
+Expect (table with borders):
+     | left | right | center |
+     |:-----|------:|:------:|
+     | left | right | center |

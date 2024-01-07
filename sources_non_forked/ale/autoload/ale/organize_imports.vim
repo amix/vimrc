@@ -19,7 +19,7 @@ function! ale#organize_imports#HandleTSServerResponse(conn_id, response) abort
     \   },
     \   {
     \       'conn_id': a:conn_id,
-    \       'should_save': !&hidden,
+    \       'should_save': g:ale_save_hidden || !&hidden,
     \   },
     \)
 endfunction
@@ -57,9 +57,7 @@ function! s:OrganizeImports(linter) abort
 endfunction
 
 function! ale#organize_imports#Execute() abort
-    for l:linter in ale#linter#Get(&filetype)
-        if !empty(l:linter.lsp)
-            call s:OrganizeImports(l:linter)
-        endif
+    for l:linter in ale#lsp_linter#GetEnabled(bufnr(''))
+        call s:OrganizeImports(l:linter)
     endfor
 endfunction

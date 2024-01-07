@@ -21,11 +21,11 @@ function! s:OpenJDTLink(root, uri, line, column, options, result) abort
     call ale#util#Open(a:uri, a:line, a:column, a:options)
     autocmd AleURISchemes BufNewFile,BufReadPre jdt://** call ale#uri#jdt#ReadJDTLink(expand('<amatch>'))
 
-    if !empty(getbufvar(bufnr(''), 'ale_lsp_root', ''))
+    if !empty(getbufvar(bufnr(''), 'ale_root', ''))
         return
     endif
 
-    let b:ale_lsp_root = a:root
+    let b:ale_root = a:root
     set filetype=java
 
     call setline(1, split(l:contents, '\n'))
@@ -39,6 +39,8 @@ endfunction
 function! ale#uri#jdt#OpenJDTLink(encoded_uri, line, column, options, conn_id) abort
     let l:found_eclipselsp = v:false
 
+    " We should only arrive here from a 'go to definition' request, so we'll
+    " assume the eclipselsp linter is enabled.
     for l:linter in ale#linter#Get('java')
         if l:linter.name is# 'eclipselsp'
             let l:found_eclipselsp = v:true
@@ -81,14 +83,14 @@ endfunction
 
 " Read jdt:// contents, as part of current project, into current buffer.
 function! ale#uri#jdt#ReadJDTLink(encoded_uri) abort
-    if !empty(getbufvar(bufnr(''), 'ale_lsp_root', ''))
+    if !empty(getbufvar(bufnr(''), 'ale_root', ''))
         return
     endif
 
     let l:linter_map = ale#lsp_linter#GetLSPLinterMap()
 
-    for l:conn_id in keys(l:linter_map)
-        if l:linter_map[l:conn_id] is# 'eclipselsp'
+    for [l:conn_id, l:linter] in items(l:linter_map)
+        if l:linter.name is# 'eclipselsp'
             let l:root = l:conn_id[stridx(l:conn_id, ':')+1:]
         endif
     endfor
@@ -98,7 +100,7 @@ function! ale#uri#jdt#ReadJDTLink(encoded_uri) abort
     endif
 
     let l:uri = a:encoded_uri
-    let b:ale_lsp_root = l:root
+    let b:ale_root = l:root
     set filetype=java
 
     call ale#lsp_linter#SendRequest(

@@ -1,9 +1,3 @@
-![Help Wanted](http://blog.ncce.org/wp-content/uploads/2013/12/help-wanted.jpg)
-
-**NERDTree** is on the lookout for a new maintainer. See [issue #1280](https://github.com/preservim/nerdtree/issues/1280) to submit your name for consideration.
-
----
-
 # The NERDTree [![Vint](https://github.com/preservim/nerdtree/workflows/Vint/badge.svg)](https://github.com/preservim/nerdtree/actions?workflow=Vint)
 
 ## Introduction
@@ -170,7 +164,7 @@ autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTa
 
 ```vim
 " If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
-autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+autocmd BufEnter * if winnr() == winnr('h') && bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
     \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 ```
 
@@ -178,7 +172,7 @@ autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_
 
 ```vim
 " Open the existing NERDTree on each new tab.
-autocmd BufWinEnter * if getcmdwintype() == '' | silent NERDTreeMirror | endif
+autocmd BufWinEnter * if &buftype != 'quickfix' && getcmdwintype() == '' | silent NERDTreeMirror | endif
 ```
 or change your NERDTree-launching shortcut key like so:
 ```vim
@@ -193,6 +187,28 @@ let g:NERDTreeDirArrowExpandable = '?'
 let g:NERDTreeDirArrowCollapsible = '?'
 ```
 The preceding values are the non-Windows default arrow symbols. Setting these variables to empty strings will remove the arrows completely and shift the entire tree two character positions to the left. See `:h NERDTreeDirArrowExpandable` for more details.
+
+### How can I show lines of files?
+
+```vim
+let g:NERDTreeFileLines = 1
+```
+
+Lines in the file are displayed as shown below.
+```
+</pack/packer/start/nerdtree/
+▸ autoload/
+▸ doc/
+▸ lib/
+▸ nerdtree_plugin/
+▸ plugin/
+▸ syntax/
+  _config.yml (1)
+  CHANGELOG.md (307)
+  LICENCE (13)
+  README.markdown (234)
+  screenshot.png (219)
+```
 
 ### Can NERDTree access remote files via scp or ftp?
 

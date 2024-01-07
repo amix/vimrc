@@ -5,6 +5,7 @@ call ale#Set('sourcekit_lsp_executable', 'sourcekit-lsp')
 
 call ale#linter#Define('swift', {
 \   'name': 'sourcekitlsp',
+\   'aliases': ['sourcekit'],
 \   'lsp': 'stdio',
 \   'executable': {b -> ale#Var(b, 'sourcekit_lsp_executable')},
 \   'command': '%e',

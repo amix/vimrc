@@ -349,6 +349,27 @@ The following options control which syntax extensions will be turned on. They ar
 
         let g:vim_markdown_edit_url_in = 'tab'
 
+### Borderless tables
+
+-   `g:vim_markdown_borderless_table`
+
+    Add support for borderless tables, such as:
+    ```
+    header 1|header 2
+    --|--
+    data 1|data 2
+    ```
+    if set to `1`:
+
+        let g:vim_markdown_borderless_table = 1
+
+    the table would be formatted as usual:
+    ```
+    | header 1 | header 2 |
+    |----------|----------|
+    | data 1   | data 2   |
+    ```
+
 ## Mappings
 
 The following work on normal and visual modes:

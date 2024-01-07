@@ -16,8 +16,9 @@ function! ale_linters#haskell#hls#FindRootFile(buffer) abort
 
     for l:path in ale#path#Upwards(expand('#' . a:buffer . ':p:h'))
         for l:root_file in l:serach_root_files
-            if filereadable(l:path . l:root_file)
-                return l:path
+            if filereadable(l:path . '/' . l:root_file)
+                " Add on / so fnamemodify(..., ':h') below keeps the path.
+                return l:path . '/'
             endif
         endfor
     endfor

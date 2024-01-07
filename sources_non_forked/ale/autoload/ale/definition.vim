@@ -168,26 +168,20 @@ function! s:GoToLSPDefinition(linter, options, capability) abort
 endfunction
 
 function! ale#definition#GoTo(options) abort
-    for l:linter in ale#linter#Get(&filetype)
-        if !empty(l:linter.lsp)
-            call s:GoToLSPDefinition(l:linter, a:options, 'definition')
-        endif
+    for l:linter in ale#lsp_linter#GetEnabled(bufnr(''))
+        call s:GoToLSPDefinition(l:linter, a:options, 'definition')
     endfor
 endfunction
 
 function! ale#definition#GoToType(options) abort
-    for l:linter in ale#linter#Get(&filetype)
-        if !empty(l:linter.lsp)
-            call s:GoToLSPDefinition(l:linter, a:options, 'typeDefinition')
-        endif
+    for l:linter in ale#lsp_linter#GetEnabled(bufnr(''))
+        call s:GoToLSPDefinition(l:linter, a:options, 'typeDefinition')
     endfor
 endfunction
 
 function! ale#definition#GoToImpl(options) abort
-    for l:linter in ale#linter#Get(&filetype)
-        if !empty(l:linter.lsp)
-            call s:GoToLSPDefinition(l:linter, a:options, 'implementation')
-        endif
+    for l:linter in ale#lsp_linter#GetEnabled(bufnr(''))
+        call s:GoToLSPDefinition(l:linter, a:options, 'implementation')
     endfor
 endfunction
 

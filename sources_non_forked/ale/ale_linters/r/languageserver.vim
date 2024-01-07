@@ -19,6 +19,7 @@ endfunction
 
 call ale#linter#Define('r', {
 \   'name': 'languageserver',
+\   'aliases': ['r_language_server'],
 \   'lsp': 'stdio',
 \   'lsp_config': {b -> ale#Var(b, 'r_languageserver_config')},
 \   'executable': 'Rscript',

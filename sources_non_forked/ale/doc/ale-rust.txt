@@ -33,11 +33,12 @@ Integration Information
   5. rustfmt -- If you have `rustfmt` installed, you can use it as a fixer to
      consistently reformat your Rust code.
 
-  Only cargo and rls are enabled by default. To switch to using rustc instead
-  of cargo, configure |g:ale_linters| appropriately: >
+  Only cargo and rust-analyze are enabled by default. To switch to using rustc
+  instead of cargo, configure |b:ale_linters| in your ftplugin file
+  appropriately: >
 
   " See the help text for the option for more information.
-  let g:ale_linters = {'rust': ['rustc', 'rls']}
+  let b:ale_linters = ['analyzer', 'rustc']
 <
 
   Also note that rustc 1.18. or later is needed.

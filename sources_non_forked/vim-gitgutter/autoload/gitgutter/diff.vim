@@ -4,14 +4,6 @@ let s:nomodeline = (v:version > 703 || (v:version == 703 && has('patch442'))) ? 
 
 let s:hunk_re = '^@@ -\(\d\+\),\?\(\d*\) +\(\d\+\),\?\(\d*\) @@'
 
-" True for git v1.7.2+.
-function! s:git_supports_command_line_config_override() abort
-  call gitgutter#utility#system(gitgutter#git().' -c foo.bar=baz --version')
-  return !v:shell_error
-endfunction
-
-let s:c_flag = s:git_supports_command_line_config_override()
-
 let s:temp_from = tempname()
 let s:temp_buffer = tempname()
 let s:counter = 0
@@ -81,20 +73,6 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     throw 'gitgutter assume unchanged'
   endif
 
-  " If we are diffing against a specific branch/commit, handle the case
-  " where a file exists on the current branch but not in/at the diff base.
-  " We have to handle it here because the approach below (using git-show)
-  " doesn't work for this case.
-  if !empty(g:gitgutter_diff_base)
-    let index_name = gitgutter#utility#get_diff_base(a:bufnr).':'.gitgutter#utility#repo_path(a:bufnr, 1)
-    let cmd = gitgutter#git().' --no-pager show '.index_name
-    let cmd = gitgutter#utility#cd_cmd(a:bufnr, cmd)
-    call gitgutter#utility#system(cmd)
-    if v:shell_error
-      throw 'gitgutter file unknown in base'
-    endif
-  endif
-
   " Wrap compound commands in parentheses to make Windows happy.
   " bash doesn't mind the parentheses.
   let cmd = '('
@@ -137,8 +115,8 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     endif
 
     " Write file from index to temporary file.
-    let index_name = gitgutter#utility#get_diff_base(a:bufnr).':'.gitgutter#utility#repo_path(a:bufnr, 1)
-    let cmd .= gitgutter#git().' --no-pager show --textconv '.index_name.' > '.from_file.' && '
+    let index_name = gitgutter#utility#get_diff_base(a:bufnr).':'.gitgutter#utility#base_path(a:bufnr)
+    let cmd .= gitgutter#git().' --no-pager show --textconv '.index_name.' > '.from_file.' || exit 0) && ('
 
   elseif a:from ==# 'working_tree'
     let from_file = gitgutter#utility#repo_path(a:bufnr, 1)
@@ -146,7 +124,7 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
 
   " Call git-diff.
   let cmd .= gitgutter#git().' --no-pager'
-  if s:c_flag
+  if gitgutter#utility#git_supports_command_line_config_override()
     let cmd .= ' -c "diff.autorefreshindex=0"'
     let cmd .= ' -c "diff.noprefix=false"'
     let cmd .= ' -c "core.safecrlf=false"'
@@ -176,9 +154,9 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
     return 'async'
 
   else
-    let diff = gitgutter#utility#system(cmd)
+    let [diff, error_code] = gitgutter#utility#system(cmd)
 
-    if v:shell_error
+    if error_code
       call gitgutter#debug#log(diff)
       throw 'gitgutter diff failed'
     endif
@@ -387,12 +365,6 @@ function! gitgutter#diff#hunk_diff(bufnr, full_diff, ...)
     endif
   endfor
   return join(modified_diff, "\n")."\n"
-endfunction
-
-
-function! gitgutter#diff#hunk_header_showing_every_line_added(bufnr)
-  let buf_line_count = getbufinfo(a:bufnr)[0].linecount
-  return '@@ -0,0 +1,'.buf_line_count.' @@'
 endfunction
 
 

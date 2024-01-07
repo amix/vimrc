@@ -102,7 +102,7 @@ function! ale#handlers#shellcheck#DefineLinter(filetype) abort
     " This global variable can be set with a string of comma-separated error
     " codes to exclude from shellcheck. For example:
     " let g:ale_sh_shellcheck_exclusions = 'SC2002,SC2004'
-    call ale#Set('sh_shellcheck_exclusions', get(g:, 'ale_linters_sh_shellcheck_exclusions', ''))
+    call ale#Set('sh_shellcheck_exclusions', '')
     call ale#Set('sh_shellcheck_executable', 'shellcheck')
     call ale#Set('sh_shellcheck_dialect', 'auto')
     call ale#Set('sh_shellcheck_options', '')

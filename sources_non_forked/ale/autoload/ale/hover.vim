@@ -117,7 +117,7 @@ function! ale#hover#ParseLSPResult(contents) abort
             for l:line in split(l:item, "\n")
                 if l:fence_language is v:null
                     " Look for the start of a code fence. (```python, etc.)
-                    let l:match = matchlist(l:line, '^```\(.*\)$')
+                    let l:match = matchlist(l:line, '^``` *\([^ ]\+\) *$')
 
                     if !empty(l:match)
                         let l:fence_language = l:match[1]
@@ -329,10 +329,9 @@ function! ale#hover#Show(buffer, line, col, opt) abort
     let l:show_documentation = get(a:opt, 'show_documentation', 0)
     let l:Callback = function('s:OnReady', [a:line, a:col, a:opt])
 
-    for l:linter in ale#linter#Get(getbufvar(a:buffer, '&filetype'))
+    for l:linter in ale#lsp_linter#GetEnabled(a:buffer)
         " Only tsserver supports documentation requests at the moment.
-        if !empty(l:linter.lsp)
-        \&& (!l:show_documentation || l:linter.lsp is# 'tsserver')
+        if !l:show_documentation || l:linter.lsp is# 'tsserver'
             call ale#lsp_linter#StartLSP(a:buffer, l:linter, l:Callback)
         endif
     endfor

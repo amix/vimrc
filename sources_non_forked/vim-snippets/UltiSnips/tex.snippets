@@ -36,24 +36,6 @@ endglobal
 # ENVIRONMENT #
 ###############
 
-snippet beg "begin{} / end{}" bi
-\begin{$1}
-	${0:${VISUAL}}
-\end{$1}
-endsnippet
-
-snippet cnt "Center" bi
-\begin{center}
-	${0:${VISUAL}}
-\end{center}
-endsnippet
-
-snippet desc "Description" bi
-\begin{description}
-	\item[${1:${VISUAL}}] $0
-\end{description}
-endsnippet
-
 snippet lemma "Lemma" bi
 \begin{lemma}
 	${0:${VISUAL}}
@@ -133,24 +115,6 @@ snippet fig "Figure environment" bi
 	\caption{${4:$3}}
 	\label{fig:${5:${3/\W+/-/g}}}
 \end{figure}
-endsnippet
-
-snippet enum "Enumerate" bi
-\begin{enumerate}
-	\item ${0:${VISUAL}}
-\end{enumerate}
-endsnippet
-
-snippet item "Itemize" bi
-\begin{itemize}
-	\item ${0:${VISUAL}}
-\end{itemize}
-endsnippet
-
-snippet case "cases" bi
-\begin{cases}
-	${0:${VISUAL}}
-\end{cases}
 endsnippet
 
 snippet abs "abstract environment" b
@@ -247,26 +211,6 @@ snippet srto "... Root" wi
 \sqrt[$1]{${2:${VISUAL}}}$0
 endsnippet
 
-snippet bf "Bold" wi
-\bf{${1:${VISUAL}}}$0
-endsnippet
-
-snippet it "Italic" wi
-\it{${1:${VISUAL}}}$0
-endsnippet
-
-snippet un "Underline" wi
-\un{${1:${VISUAL}}}$0
-endsnippet
-
-snippet rm "Text" wi
-\rm{${1:${VISUAL}}}$0
-endsnippet
-
-snippet itm "Item" wi
-\item ${0:${VISUAL}}
-endsnippet
-
 snippet ceil "Ceil" w
 \left\lceil $1 \right\rceil $0
 endsnippet
@@ -283,32 +227,8 @@ snippet bmat "Bmat" w
 \begin{bmatrix} $1 \end{bmatrix} $0
 endsnippet
 
-snippet () "Left( right)" w
-\left( ${1:${VISUAL}} \right) $0
-endsnippet
-
-snippet lr "left( right)" i
-\left( ${1:${VISUAL}} \right) $0
-endsnippet
-
-snippet lr( "left( right)" i
-\left( ${1:${VISUAL}} \right) $0
-endsnippet
-
-snippet lr| "left| right|" i
-\left| ${1:${VISUAL}} \right| $0
-endsnippet
-
-snippet lr{ "left\{ right\}" i
-\left\\{ ${1:${VISUAL}} \right\\} $0
-endsnippet
-
 snippet lrb "left\{ right\}" i
 \left\\{ ${1:${VISUAL}} \right\\} $0
-endsnippet
-
-snippet lr[ "left[ right]" i
-\left[ ${1:${VISUAL}} \right] $0
 endsnippet
 
 snippet lra "leftangle rightangle" wi
@@ -465,114 +385,6 @@ endsnippet
 
 snippet ac "Acroynm normal" bi
 \ac{${1:acronym}}
-endsnippet
-
-snippet ni "Non-indented paragraph" bi
-\noindent
-endsnippet
-
-
-############
-# SECTIONS #
-############
-
-snippet chap "Chapter" wi
-\chapter{$1${VISUAL}}
-endsnippet
-
-snippet sec "Section" wi
-\section{$1${VISUAL}}
-endsnippet
-
-snippet sec* "Section*" wi
-\section*{$1${VISUAL}}
-endsnippet
-
-snippet sub "Subsection" wi
-\subsection{$1${VISUAL}}
-endsnippet
-
-snippet sub* "Subsection*" wi
-\subsection*{$1${VISUAL}}
-endsnippet
-
-snippet subsub "Subsection" wi
-\subsubsection{$1${VISUAL}}
-endsnippet
-
-snippet subsub* "Subsubsection" wi
-\subsubsection*{$1${VISUAL}}
-endsnippet
-
-snippet par "Paragraph" wi
-\paragraph{$1${VISUAL}}
-endsnippet
-
-snippet par* "Paragraph*" wi
-\paragraph*{$1${VISUAL}}
-endsnippet
-
-snippet subpar "Sub Paragraph" wi
-\subparagraph{$1${VISUAL}}
-endsnippet
-
-snippet subpar* "Sub Paragraph*" wi
-\subparagraph*{$1${VISUAL}}
-endsnippet
-
-snippet chapl "Chapter with label" wi
-\chapter{$1${VISUAL}}
-\label{cha:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet secl "Section with label" wi
-\section{$1${VISUAL}}
-\label{sec:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet sec*l "Section* with label" wi
-\section*{$1${VISUAL}}
-\label{sec:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet subl "Subsection with label" wi
-\subsection{$1${VISUAL}}
-\label{sub:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet sub*l "Subsection* with label" wi
-\subsection*{$1${VISUAL}}
-\label{sub:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet subsubl "Subsection with label" wi
-\subsubsection{$1${VISUAL}}
-\label{ssub:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet subsub*l "Subsubsection with label" wi
-\subsubsection*{$1${VISUAL}}
-\label{ssub:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet parl "Paragraph with label" wi
-\paragraph{$1${VISUAL}}
-\label{par:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet par*l "Paragraph* with label" wi
-\paragraph*{$1${VISUAL}}
-\label{par:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet subparl "Sub Paragraph with label" wi
-\subparagraph{$1${VISUAL}}
-\label{subp:${2:${1/\W+/-/g}}}
-endsnippet
-
-snippet subpar*l "Sub Paragraph* with label" wi
-\subparagraph*{$1${VISUAL}}
-\label{subp:${2:${1/\W+/-/g}}}
 endsnippet
 
 # vim:ft=snippets:

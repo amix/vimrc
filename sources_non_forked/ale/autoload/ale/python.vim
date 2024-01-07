@@ -7,14 +7,17 @@ call ale#Set('python_auto_poetry', '0')
 let s:sep = has('win32') ? '\' : '/'
 " bin is used for Unix virtualenv directories, and Scripts is for Windows.
 let s:bin_dir = has('unix') ? 'bin' : 'Scripts'
+" The default virtualenv directory names are ordered from the likely most
+" common names down to the least common. `.env` might be more common, but it's
+" also likely to conflict with a `.env` file for environment variables, so we
+" search for it last. (People really shouldn't use that name.)
 let g:ale_virtualenv_dir_names = get(g:, 'ale_virtualenv_dir_names', [
-\   '.env',
 \   '.venv',
 \   'env',
-\   've-py3',
 \   've',
-\   'virtualenv',
 \   'venv',
+\   'virtualenv',
+\   '.env',
 \])
 
 function! ale#python#FindProjectRootIni(buffer) abort

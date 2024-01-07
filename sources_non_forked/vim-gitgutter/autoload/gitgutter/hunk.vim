@@ -309,7 +309,7 @@ function! s:stage(hunk_diff)
       let cmd = gitgutter#utility#cd_cmd(bufnr,
             \ gitgutter#git().' add '.
             \ gitgutter#utility#shellescape(gitgutter#utility#filename(bufnr)))
-      call gitgutter#utility#system(cmd)
+      let [_, error_code] = gitgutter#utility#system(cmd)
     else
       return
     endif
@@ -317,12 +317,12 @@ function! s:stage(hunk_diff)
   else
     let diff = s:adjust_header(bufnr, a:hunk_diff)
     " Apply patch to index.
-    call gitgutter#utility#system(
+    let [_, error_code] = gitgutter#utility#system(
           \ gitgutter#utility#cd_cmd(bufnr, gitgutter#git().' apply --cached --unidiff-zero - '),
           \ diff)
   endif
 
-  if v:shell_error
+  if error_code
     call gitgutter#utility#warn('Patch does not apply')
   else
     if exists('#User#GitGutterStage')

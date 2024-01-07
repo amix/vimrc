@@ -169,6 +169,9 @@ on the fly adding those.
 Currently all snippets from UltiSnips have been put into `/UltiSnips` - some work
 on merging should be done (dropping duplicates etc). Also see engines section above.
 
+Since UltiSnips supports both UltiSnip and vim-snipmate snippets, when
+contributing fixes/new snippets, please prefer adding vim-snipmate snippets.
+
 Related repositories
 --------------------
 

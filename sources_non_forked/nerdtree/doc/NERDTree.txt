@@ -287,6 +287,7 @@ I........Toggle whether hidden files displayed......................|NERDTree-I|
 f........Toggle whether the file filters are used...................|NERDTree-f|
 F........Toggle whether files are displayed.........................|NERDTree-F|
 B........Toggle whether the bookmark table is displayed.............|NERDTree-B|
+L........Toggle whether the number of lines in files is displayed...|NERDTree-L|
 
 q........Close the NERDTree window..................................|NERDTree-q|
 A........Zoom (maximize/minimize) the NERDTree window...............|NERDTree-A|
@@ -602,6 +603,14 @@ Applies to: no restrictions.
 Toggles whether the bookmarks table is displayed.
 
 ------------------------------------------------------------------------------
+                                                                    *NERDTree-L*
+Default key: L
+Map setting: *NERDTreeMapToggleFileLines*
+Applies to: no restrictions.
+
+Toggles whether the number of lines in files is displayed.
+
+------------------------------------------------------------------------------
                                                                     *NERDTree-q*
 Default key: q
 Map setting: *NERDTreeMapQuit*
@@ -672,6 +681,9 @@ the NERDTree. These settings should be set in your vimrc, using `:let`.
                             distance to the top/bottom of the window.
 
 |NERDTreeAutoCenterThreshold| Controls the sensitivity of autocentering.
+
+|NERDTreeCaseSensitiveFS|     Tells the NERDTree whether or not it is
+                            running in on a case sensitive file system.
 
 |NERDTreeCaseSensitiveSort|   Tells the NERDTree whether to be case
                             sensitive or not when sorting nodes.
@@ -807,6 +819,26 @@ Default: 3
 
 This setting controls the "sensitivity" of the NERDTree auto centering. See
 |NERDTreeAutoCenter| for details.
+
+------------------------------------------------------------------------------
+                                                     *NERDTreeCaseSensitiveFS*
+Values: 0, 1, 2 or 3.
+Default: 2.
+
+If set to 0, the NERDTree will interact with the file system without case
+sensitivity.
+
+If set to 1, the NERDTree will interact with the file system in a case-sensitive
+manner.
+
+If set to 2, the NERDTree assumes its case sensitivity from the OS it is
+running on. It Will default to case-insensitive on Windows and macOS
+machines and case-sensitive on everything else. Since it's not a foolproof
+way of detection, NERDTree won't proceed with any write actions when
+the destination is ambiguous.
+
+Setting it to 3 will perform just like 2, but without suppressing write
+actions.
 
 ------------------------------------------------------------------------------
                                                      *NERDTreeCaseSensitiveSort*
@@ -1041,6 +1073,20 @@ mapping and is useful for drastically shrinking the tree when you are
 navigating to a different part of the tree.
 
 ------------------------------------------------------------------------------
+                                                        *NERDTreeShowFilesLines*
+Values: 0 or 1.
+Default: 0.
+
+If this setting is set to 1 then the NERDTree shows number of lines for each
+file.
+
+This setting can be toggled dynamically, per tree, with the |NERDTree-L|
+mapping.
+Use one of the follow lines for this setting: >
+    let NERDTreeShowFilesLines=0
+    let NERDTreeShowFilesLines=1
+<
+------------------------------------------------------------------------------
                                                             *NERDTreeShowHidden*
 Values: 0 or 1.
 Default: 0.
@@ -1128,7 +1174,7 @@ setting is used.
 
 ------------------------------------------------------------------------------
                                                                 *NERDTreeWinPos*
-Values: "left" or "right"
+Values: "left", "right", "top" or "bottom"
 Default: "left".
 
 This setting is used to determine where NERDTree window is placed on the
@@ -1138,6 +1184,13 @@ This setting makes it possible to use two different explorer plugins
 simultaneously. For example, you could have the taglist plugin on the left of
 the window and the NERDTree on the right.
 
+When setting this variable to "top" or "bottom" make sure to also change the
+|NERDTreeWinSize| to a more reasonable size.
+
+For example:
+>
+    let g:NERDTreeWinSize = 15
+<
 ------------------------------------------------------------------------------
                                                                *NERDTreeWinSize*
 Values: a positive integer.

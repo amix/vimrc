@@ -253,7 +253,7 @@ function! ale#engine#SendResultsToNeovimDiagnostics(buffer, loclist) abort
 
     " Keep the Lua surface area really small in the VimL part of ALE,
     " and just require the diagnostics.lua module on demand.
-    let l:SendDiagnostics = luaeval('require("diagnostics").sendAleResultsToDiagnostics')
+    let l:SendDiagnostics = luaeval('require("ale.diagnostics").sendAleResultsToDiagnostics')
     call l:SendDiagnostics(a:buffer, a:loclist)
 endfunction
 

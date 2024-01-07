@@ -251,3 +251,29 @@ snippet sr "std::ranges::"
 # STL std::views::
 snippet sv "std::views::"
 	std::views::
+##
+## Tests
+# GTest:add main
+snippet gtemain "GTest:add main"
+	int main(int argc, char **argv) {
+		testing::InitGoogleTest(&argc, argv);
+		return RUN_ALL_TESTS();
+	}
+# GTest:add test
+snippet gtetest "GTest:add test"
+	TEST(${1:SuiteName}, ${2:TestName}) {
+		${0}
+	}
+# GTest:add fixture
+snippet gtefix "GTest:add fixture"
+	TEST_F(${1:SuiteName}, ${2:TestName}) {
+		${0}
+	}
+# GTest:add parameterized test
+snippet gtepar "GTest:add parameterized test"
+	TEST_P(${1:SuiteName}, ${2:TestName}) {
+		${0}
+	}
+# GTest:instantiate parameterized test
+snippet gteparins "GTest:instantiate parameterized test"
+	INSTANTIATE_TEST_SUITE_P(${1:InstantiationName}, ${2:SuiteName}, ${0});
