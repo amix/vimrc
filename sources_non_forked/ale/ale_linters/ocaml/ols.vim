@@ -6,6 +6,7 @@ call ale#Set('ocaml_ols_use_global', get(g:, 'ale_use_global_executables', 0))
 
 call ale#linter#Define('ocaml', {
 \   'name': 'ols',
+\   'aliases': ['ocaml-language-server'],
 \   'lsp': 'stdio',
 \   'executable': function('ale#handlers#ols#GetExecutable'),
 \   'command': function('ale#handlers#ols#GetCommand'),

@@ -17,7 +17,8 @@ function! ale_linters#javascript#flow_ls#FindProjectRoot(buffer) abort
 endfunction
 
 call ale#linter#Define('javascript', {
-\   'name': 'flow-language-server',
+\   'name': 'flow_ls',
+\   'aliaes': ['flow-language-server'],
 \   'lsp': 'stdio',
 \   'executable': {b -> ale#path#FindExecutable(b, 'javascript_flow_ls', [
 \       'node_modules/.bin/flow',

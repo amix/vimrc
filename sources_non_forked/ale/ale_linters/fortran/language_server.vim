@@ -12,6 +12,7 @@ endfunction
 
 call ale#linter#Define('fortran', {
 \   'name': 'language_server',
+\   'aliases': ['fortls'],
 \   'lsp': 'stdio',
 \   'executable': {b -> ale#Var(b, 'fortran_language_server_executable')},
 \   'command': '%e',

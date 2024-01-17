@@ -4,7 +4,7 @@
 
 call ale#Set('deno_executable', 'deno')
 call ale#Set('deno_unstable', 0)
-call ale#Set('deno_importMap', 'import_map.json')
+call ale#Set('deno_import_map', 'import_map.json')
 call ale#Set('deno_lsp_project_root', '')
 
 function! ale#handlers#deno#GetExecutable(buffer) abort
@@ -68,8 +68,19 @@ function! ale#handlers#deno#GetInitializationOptions(buffer) abort
         let l:options.unstable = v:true
     endif
 
-    if ale#Var(a:buffer, 'deno_importMap') isnot# ''
-        let l:options.importMap = ale#path#FindNearestFile(a:buffer, ale#Var(a:buffer, 'deno_importMap'))
+    " Look for a value set using the historical option name.
+    let l:import_map = getbufvar(
+    \   a:buffer,
+    \   'ale_deno_importMap',
+    \   get(g:, 'ale_deno_importMap', '')
+    \)
+
+    if empty(l:import_map)
+        let l:import_map = ale#Var(a:buffer, 'deno_import_map')
+    endif
+
+    if !empty(l:import_map)
+        let l:options.importMap = ale#path#FindNearestFile(a:buffer, l:import_map)
     endif
 
     return l:options

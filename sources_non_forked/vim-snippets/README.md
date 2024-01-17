@@ -169,6 +169,9 @@ on the fly adding those.
 Currently all snippets from UltiSnips have been put into `/UltiSnips` - some work
 on merging should be done (dropping duplicates etc). Also see engines section above.
 
+Since UltiSnips supports both UltiSnip and vim-snipmate snippets, when
+contributing fixes/new snippets, please prefer adding vim-snipmate snippets.
+
 Related repositories
 --------------------
 
@@ -245,7 +248,6 @@ This list is kept up-to-date on a best effort basis.
 * Python - [honza](http://github.com/honza)
 * Ruby - [taq](http://github.com/taq)
 * Scala - [gorodinskiy](https://github.com/gorodinskiy)
-* Supercollider - [lpil](https://github.com/lpil)
 
 License
 -------

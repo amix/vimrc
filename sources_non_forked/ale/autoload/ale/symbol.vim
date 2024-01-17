@@ -102,8 +102,8 @@ function! ale#symbol#Search(args) abort
     call setbufvar(l:buffer, 'ale_symbol_request_made', 0)
     let l:Callback = function('s:OnReady', [l:query, l:options])
 
-    for l:linter in ale#linter#Get(getbufvar(l:buffer, '&filetype'))
-        if !empty(l:linter.lsp) && l:linter.lsp isnot# 'tsserver'
+    for l:linter in ale#lsp_linter#GetEnabled(l:buffer)
+        if l:linter.lsp isnot# 'tsserver'
             call ale#lsp_linter#StartLSP(l:buffer, l:linter, l:Callback)
         endif
     endfor

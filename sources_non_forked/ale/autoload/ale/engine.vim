@@ -184,9 +184,13 @@ endfunction
 function! ale#engine#SetResults(buffer, loclist) abort
     let l:linting_is_done = !ale#engine#IsCheckingBuffer(a:buffer)
 
+    if g:ale_use_neovim_diagnostics_api
+        call ale#engine#SendResultsToNeovimDiagnostics(a:buffer, a:loclist)
+    endif
+
     " Set signs first. This could potentially fix some line numbers.
     " The List could be sorted again here by SetSigns.
-    if g:ale_set_signs
+    if !g:ale_use_neovim_diagnostics_api && g:ale_set_signs
         call ale#sign#SetSigns(a:buffer, a:loclist)
     endif
 
@@ -199,11 +203,12 @@ function! ale#engine#SetResults(buffer, loclist) abort
         call ale#statusline#Update(a:buffer, a:loclist)
     endif
 
-    if g:ale_set_highlights
+    if !g:ale_use_neovim_diagnostics_api && g:ale_set_highlights
         call ale#highlight#SetHighlights(a:buffer, a:loclist)
     endif
 
-    if g:ale_virtualtext_cursor == 2
+    if !g:ale_use_neovim_diagnostics_api
+    \&& (g:ale_virtualtext_cursor is# 'all' || g:ale_virtualtext_cursor == 2)
         call ale#virtualtext#SetTexts(a:buffer, a:loclist)
     endif
 
@@ -214,7 +219,8 @@ function! ale#engine#SetResults(buffer, loclist) abort
             call ale#cursor#EchoCursorWarning()
         endif
 
-        if g:ale_virtualtext_cursor == 1
+        if !g:ale_use_neovim_diagnostics_api
+        \&& (g:ale_virtualtext_cursor is# 'current' || g:ale_virtualtext_cursor == 1)
             " Try and show the warning now.
             " This will only do something meaningful if we're in normal mode.
             call ale#virtualtext#ShowCursorWarning()
@@ -236,6 +242,19 @@ function! ale#engine#SetResults(buffer, loclist) abort
         " Call user autocommands. This allows users to hook into ALE's lint cycle.
         silent doautocmd <nomodeline> User ALELintPost
     endif
+endfunction
+
+function! ale#engine#SendResultsToNeovimDiagnostics(buffer, loclist) abort
+    if !has('nvim-0.6')
+        " We will warn the user on startup as well if they try to set
+        " g:ale_use_neovim_diagnostics_api outside of a Neovim context.
+        return
+    endif
+
+    " Keep the Lua surface area really small in the VimL part of ALE,
+    " and just require the diagnostics.lua module on demand.
+    let l:SendDiagnostics = luaeval('require("ale.diagnostics").sendAleResultsToDiagnostics')
+    call l:SendDiagnostics(a:buffer, a:loclist)
 endfunction
 
 function! s:RemapItemTypes(type_map, loclist) abort

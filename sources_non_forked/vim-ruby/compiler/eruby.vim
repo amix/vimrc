@@ -2,7 +2,6 @@
 " Language:		eRuby
 " Maintainer:		Doug Kearns <dougkearns@gmail.com>
 " URL:			https://github.com/vim-ruby/vim-ruby
-" Release Coordinator:	Doug Kearns <dougkearns@gmail.com>
 
 if exists("current_compiler")
   finish

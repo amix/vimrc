@@ -3,12 +3,6 @@ if !exists('g:snipMate')
   let g:snipMate = {}
 endif
 
-try
-	call tlib#input#List('mi', '', [])
-catch /.*/
-	echoe "tlib is missing. See install instructions at ".expand('<sfile>:h:h').'/README.md'
-endtry
-
 fun! Filename(...) abort
 	let filename = expand('%:t:r')
 	if filename == '' | return a:0 == 2 ? a:2 : '' | endif
@@ -26,6 +20,8 @@ function! snipMate#expandSnip(snip, version, col) abort
 
 	if a:version == 1
 		let [snippet, b:snip_state.stops] = snipmate#parse#snippet(a:snip)
+		" only if zero stop doesn't exist
+		call s:add_zero_stop(snippet, b:snip_state.stops)
 		" Build stop/mirror info
 		let b:snip_state.stop_count = s:build_stops(snippet, b:snip_state.stops, lnum, col, indent)
 	else
@@ -55,6 +51,14 @@ function! snipMate#expandSnip(snip, version, col) abort
 
 	let b:snip_state.stop_no = 0
 	return b:snip_state.set_stop(0)
+endfunction
+
+function! s:add_zero_stop(snippet, stops) abort
+	if !exists("a:stops['0']")
+		let zero_stop = {'mirrors': [], 'placeholder': []}
+		call extend(a:snippet[-1], [[0, '', zero_stop]])
+		call extend(a:stops, {'0': zero_stop}, 'keep')
+	endif
 endfunction
 
 function! s:insert_snippet_text(snippet, lnum, col, indent)
@@ -147,10 +151,6 @@ function! s:build_stops(snippet, stops, lnum, col, indent) abort
 		endif
 	endfor
 
-	" add zero tabstop if it doesn't exist and then link it to the highest stop
-	" number
-	let stops[0] = get(stops, 0,
-				\ { 'placeholder' : [], 'line' : lnum, 'col' : col })
 	let stop_count = max(keys(stops)) + 2
 	let stops[stop_count - 1] = stops[0]
 
@@ -175,6 +175,7 @@ function! s:build_loc_info(snippet, stops, lnum, col, seen_items) abort
 			let stub.col = col
 			call s:add_update_objects(stub, seen_items)
 
+			" if we've found a stop?
 			if len(item) > 2 && type(item[1]) != type({})
 				let col = s:build_loc_info(item[1:-2], stops, lnum, col, seen_items)
 			else
@@ -211,7 +212,7 @@ fun! snipMate#ReadSnippetsFile(file) abort
 	if !filereadable(a:file) | return [result, new_scopes] | endif
 	let inSnip = 0
 	let line_no = 0
-	let snipversion = get(g:snipMate, 'snippet_version', 0)
+	let snipversion = get(g:snipMate, 'snippet_version', 1)
 	for line in readfile(a:file) + ["\n"]
 		let line_no += 1
 
@@ -308,7 +309,7 @@ function! s:source_snippet() abort
 	let new_snips = []
 	if fnamemodify(file, ':e') == 'snippet'
 		call add(new_snips, [trigger, desc, join(readfile(file), "\n"), 0,
-					\ get(g:snipMate, 'snippet_version', 0)])
+					\ get(g:snipMate, 'snippet_version', 1)])
 	else
 		let [snippets, extends] = s:CachedSnips(file)
 		let new_snips = deepcopy(snippets)
@@ -421,6 +422,12 @@ function! s:snippet_dirs() abort
 endfunction
 
 function! snipMate#OpenSnippetFiles() abort
+	if !exists('g:loaded_tlib') || g:loaded_tlib < 41
+		echom 'tlib is required for this command. '
+					\ . 'Remember to run :packadd if necessary.'
+		return
+	endif
+
 	let files = []
 	let scopes_done = []
 	let exists = []
@@ -448,15 +455,50 @@ fun! snipMate#ScopesByFile() abort
 	return filter(funcref#Call(g:snipMate.get_scopes), "v:val != ''")
 endf
 
-" used by both: completion and insert snippet
-fun! snipMate#GetSnippetsForWordBelowCursor(word, exact) abort
+function! snipMate#flatten_filter_empty(list) abort
+	let result = []
+	for item in a:list
+		if type(item) == type([])
+			call extend(result, snipMate#flatten_filter_empty(item))
+		elseif !empty(item)
+			call extend(result, [item])
+		endif
+		unlet item " Avoid E706
+	endfor
+	return result
+endf
+
+function! s:determine_lookups(word) abort
+	let b:snip_word = a:word
+
+	" gather any lookups from the Pre au
+	if exists('#User#SnipLookupPre')
+		doautocmd User <nomodeline> SnipLookupPre
+	endif
+
+	" If none are found, add the standard lookups
+	if !exists('b:snip_lookups') || empty(b:snip_lookups)
+		let b:snip_lookups = s:standard_lookups(b:snip_word)
+	endif
+
+	" Run the Post au
+	if exists('#User#SnipLookupPost')
+		doautocmd <nomodeline> User SnipLookupPost
+	endif
+
+	" return the appropriate data, deleting buffer variables.
+	let ret = b:snip_lookups
+	unlet! b:snip_lookups b:snip_word
+	return ret
+endfunction
+
+function! s:standard_lookups(word) abort
 	" Split non-word characters into their own piece
 	" so 'foo.bar..baz' becomes ['foo', '.', 'bar', '.', '.', 'baz']
 	" First split just after a \W and then split each resultant string just
 	" before a \W
-	let parts = filter(tlib#list#Flatten(
-				\ map(split(a:word, '\W\zs'), 'split(v:val, "\\ze\\W")')),
-				\ '!empty(v:val)')
+	let parts = snipMate#flatten_filter_empty(
+				\ map(split(a:word, '\W\zs'), 'split(v:val, "\\ze\\W")'))
 	" Only look at the last few possibilities. Too many can be slow.
 	if len(parts) > 5
 		let parts = parts[-5:]
@@ -469,7 +511,12 @@ fun! snipMate#GetSnippetsForWordBelowCursor(word, exact) abort
 			call add(lookups, lookup)
 		endif
 	endfor
+	return lookups
+endfunction
 
+" used by both: completion and insert snippet
+fun! snipMate#GetSnippetsForWordBelowCursor(word, exact) abort
+	let lookups = s:determine_lookups(a:word)
 	" Remove empty lookup entries, but only if there are other nonempty lookups
 	if len(lookups) > 1
 		call filter(lookups, 'v:val != ""')
@@ -504,18 +551,17 @@ fun! s:ChooseSnippet(snippets) abort
 		let snippet += [i.'. '.snip]
 		let i += 1
 	endfor
-	if len(snippet) == 1 || get(g:snipMate, 'always_choose_first', 0) == 1
-		" there's only a single snippet, choose it
-		let idx = 0
-	else
-		let idx = tlib#input#List('si','select snippet by name',snippet) -1
-		if idx == -1
-			return ''
+	let i = 0
+	if len(snippet) > 1 && get(g:snipMate, 'always_choose_first', 0) != 1
+		if exists('g:loaded_tlib') && g:loaded_tlib >= 41
+			let i = tlib#input#List('si','select snippet by name',snippet) - 1
+		else
+			let i = inputlist(snippet + ['Select a snippet by number']) - 1
 		endif
 	endif
 	" if a:snippets[..] is a String Call returns it
 	" If it's a function or a function string the result is returned
-	return funcref#Call(a:snippets[keys(a:snippets)[idx]])
+	return (i == -1) ? '' : funcref#Call(a:snippets[keys(a:snippets)[i]])
 endf
 
 fun! snipMate#WordBelowCursor() abort

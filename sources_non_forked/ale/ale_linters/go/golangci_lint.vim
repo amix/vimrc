@@ -1,7 +1,7 @@
 " Author: Sascha Grunert <mail@saschagrunert.de>
 " Description: Adds support of golangci-lint
 
-call ale#Set('go_golangci_lint_options', '--enable-all')
+call ale#Set('go_golangci_lint_options', '')
 call ale#Set('go_golangci_lint_executable', 'golangci-lint')
 call ale#Set('go_golangci_lint_package', 0)
 

@@ -38,6 +38,29 @@ function! s:Creator.BufNamePrefix()
     return 'NERD_tree_'
 endfunction
 
+" FUNCTION: s:Creator.CreateExploreTree(dir) {{{1
+function! s:Creator.CreateExploreTree(dir)
+    try
+        let path = g:NERDTreePath.New(a:dir)
+    catch /^NERDTree.InvalidArgumentsError/
+        call nerdtree#echo('Invalid directory name:' . a:dir)
+        return
+    endtry
+
+    let creator = s:Creator.New()
+    if getbufinfo('%')[0].changed && !&hidden && !&autowriteall
+        let l:splitLocation = g:NERDTreeWinPos ==# 'left' || g:NERDTreeWinPos ==# 'top' ? 'topleft ' : 'botright '
+        let l:splitDirection = g:NERDTreeWinPos ==# 'left' || g:NERDTreeWinPos ==# 'right' ? 'vertical' : ''
+        silent! execute l:splitLocation . l:splitDirection . ' new'
+    else
+        silent! execute 'enew'
+    endif
+
+    call creator.createWindowTree(a:dir)
+    "we want windowTree buffer to disappear after moving to any other buffer
+    setlocal bufhidden=wipe
+endfunction
+
 " FUNCTION: s:Creator.CreateTabTree(a:name) {{{1
 function! s:Creator.CreateTabTree(name)
     let creator = s:Creator.New()
@@ -182,16 +205,17 @@ endfunction
 " Initialize the NERDTree window.  Open the window, size it properly, set all
 " local options, etc.
 function! s:Creator._createTreeWin()
-    let l:splitLocation = g:NERDTreeWinPos ==# 'left' ? 'topleft ' : 'botright '
+    let l:splitLocation = g:NERDTreeWinPos ==# 'left' || g:NERDTreeWinPos ==# 'top' ? 'topleft ' : 'botright '
+    let l:splitDirection = g:NERDTreeWinPos ==# 'left' || g:NERDTreeWinPos ==# 'right' ? 'vertical' : ''
     let l:splitSize = g:NERDTreeWinSize
 
     if !g:NERDTree.ExistsForTab()
         let t:NERDTreeBufName = self._nextBufferName()
-        silent! execute l:splitLocation . 'vertical ' . l:splitSize . ' new'
+        silent! execute l:splitLocation . l:splitDirection . ' ' . l:splitSize . ' new'
         silent! execute 'edit ' . t:NERDTreeBufName
-        silent! execute 'vertical resize '. l:splitSize
+        silent! execute l:splitDirection . ' resize '. l:splitSize
     else
-        silent! execute l:splitLocation . 'vertical ' . l:splitSize . ' split'
+        silent! execute l:splitLocation . l:splitDirection . ' ' . l:splitSize . ' split'
         silent! execute 'buffer ' . t:NERDTreeBufName
     endif
 

@@ -1,6 +1,6 @@
 "TODO print messages when on visual mode. I only see VISUAL, not the messages.
 
-" Function interface phylosophy:
+" Function interface philosophy:
 "
 " - functions take arbitrary line numbers as parameters.
 "    Current cursor line is only a suitable default parameter.
@@ -56,7 +56,7 @@ let s:levelRegexpDict = {
     \ 6: '\v^######[^#]@='
 \ }
 
-" Maches any header level of any type.
+" Matches any header level of any type.
 "
 " This could be deduced from `s:levelRegexpDict`, but it is more
 " efficient to have a single regexp for this.
@@ -494,7 +494,9 @@ endfunction
 function! s:SetexToAtx(line1, line2)
     let l:originalNumLines = line('$')
     execute 'silent! ' . a:line1 . ',' . a:line2 . 'substitute/\v(.*\S.*)\n\=+$/# \1/'
-    execute 'silent! ' . a:line1 . ',' . a:line2 . 'substitute/\v(.*\S.*)\n-+$/## \1/'
+
+    let l:changed = l:originalNumLines - line('$')
+    execute 'silent! ' . a:line1 . ',' . (a:line2 - l:changed) . 'substitute/\v(.*\S.*)\n-+$/## \1'
     return l:originalNumLines - line('$')
 endfunction
 
@@ -536,6 +538,19 @@ endfunction
 "
 function! s:TableFormat()
     let l:pos = getpos('.')
+
+    if get(g:, 'vim_markdown_borderless_table', 0)
+      " add `|` to the beginning of the line if it isn't present
+      normal! {
+      call search('|')
+      execute 'silent .,''}s/\v^(\s{0,})\|?([^\|])/\1|\2/e'
+
+      " add `|` to the end of the line if it isn't present
+      normal! {
+      call search('|')
+      execute 'silent .,''}s/\v([^\|])\|?(\s{0,})$/\1|\2/e'
+    endif
+
     normal! {
     " Search instead of `normal! j` because of the table at beginning of file edge case.
     call search('|')
@@ -654,7 +669,12 @@ endfunction
 function! s:OpenUrlUnderCursor()
     let l:url = s:Markdown_GetUrlForPosition(line('.'), col('.'))
     if l:url !=# ''
-        call s:VersionAwareNetrwBrowseX(l:url)
+      if l:url =~? 'http[s]\?:\/\/[[:alnum:]%\/_#.-]*'
+        "Do nothing
+      else
+        let l:url = expand(expand('%:h').'/'.l:url)
+      endif
+      call s:VersionAwareNetrwBrowseX(l:url)
     else
         echomsg 'The cursor is not on a link.'
     endif
@@ -712,7 +732,7 @@ if !exists('*s:EditUrlUnderCursor')
                 execute l:editmethod l:url
             endif
             if l:anchor !=# ''
-                silent! execute '/'.l:anchor
+                call search(l:anchor, 's')
             endif
         else
             execute l:editmethod . ' <cfile>'
@@ -758,7 +778,7 @@ endif
 command! -buffer -range=% HeaderDecrease call s:HeaderDecrease(<line1>, <line2>)
 command! -buffer -range=% HeaderIncrease call s:HeaderDecrease(<line1>, <line2>, 1)
 command! -buffer -range=% SetexToAtx call s:SetexToAtx(<line1>, <line2>)
-command! -buffer TableFormat call s:TableFormat()
+command! -buffer -range TableFormat call s:TableFormat()
 command! -buffer Toc call s:Toc()
 command! -buffer Toch call s:Toc('horizontal')
 command! -buffer Tocv call s:Toc('vertical')
@@ -854,19 +874,23 @@ function! s:SyntaxInclude(filetype)
     return grouplistname
 endfunction
 
+function! s:IsHighlightSourcesEnabledForBuffer()
+    " Enable for markdown buffers, and for liquid buffers with markdown format
+    return &filetype =~# 'markdown' || get(b:, 'liquid_subtype', '') =~# 'markdown'
+endfunction
 
 function! s:MarkdownRefreshSyntax(force)
     " Use != to compare &syntax's value to use the same logic run on
     " $VIMRUNTIME/syntax/synload.vim.
     "
     " vint: next-line -ProhibitEqualTildeOperator
-    if &filetype =~# 'markdown' && line('$') > 1 && &syntax != 'OFF'
+    if s:IsHighlightSourcesEnabledForBuffer() && line('$') > 1 && &syntax != 'OFF'
         call s:MarkdownHighlightSources(a:force)
     endif
 endfunction
 
 function! s:MarkdownClearSyntaxVariables()
-    if &filetype =~# 'markdown'
+    if s:IsHighlightSourcesEnabledForBuffer()
         unlet! b:mkd_included_filetypes
     endif
 endfunction

@@ -56,9 +56,10 @@ if has('nvim-0.5') && luaeval("pcall(require, 'gitsigns')")
   hi! link GitSignsChange   DiffChange
   hi! link GitSignsChangeLn DiffChange
   hi! link GitSignsChangeNr DiffChange
-  hi! link GitSignsDelete   DiffDelete
-  hi! link GitSignsDeleteLn DiffDelete
-  hi! link GitSignsDeleteNr DiffDelete
+
+  hi! link GitSignsDelete   DraculaRed
+  hi! link GitSignsDeleteLn DraculaRed
+  hi! link GitSignsDeleteNr DraculaRed
 endif
 " }}}
 " Tree-sitter: {{{
@@ -100,10 +101,10 @@ if exists('g:loaded_nvim_treesitter')
   " which in turn links to Identifer (white).
   hi! link TSTagAttribute DraculaGreenItalic
 
-  if has('nvim-0.8')
+  if has('nvim-0.8.1')
     " # Misc
     hi! link @punctuation.delimiter Delimiter
-    hi! link @punctuation.bracket Normal
+    hi! link @punctuation.bracket DraculaFg
     hi! link @punctuation.special Special
     " # Constants
     hi! link @constant Constant
@@ -121,7 +122,7 @@ if exists('g:loaded_nvim_treesitter')
     hi! link @parameter DraculaOrangeItalic
     hi! link @parameter.reference DraculaOrange
     hi! link @field DraculaOrange
-    hi! link @property Normal
+    hi! link @property DraculaFg
     hi! link @constructor DraculaCyan
     " # Keywords
     hi! link @label DraculaPurpleItalic
@@ -129,19 +130,21 @@ if exists('g:loaded_nvim_treesitter')
     hi! link @keyword.operator Operator
     hi! link @exception DraculaPurple
     " # Variable
-    hi! link @variable Normal
+    hi! link @variable DraculaFg
     hi! link @variable.builtin DraculaPurpleItalic
     " # Text
-    hi! link @text Normal
+    hi! link @text DraculaFg
     hi! link @text.strong DraculaFgBold
     hi! link @text.emphasis DraculaFg
     hi! link @text.underline Underlined
     hi! link @text.title DraculaYellow
     hi! link @text.literal DraculaYellow
     hi! link @text.uri DraculaYellow
+    hi! link @text.diff.add DiffAdd
+    hi! link @text.diff.delete DiffDelete
     " # Tags
     hi! link @tag DraculaCyan
-    hi! link @tag.delimiter Normal
+    hi! link @tag.delimiter DraculaFg
     " HTML and JSX tag attributes. By default, this group is linked to TSProperty,
     " which in turn links to Identifer (white).
     hi! link @tag.attribute DraculaGreenItalic

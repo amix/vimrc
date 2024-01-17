@@ -49,6 +49,12 @@ the `<F7>` key if so.  For example, to remap it to `<F3>` instead, use:
 
     autocmd FileType python map <buffer> <F3> :call flake8#Flake8()<CR>
 
+Since the `autocmd` order is not specified in Vim, the previous
+recommendation is sometimes not sufficient to "unmap" `<F7>`. In such a
+case, being more explicit about it should help (see `:h no_mail_maps`):
+
+    let g:no_flake8_maps = 1
+
 For flake8 configuration options please consult the following page:
 
 http://flake8.pycqa.org/en/latest/user/configuration.html

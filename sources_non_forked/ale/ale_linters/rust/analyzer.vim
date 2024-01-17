@@ -28,6 +28,7 @@ endfunction
 
 call ale#linter#Define('rust', {
 \   'name': 'analyzer',
+\   'aliases': ['rust_analyzer'],
 \   'lsp': 'stdio',
 \   'initialization_options': {b -> ale#Var(b, 'rust_analyzer_config')},
 \   'executable': {b -> ale#Var(b, 'rust_analyzer_executable')},

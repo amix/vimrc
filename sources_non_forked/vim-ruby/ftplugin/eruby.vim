@@ -2,7 +2,6 @@
 " Language:		eRuby
 " Maintainer:		Tim Pope <vimNOSPAM@tpope.org>
 " URL:			https://github.com/vim-ruby/vim-ruby
-" Release Coordinator:	Doug Kearns <dougkearns@gmail.com>
 
 " Only do this when not done yet for this buffer
 if exists("b:did_ftplugin")

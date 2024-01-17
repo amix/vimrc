@@ -60,6 +60,10 @@ if !exists('g:EditorConfig_disable_rules')
     let g:EditorConfig_disable_rules = []
 endif
 
+if !exists('g:EditorConfig_enable_for_new_buf')
+    let g:EditorConfig_enable_for_new_buf = 0
+endif
+
 if !exists('g:EditorConfig_softtabstop_space')
     let g:EditorConfig_softtabstop_space = 1
 endif
@@ -87,23 +91,24 @@ let s:initialized = 0
 " }}}1
 
 " shellslash handling {{{1
-function! s:DisableShellSlash() " {{{2
+function! s:DisableShellSlash(bufnr) " {{{2
     " disable shellslash for proper escaping of Windows paths
 
     " In Windows, 'shellslash' also changes the behavior of 'shellescape'.
     " It makes 'shellescape' behave like in UNIX environment. So ':setl
     " noshellslash' before evaluating 'shellescape' and restore the
     " settings afterwards when 'shell' does not contain 'sh' somewhere.
-    if has('win32') && empty(matchstr(&shell, 'sh'))
-        let s:old_shellslash = &l:shellslash
-        setlocal noshellslash
+    let l:shell = getbufvar(a:bufnr, '&shell')
+    if has('win32') && empty(matchstr(l:shell, 'sh'))
+        let s:old_shellslash = getbufvar(a:bufnr, '&shellslash')
+        call setbufvar(a:bufnr, '&shellslash', 0)
     endif
 endfunction " }}}2
 
-function! s:ResetShellSlash() " {{{2
+function! s:ResetShellSlash(bufnr) " {{{2
     " reset shellslash to the user-set value, if any
     if exists('s:old_shellslash')
-        let &l:shellslash = s:old_shellslash
+        call setbufvar(a:bufnr, '&shellslash', s:old_shellslash)
         unlet! s:old_shellslash
     endif
 endfunction " }}}2
@@ -200,23 +205,59 @@ function! s:GetFilenames(path, filename) " {{{1
     return l:path_list
 endfunction " }}}1
 
-function! s:UseConfigFiles() abort " Apply config to the current buffer {{{1
-    let b:editorconfig_tried = 1
-    let l:buffer_name = expand('%:p')
-    " ignore buffers without a name
-    if empty(l:buffer_name)
+function! s:UseConfigFiles(from_autocmd) abort " Apply config to the current buffer {{{1
+    " from_autocmd is truthy if called from an autocmd, falsy otherwise.
+
+    " Get the properties of the buffer we are working on
+    if a:from_autocmd
+        let l:bufnr = str2nr(expand('<abuf>'))
+        let l:buffer_name = expand('<afile>:p')
+        let l:buffer_path = expand('<afile>:p:h')
+    else
+        let l:bufnr = bufnr('%')
+        let l:buffer_name = expand('%:p')
+        let l:buffer_path = expand('%:p:h')
+    endif
+    call setbufvar(l:bufnr, 'editorconfig_tried', 1)
+
+    " Only process normal buffers (do not treat help files as '.txt' files)
+    " When starting Vim with a directory, the buftype might not yet be set:
+    " Therefore, also check if buffer_name is a directory.
+    if index(['', 'acwrite'], &buftype) == -1 || isdirectory(l:buffer_name)
         return
     endif
 
-    if exists("b:EditorConfig_disable") && b:EditorConfig_disable
+    if empty(l:buffer_name)
+        if g:EditorConfig_enable_for_new_buf
+            let l:buffer_name = getcwd() . "/."
+        else
+            if g:EditorConfig_verbose
+                echo 'Skipping EditorConfig for unnamed buffer'
+            endif
+            return
+        endif
+    endif
+
+    if getbufvar(l:bufnr, 'EditorConfig_disable', 0)
         if g:EditorConfig_verbose
-            echo 'Skipping EditorConfig for buffer "' . l:buffer_name . '"'
+            echo 'EditorConfig disabled --- skipping buffer "' . l:buffer_name . '"'
         endif
         return
     endif
 
+    " Ignore specific patterns
+    for pattern in g:EditorConfig_exclude_patterns
+        if l:buffer_name =~ pattern
+            if g:EditorConfig_verbose
+                echo 'Skipping EditorConfig for buffer "' . l:buffer_name .
+                    \ '" based on pattern "' . pattern . '"'
+            endif
+            return
+        endif
+    endfor
+
     " Check if any .editorconfig does exist
-    let l:conf_files = s:GetFilenames(expand('%:p:h'), '.editorconfig')
+    let l:conf_files = s:GetFilenames(l:buffer_path, '.editorconfig')
     let l:conf_found = 0
     for conf_file in conf_files
         if filereadable(conf_file)
@@ -239,20 +280,13 @@ function! s:UseConfigFiles() abort " Apply config to the current buffer {{{1
             \ ' on file "' . l:buffer_name . '"'
     endif
 
-    " Ignore specific patterns
-    for pattern in g:EditorConfig_exclude_patterns
-        if l:buffer_name =~ pattern
-            return
-        endif
-    endfor
-
     if s:editorconfig_core_mode ==? 'vim_core'
-        if s:UseConfigFiles_VimCore() == 0
-            let b:editorconfig_applied = 1
+        if s:UseConfigFiles_VimCore(l:bufnr, l:buffer_name) == 0
+            call setbufvar(l:bufnr, 'editorconfig_applied', 1)
         endif
     elseif s:editorconfig_core_mode ==? 'external_command'
-        call s:UseConfigFiles_ExternalCommand()
-        let b:editorconfig_applied = 1
+        call s:UseConfigFiles_ExternalCommand(l:bufnr, l:buffer_name)
+        call setbufvar(l:bufnr, 'editorconfig_applied', 1)
     else
         echohl Error |
                     \ echo "Unknown EditorConfig Core: " .
@@ -268,7 +302,8 @@ function! s:EditorConfigEnable(should_enable)
     augroup editorconfig
         autocmd!
         if a:should_enable
-            autocmd BufNewFile,BufReadPost,BufFilePost * call s:UseConfigFiles()
+            autocmd BufNewFile,BufReadPost,BufFilePost * call s:UseConfigFiles(1)
+            autocmd VimEnter,BufNew * call s:UseConfigFiles(1)
         endif
     augroup END
 endfunction
@@ -279,45 +314,39 @@ endfunction
 command! EditorConfigEnable call s:EditorConfigEnable(1)
 command! EditorConfigDisable call s:EditorConfigEnable(0)
 
-command! EditorConfigReload call s:UseConfigFiles() " Reload EditorConfig files
+command! EditorConfigReload call s:UseConfigFiles(0) " Reload EditorConfig files
 " }}}2
 
 " On startup, enable the autocommands
 call s:EditorConfigEnable(1)
 
-" Always set the filetype for .editorconfig files
-augroup editorconfig_dosini
-    autocmd!
-    autocmd BufNewFile,BufRead .editorconfig set filetype=dosini
-augroup END
-
 " }}}1
 
 " UseConfigFiles function for different modes {{{1
 
-function! s:UseConfigFiles_VimCore()
+function! s:UseConfigFiles_VimCore(bufnr, target)
 " Use the vimscript EditorConfig core
     try
         let l:config = editorconfig_core#handler#get_configurations(
-            \ { 'target': expand('%:p') } )
-        call s:ApplyConfig(l:config)
+            \ { 'target': a:target } )
+        call s:ApplyConfig(a:bufnr, l:config)
         return 0    " success
     catch
         return 1    " failure
     endtry
 endfunction
 
-function! s:UseConfigFiles_ExternalCommand()
+function! s:UseConfigFiles_ExternalCommand(bufnr, target)
 " Use external EditorConfig core (e.g., the C core)
 
-    call s:DisableShellSlash()
+    call s:DisableShellSlash(a:bufnr)
     let l:exec_path = shellescape(s:editorconfig_exec_path)
-    call s:ResetShellSlash()
+    call s:ResetShellSlash(a:bufnr)
 
-    call s:SpawnExternalParser(l:exec_path)
+    call s:SpawnExternalParser(a:bufnr, l:exec_path, a:target)
 endfunction
 
-function! s:SpawnExternalParser(cmd) " {{{2
+function! s:SpawnExternalParser(bufnr, cmd, target) " {{{2
 " Spawn external EditorConfig. Used by s:UseConfigFiles_ExternalCommand()
 
     let l:cmd = a:cmd
@@ -328,9 +357,9 @@ function! s:SpawnExternalParser(cmd) " {{{2
 
     let l:config = {}
 
-    call s:DisableShellSlash()
-    let l:cmd = l:cmd . ' ' . shellescape(expand('%:p'))
-    call s:ResetShellSlash()
+    call s:DisableShellSlash(a:bufnr)
+    let l:cmd = l:cmd . ' ' . shellescape(a:target)
+    call s:ResetShellSlash(a:bufnr)
 
     let l:parsing_result = split(system(l:cmd), '\v[\r\n]+')
 
@@ -369,31 +398,69 @@ function! s:SpawnExternalParser(cmd) " {{{2
         let l:config[l:eq_left] = l:eq_right
     endfor
 
-    call s:ApplyConfig(l:config)
+    call s:ApplyConfig(a:bufnr, l:config)
 endfunction " }}}2
 
 " }}}1
 
-function! s:ApplyConfig(config) abort " Set the buffer options {{{1
-    " Only process normal buffers (do not treat help files as '.txt' files)
-    if index(['', 'acwrite'], &buftype) == -1
-        return
+" Set the buffer options {{{1
+function! s:SetCharset(bufnr, charset) abort " apply config['charset']
+
+    " Remember the buffer's state so we can set `nomodifed` at the end
+    " if appropriate.
+    let l:orig_fenc = getbufvar(a:bufnr, "&fileencoding")
+    let l:orig_enc = getbufvar(a:bufnr, "&encoding")
+    let l:orig_modified = getbufvar(a:bufnr, "&modified")
+
+    if a:charset == "utf-8"
+        call setbufvar(a:bufnr, '&fileencoding', 'utf-8')
+        call setbufvar(a:bufnr, '&bomb', 0)
+    elseif a:charset == "utf-8-bom"
+        call setbufvar(a:bufnr, '&fileencoding', 'utf-8')
+        call setbufvar(a:bufnr, '&bomb', 1)
+    elseif a:charset == "latin1"
+        call setbufvar(a:bufnr, '&fileencoding', 'latin1')
+        call setbufvar(a:bufnr, '&bomb', 0)
+    elseif a:charset == "utf-16be"
+        call setbufvar(a:bufnr, '&fileencoding', 'utf-16be')
+        call setbufvar(a:bufnr, '&bomb', 1)
+    elseif a:charset == "utf-16le"
+        call setbufvar(a:bufnr, '&fileencoding', 'utf-16le')
+        call setbufvar(a:bufnr, '&bomb', 1)
     endif
 
+    let l:new_fenc = getbufvar(a:bufnr, "&fileencoding")
+
+    " If all we did was change the fileencoding from the default to a copy
+    " of the default, we didn't actually modify the file.
+    if !l:orig_modified && (l:orig_fenc ==# '') && (l:new_fenc ==# l:orig_enc)
+        if g:EditorConfig_verbose
+            echo 'Setting nomodified on buffer ' . a:bufnr
+        endif
+        call setbufvar(a:bufnr, '&modified', 0)
+    endif
+endfunction
+
+function! s:ApplyConfig(bufnr, config) abort
     if g:EditorConfig_verbose
         echo 'Options: ' . string(a:config)
     endif
 
     if s:IsRuleActive('indent_style', a:config)
         if a:config["indent_style"] == "tab"
-            setl noexpandtab
+            call setbufvar(a:bufnr, '&expandtab', 0)
         elseif a:config["indent_style"] == "space"
-            setl expandtab
+            call setbufvar(a:bufnr, '&expandtab', 1)
         endif
     endif
 
-    if s:IsRuleActive('tab_width', a:config)
-        let &l:tabstop = str2nr(a:config["tab_width"])
+    " Set tabstop.  Skip this for terminal buffers, e.g., :FZF (#224).
+    if s:IsRuleActive('tab_width', a:config) && bufname(a:bufnr) !~# '^!\w*sh$'
+        let l:tabstop = str2nr(a:config["tab_width"])
+        call setbufvar(a:bufnr, '&tabstop', l:tabstop)
+    else
+        " Grab the current ts so we can use it below
+        let l:tabstop = getbufvar(a:bufnr, '&tabstop')
     endif
 
     if s:IsRuleActive('indent_size', a:config)
@@ -401,18 +468,20 @@ function! s:ApplyConfig(config) abort " Set the buffer options {{{1
         " if indent_size is a positive integer, set shiftwidth to the integer
         " value
         if a:config["indent_size"] == "tab"
-            let &l:shiftwidth = &l:tabstop
+            call setbufvar(a:bufnr, '&shiftwidth', l:tabstop)
             if type(g:EditorConfig_softtabstop_tab) != type([])
-                let &l:softtabstop = g:EditorConfig_softtabstop_tab > 0 ?
-                            \ &l:shiftwidth : g:EditorConfig_softtabstop_tab
+                call setbufvar(a:bufnr, '&softtabstop',
+                            \ g:EditorConfig_softtabstop_tab > 0 ?
+                            \ l:tabstop : g:EditorConfig_softtabstop_tab)
             endif
         else
             let l:indent_size = str2nr(a:config["indent_size"])
             if l:indent_size > 0
-                let &l:shiftwidth = l:indent_size
+                call setbufvar(a:bufnr, '&shiftwidth', l:indent_size)
                 if type(g:EditorConfig_softtabstop_space) != type([])
-                    let &l:softtabstop = g:EditorConfig_softtabstop_space > 0 ?
-                            \ &l:shiftwidth : g:EditorConfig_softtabstop_space
+                    call setbufvar(a:bufnr, '&softtabstop',
+                            \ g:EditorConfig_softtabstop_space > 0 ?
+                            \ l:indent_size : g:EditorConfig_softtabstop_space)
                 endif
             endif
         endif
@@ -420,50 +489,35 @@ function! s:ApplyConfig(config) abort " Set the buffer options {{{1
     endif
 
     if s:IsRuleActive('end_of_line', a:config) &&
-                \ &l:modifiable
+                \ getbufvar(a:bufnr, '&modifiable')
         if a:config["end_of_line"] == "lf"
-            setl fileformat=unix
+            call setbufvar(a:bufnr, '&fileformat', 'unix')
         elseif a:config["end_of_line"] == "crlf"
-            setl fileformat=dos
+            call setbufvar(a:bufnr, '&fileformat', 'dos')
         elseif a:config["end_of_line"] == "cr"
-            setl fileformat=mac
+            call setbufvar(a:bufnr, '&fileformat', 'mac')
         endif
     endif
 
     if s:IsRuleActive('charset', a:config) &&
-                \ &l:modifiable
-        if a:config["charset"] == "utf-8"
-            setl fileencoding=utf-8
-            setl nobomb
-        elseif a:config["charset"] == "utf-8-bom"
-            setl fileencoding=utf-8
-            setl bomb
-        elseif a:config["charset"] == "latin1"
-            setl fileencoding=latin1
-            setl nobomb
-        elseif a:config["charset"] == "utf-16be"
-            setl fileencoding=utf-16be
-            setl bomb
-        elseif a:config["charset"] == "utf-16le"
-            setl fileencoding=utf-16le
-            setl bomb
-        endif
+                \ getbufvar(a:bufnr, '&modifiable')
+        call s:SetCharset(a:bufnr, a:config["charset"])
     endif
 
     augroup editorconfig_trim_trailing_whitespace
         autocmd! BufWritePre <buffer>
         if s:IsRuleActive('trim_trailing_whitespace', a:config) &&
                     \ get(a:config, 'trim_trailing_whitespace', 'false') ==# 'true'
-            autocmd BufWritePre <buffer> call s:TrimTrailingWhitespace()
+            execute 'autocmd BufWritePre <buffer=' . a:bufnr . '> call s:TrimTrailingWhitespace()'
         endif
     augroup END
 
     if s:IsRuleActive('insert_final_newline', a:config)
         if exists('+fixendofline')
             if a:config["insert_final_newline"] == "false"
-                setl nofixendofline
+                call setbufvar(a:bufnr, '&fixendofline', 0)
             else
-                setl fixendofline
+                call setbufvar(a:bufnr, '&fixendofline', 1)
             endif
         elseif  exists(':SetNoEOL') == 2
             if a:config["insert_final_newline"] == "false"
@@ -478,23 +532,39 @@ function! s:ApplyConfig(config) abort " Set the buffer options {{{1
         let l:max_line_length = str2nr(a:config['max_line_length'])
 
         if l:max_line_length >= 0
-            let &l:textwidth = l:max_line_length
+            call setbufvar(a:bufnr, '&textwidth', l:max_line_length)
             if g:EditorConfig_preserve_formatoptions == 0
-                setlocal formatoptions+=tc
+                " setlocal formatoptions+=tc
+                let l:fo = getbufvar(a:bufnr, '&formatoptions')
+                if l:fo !~# 't'
+                    let l:fo .= 't'
+                endif
+                if l:fo !~# 'c'
+                    let l:fo .= 'c'
+                endif
+                call setbufvar(a:bufnr, '&formatoptions', l:fo)
             endif
         endif
 
         if exists('+colorcolumn')
             if l:max_line_length > 0
                 if g:EditorConfig_max_line_indicator == 'line'
-                    setlocal colorcolumn+=+1
+                    " setlocal colorcolumn+=+1
+                    let l:cocol = getbufvar(a:bufnr, '&colorcolumn')
+                    if !empty(l:cocol)
+                        let l:cocol .= ','
+                    endif
+                    let l:cocol .= '+1'
+                    call setbufvar(a:bufnr, '&colorcolumn', l:cocol)
                 elseif g:EditorConfig_max_line_indicator == 'fill' &&
-                            \ l:max_line_length < &l:columns
+                            \ l:max_line_length < getbufvar(a:bufnr, '&columns')
                     " Fill only if the columns of screen is large enough
-                    let &l:colorcolumn = join(
-                                \ range(l:max_line_length+1,&l:columns),',')
+                    call setbufvar(a:bufnr, '&colorcolumn',
+                            \ join(range(l:max_line_length+1,
+                            \           getbufvar(a:bufnr, '&columns')),
+                            \       ','))
                 elseif g:EditorConfig_max_line_indicator == 'exceeding'
-                    let &l:colorcolumn = ''
+                    call setbufvar(a:bufnr, '&colorcolumn', '')
                     for l:match in getmatches()
                         if get(l:match, 'group', '') == 'ColorColumn'
                             call matchdelete(get(l:match, 'id'))
@@ -502,6 +572,15 @@ function! s:ApplyConfig(config) abort " Set the buffer options {{{1
                     endfor
                     call matchadd('ColorColumn',
                         \ '\%' . (l:max_line_length + 1) . 'v.', 100)
+                elseif g:EditorConfig_max_line_indicator == 'fillexceeding'
+                    let &l:colorcolumn = ''
+                    for l:match in getmatches()
+                        if get(l:match, 'group', '') == 'ColorColumn'
+                            call matchdelete(get(l:match, 'id'))
+                        endif
+                    endfor
+                    call matchadd('ColorColumn',
+                        \ '\%'. (l:max_line_length + 1) . 'v.\+', -1)
                 endif
             endif
         endif
@@ -513,7 +592,8 @@ endfunction
 " }}}1
 
 function! s:TrimTrailingWhitespace() " {{{1
-    if &l:modifiable
+    " Called from within a buffer-specific autocmd, so we can use '%'
+    if getbufvar('%', '&modifiable')
         " don't lose user position when trimming trailing whitespace
         let s:view = winsaveview()
         try

@@ -117,22 +117,19 @@ There's also a variant for searching and a variant for grepping.
 ## Coercion
 
 Want to turn `fooBar` into `foo_bar`?  Press `crs` (coerce to
-snake\_case).  MixedCase (`crm`), camelCase (`crc`), snake\_case
-(`crs`), UPPER\_CASE (`cru`), dash-case (`cr-`), dot.case (`cr.`),
-space case (`cr<space>`), and Title Case (`crt`) are all just 3
+snake\_case).  MixedCase (`crm`), camelCase (`crc`), UPPER\_CASE
+(`cru`), dash-case (`cr-`), and dot.case (`cr.`) are all just 3
 keystrokes away.
 
 ## Installation
 
-If you don't have a preferred installation method, I recommend
-installing [pathogen.vim](https://github.com/tpope/vim-pathogen), and
-then simply copy and paste:
+Install using your favorite package manager, or use Vim's built-in package
+support:
 
-    cd ~/.vim/bundle
-    git clone git://github.com/tpope/vim-abolish.git
-
-Once help tags have been generated, you can view the manual with
-`:help abolish`.
+    mkdir -p ~/.vim/pack/tpope/start
+    cd ~/.vim/pack/tpope/start
+    git clone https://tpope.io/vim/abolish.git
+    vim -u NONE -c "helptags abolish/doc" -c q
 
 ## Self-Promotion
 

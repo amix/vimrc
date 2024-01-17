@@ -22,26 +22,6 @@ if !hlexists('ALEInfo')
     highlight link ALEInfo ALEWarning
 endif
 
-if !hlexists('ALEVirtualTextError')
-    highlight link ALEVirtualTextError ALEError
-endif
-
-if !hlexists('ALEVirtualTextStyleError')
-    highlight link ALEVirtualTextStyleError ALEVirtualTextError
-endif
-
-if !hlexists('ALEVirtualTextWarning')
-    highlight link ALEVirtualTextWarning ALEWarning
-endif
-
-if !hlexists('ALEVirtualTextStyleWarning')
-    highlight link ALEVirtualTextStyleWarning ALEVirtualTextWarning
-endif
-
-if !hlexists('ALEVirtualTextInfo')
-    highlight link ALEVirtualTextInfo ALEVirtualTextWarning
-endif
-
 " The maximum number of items for the second argument of matchaddpos()
 let s:MAX_POS_VALUES = 8
 let s:MAX_COL_SIZE = 1073741824 " pow(2, 30)

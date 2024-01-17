@@ -3,7 +3,7 @@
 Author: itchyny (https://github.com/itchyny)
 License: MIT License
 Repository: https://github.com/itchyny/lightline.vim
-Last Change: 2022/03/16 00:15:04.
+Last Change: 2023/11/21 08:10:00.
 
 CONTENTS					*lightline-contents*
 
@@ -233,7 +233,7 @@ OPTIONS						*lightline-option*
 		Tomorrow_Night_Bright, Tomorrow_Night_Eighties, PaperColor,
 		landscape, one, materia, material, OldHope, nord, deus,
 		simpleblack, srcery_drk, ayu_mirage, ayu_light, ayu_dark,
-		apprentice, rosepine, and 16color are available.
+		apprentice, rosepine, rosepine_moon, and 16color are available.
 		The default value is:
 >
 		let g:lightline.colorscheme = 'default'

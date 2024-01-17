@@ -117,6 +117,16 @@ endfunction
 
 " }}}
 
+
+function! gitgutter#git()
+  if empty(g:gitgutter_git_args)
+    return g:gitgutter_git_executable
+  else
+    return g:gitgutter_git_executable.' '.g:gitgutter_git_args
+  endif
+endfunction
+
+
 function! gitgutter#setup_maps()
   if !g:gitgutter_map_keys
     return
@@ -185,6 +195,7 @@ function! s:clear(bufnr)
   call gitgutter#hunk#reset(a:bufnr)
   call s:reset_tick(a:bufnr)
   call gitgutter#utility#setbufvar(a:bufnr, 'path', '')
+  call gitgutter#utility#setbufvar(a:bufnr, 'basepath', '')
 endfunction
 
 
@@ -193,14 +204,14 @@ endfunction
 " - it ignores unsaved changes in buffers
 " - it does not change to the repo root
 function! gitgutter#quickfix(current_file)
-  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' rev-parse --show-cdup'
+  let cmd = gitgutter#git().' rev-parse --show-cdup'
   let path_to_repo = get(systemlist(cmd), 0, '')
   if !empty(path_to_repo) && path_to_repo[-1:] != '/'
     let path_to_repo .= '/'
   endif
 
   let locations = []
-  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager'.
+  let cmd = gitgutter#git().' --no-pager'.
         \ ' diff --no-ext-diff --no-color -U0'.
         \ ' --src-prefix=a/'.path_to_repo.' --dst-prefix=b/'.path_to_repo.' '.
         \ g:gitgutter_diff_args. ' '. g:gitgutter_diff_base
@@ -211,13 +222,13 @@ function! gitgutter#quickfix(current_file)
   let lnum = 0
   for line in diff
     if line =~ '^diff --git [^"]'
-      let paths = line[11:]
-      let mid = (len(paths) - 1) / 2
-      let [fnamel, fnamer] = [paths[:mid-1], paths[mid+1:]]
-      let fname = fnamel ==# fnamer ? fnamel : fnamel[2:]
+      " No quotation mark therefore no spaces in filenames
+      let [fnamel, fnamer] = split(line)[2:3]
+      let fname = fnamel ==# fnamer ? fnamer : fnamer[2:]
     elseif line =~ '^diff --git "'
+      " Quotation mark therefore do not split on space
       let [_, fnamel, _, fnamer] = split(line, '"')
-      let fname = fnamel ==# fnamer ? fnamel : fnamel[2:]
+      let fname = fnamel ==# fnamer ? fnamer : fnamer[2:]
     elseif line =~ '^diff --cc [^"]'
       let fname = line[10:]
     elseif line =~ '^diff --cc "'
@@ -239,7 +250,6 @@ endfunction
 
 function! gitgutter#difforig()
   let bufnr = bufnr('')
-  let path = gitgutter#utility#repo_path(bufnr, 1)
   let filetype = &filetype
 
   vertical new
@@ -247,15 +257,15 @@ function! gitgutter#difforig()
   let &filetype = filetype
 
   if g:gitgutter_diff_relative_to ==# 'index'
-    let index_name = gitgutter#utility#get_diff_base(bufnr).':'.path
+    let index_name = gitgutter#utility#get_diff_base(bufnr).':'.gitgutter#utility#base_path(bufnr)
     let cmd = gitgutter#utility#cd_cmd(bufnr,
-          \ g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager show '.index_name
+          \ gitgutter#git().' --no-pager show '.index_name
           \ )
     " NOTE: this uses &shell to execute cmd.  Perhaps we should use instead
     " gitgutter#utility's use_known_shell() / restore_shell() functions.
     silent! execute "read ++edit !" cmd
   else
-    silent! execute "read ++edit" path
+    silent! execute "read ++edit" gitgutter#utility#repo_path(bufnr, 1)
   endif
 
   0d_

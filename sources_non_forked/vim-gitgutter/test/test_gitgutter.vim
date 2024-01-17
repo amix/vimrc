@@ -52,10 +52,15 @@ endfunction
 "
 
 function SetUp()
+  let g:gitgutter_diff_base = ''
   call system("git init ".s:test_repo.
         \ " && cd ".s:test_repo.
+        \ " && cp ../.gitconfig .".
+        \ " && cp ../.gitattributes .".
+        \ " && cp ../fixture.foo .".
         \ " && cp ../fixture.txt .".
         \ " && cp ../fixture_dos.txt .".
+        \ " && cp ../fixture_dos_noeol.txt .".
         \ " && git add . && git commit -m 'initial'".
         \ " && git config diff.mnemonicPrefix false")
   execute ':cd' s:test_repo
@@ -191,6 +196,20 @@ function Test_filename_with_equals()
 endfunction
 
 
+function Test_filename_with_colon()
+  call system('touch fix:ture.txt && git add fix:ture.txt')
+  edit fix:ture.txt
+  normal ggo*
+  call s:trigger_gitgutter()
+
+  let expected = [
+        \ {'lnum': 1, 'name': 'GitGutterLineAdded'},
+        \ {'lnum': 2, 'name': 'GitGutterLineAdded'}
+        \ ]
+  call s:assert_signs(expected, 'fix:ture.txt')
+endfunction
+
+
 function Test_filename_with_square_brackets()
   call system('touch fix[tu]re.txt && git add fix[tu]re.txt')
   edit fix[tu]re.txt
@@ -244,6 +263,58 @@ function Test_filename_umlaut()
         \ {'lnum': 2, 'name': 'GitGutterLineAdded'}
         \ ]
   call s:assert_signs(expected, 'fixtüre.txt')
+endfunction
+
+
+function Test_file_cmd()
+  normal ggo*
+
+  file other.txt
+
+  call s:trigger_gitgutter()
+  call assert_equal(1, b:gitgutter.enabled)
+  call assert_equal('', b:gitgutter.path)
+  call s:assert_signs([], 'other.txt')
+
+  write
+
+  call s:trigger_gitgutter()
+  call assert_equal(-2, b:gitgutter.path)
+endfunction
+
+
+function Test_saveas()
+  normal ggo*
+
+  saveas other.txt
+
+  call s:trigger_gitgutter()
+  call assert_equal(1, b:gitgutter.enabled)
+  call assert_equal(-2, b:gitgutter.path)
+  call s:assert_signs([], 'other.txt')
+endfunction
+
+
+function Test_file_mv()
+  call system('git mv fixture.txt fixture_moved.txt')
+  edit fixture_moved.txt
+  normal ggo*
+  call s:trigger_gitgutter()
+  let expected = [{'lnum': 2, 'name': 'GitGutterLineAdded'}]
+  call s:assert_signs(expected, 'fixture_moved.txt')
+
+  write
+  call system('git add fixture_moved.txt && git commit -m "moved and edited"')
+  GitGutterDisable
+  GitGutterEnable
+  let expected = []
+  call s:assert_signs(expected, 'fixture_moved.txt')
+
+  GitGutterDisable
+  let g:gitgutter_diff_base = 'HEAD^'
+  GitGutterEnable
+  let expected = [{'lnum': 2, 'name': 'GitGutterLineAdded'}]
+  call s:assert_signs(expected, 'fixture_moved.txt')
 endfunction
 
 
@@ -348,6 +419,41 @@ function Test_untracked_file_square_brackets_within_repo()
 endfunction
 
 
+function Test_file_unknown_in_base()
+  let starting_branch = split(system('git branch --show-current'))[0]
+  call system('git checkout -b some-feature')
+  let tmp = 'file-on-this-branch-only.tmp'
+  call system('echo "hi" > '.tmp.' && git add '.tmp)
+  execute 'edit '.tmp
+  let g:gitgutter_diff_base = starting_branch
+  GitGutter
+  let expected = [{'lnum': 1, 'name': 'GitGutterLineAdded', 'group': 'gitgutter', 'priority': 10}]
+  call s:assert_signs(expected, tmp)
+  let g:gitgutter_diff_base = ''
+endfunction
+
+
+function Test_v_shell_error_not_clobbered()
+  " set gitgutter up to generate a shell error
+  let starting_branch = split(system('git branch --show-current'))[0]
+  call system('git checkout -b some-feature')
+  let tmp = 'file-on-this-branch-only.tmp'
+  call system('echo "hi" > '.tmp.' && git add '.tmp)
+  execute 'edit '.tmp
+  let g:gitgutter_diff_base = starting_branch
+
+  " run a successful shell command
+  silent !echo foobar >/dev/null
+
+  " run gitgutter
+  GitGutter
+
+  call assert_equal(0, v:shell_error)
+
+  let g:gitgutter_diff_base = ''
+endfunction
+
+
 function Test_hunk_outside_noop()
   5
   GitGutterStageHunk
@@ -390,6 +496,12 @@ function Test_preview_dos()
 endfunction
 
 
+function Test_dos_noeol()
+  edit! fixture_dos_noeol.txt
+  GitGutter
+
+  call s:assert_signs([], 'fixture_dos_noeol.txt')
+endfunction
 
 
 function Test_hunk_stage()
@@ -752,7 +864,7 @@ endfunction
 
 
 function Test_overlapping_hunk_op()
-  func Answer(char)
+  func! Answer(char)
     call feedkeys(a:char."\<CR>")
   endfunc
 
@@ -1163,4 +1275,30 @@ function Test_assume_unchanged()
   normal ggo*
   call s:trigger_gitgutter()
   call s:assert_signs([], 'fixture.txt')
+endfunction
+
+
+function Test_clean_smudge_filter()
+  call system("git config --local include.path ../.gitconfig")
+  call system("rm fixture.foo && git checkout fixture.foo")
+
+  func! Answer(char)
+    call feedkeys(a:char."\<CR>")
+  endfunc
+
+  edit fixture.foo
+  call setline(2, ['A'])
+  call setline(4, ['B'])
+  call s:trigger_gitgutter()
+  normal! 2G
+  call timer_start(100, {-> Answer('y')} )
+  GitGutterStageHunk
+  call s:trigger_gitgutter()
+
+  let expected = [
+        \ {'lnum': 2, 'id': 23, 'name': 'GitGutterLineModified', 'priority': 10, 'group': 'gitgutter'},
+        \ {'lnum': 4, 'id': 24, 'name': 'GitGutterLineModified', 'priority': 10, 'group': 'gitgutter'}
+        \ ]
+  " call s:assert_signs(expected, 'fixture.foo')
+  call s:assert_signs([], 'fixture.foo')
 endfunction

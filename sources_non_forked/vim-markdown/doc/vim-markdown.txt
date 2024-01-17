@@ -490,6 +490,30 @@ Change how to open new files ~
 >
   let g:vim_markdown_edit_url_in = 'tab'
 <
+-------------------------------------------------------------------------------
+                                    *vim-markdown-support-borderless-tables*
+Support borderless tables ~
+
+                                              *g:vim_markdown_borderless_table*
+- 'g:vim_markdown_borderless_table'
+
+  Add support for borderless tables, such as:
+>
+  header 1|header 2
+  --|--
+  data 1|data 2
+<
+  if set to 1:
+>
+  let g:vim_markdown_borderless_table = 1
+<
+  the table would be formatted as usual:
+>
+  | header 1 | header 2 |
+  |----------|----------|
+  | data 1   | data 2   |
+<
+
 ===============================================================================
                                                         *vim-markdown-mappings*
 Mappings ~

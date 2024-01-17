@@ -27,6 +27,7 @@ formatting.
   * [gcc](https://gcc.gnu.org)
   * [gnatpp](https://docs.adacore.com/gnat_ugn-docs/html/gnat_ugn/gnat_ugn/gnat_utility_programs.html#the-gnat-pretty-printer-gnatpp) :floppy_disk:
 * Ansible
+  * [ansible-language-server](https://github.com/ansible/ansible-language-server/)
   * [ansible-lint](https://github.com/willthames/ansible-lint) :floppy_disk:
 * API Blueprint
   * [drafter](https://github.com/apiaryio/drafter)
@@ -44,6 +45,7 @@ formatting.
   * [write-good](https://github.com/btford/write-good)
 * ASM
   * [gcc](https://gcc.gnu.org)
+  * [llvm-mc](https://llvm.org)
 * AVRA
   * [avra](https://github.com/Ro5bert/avra)
 * Awk
@@ -74,6 +76,7 @@ formatting.
   * [ccls](https://github.com/MaskRay/ccls)
   * [clang](http://clang.llvm.org/)
   * [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
+  * [clangcheck](http://clang.llvm.org/docs/ClangCheck.html) :floppy_disk:
   * [clangd](https://clang.llvm.org/extra/clangd.html)
   * [clangtidy](http://clang.llvm.org/extra/clang-tidy/) :floppy_disk:
   * [cppcheck](http://cppcheck.sourceforge.net)
@@ -84,6 +87,7 @@ formatting.
   * [gcc](https://gcc.gnu.org/)
   * [uncrustify](https://github.com/uncrustify/uncrustify)
 * C#
+  * [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
   * [csc](http://www.mono-project.com/docs/about-mono/languages/csharp/) :floppy_disk: see:`help ale-cs-csc` for details and configuration
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
   * [dotnet-format](https://github.com/dotnet/format)
@@ -107,6 +111,7 @@ formatting.
   * [gcc](https://gcc.gnu.org/)
   * [uncrustify](https://github.com/uncrustify/uncrustify)
 * Cairo
+  * [scarb](https://docs.swmansion.com/scarb/) :floppy_disk:
   * [starknet](https://starknet.io/docs)
 * Chef
   * [cookstyle](https://docs.chef.io/cookstyle.html)
@@ -137,6 +142,7 @@ formatting.
 * Cucumber
   * [cucumber](https://cucumber.io/)
 * CUDA
+  * [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
   * [clangd](https://clang.llvm.org/extra/clangd.html)
   * [nvcc](http://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html) :floppy_disk:
 * Cypher
@@ -164,6 +170,7 @@ formatting.
   * [dhall-lint](https://github.com/dhall-lang/dhall-lang)
 * Dockerfile
   * [dockerfile_lint](https://github.com/projectatomic/dockerfile_lint)
+  * [dockerlinter](https://github.com/buddy-works/dockerfile-linter)
   * [dprint](https://dprint.dev)
   * [hadolint](https://github.com/hadolint/hadolint)
 * Elixir
@@ -172,6 +179,7 @@ formatting.
   * [dialyxir](https://github.com/jeremyjh/dialyxir)
   * [dogma](https://github.com/lpil/dogma) :floppy_disk:
   * [elixir-ls](https://github.com/elixir-lsp/elixir-ls) :warning:
+  * [lexical](https://github.com/lexical-lsp/lexical) :warning:
   * [mix](https://hexdocs.pm/mix/Mix.html) :warning: :floppy_disk:
 * Elm
   * [elm-format](https://github.com/avh4/elm-format)
@@ -179,6 +187,7 @@ formatting.
   * [elm-make](https://github.com/elm/compiler)
 * Erb
   * [erb](https://apidock.com/ruby/ERB)
+  * [erb-formatter](https://github.com/nebulab/erb-formatter)
   * [erblint](https://github.com/Shopify/erb-lint)
   * [erubi](https://github.com/jeremyevans/erubi)
   * [erubis](https://github.com/kwatch/erubis)
@@ -217,8 +226,6 @@ formatting.
   * [golangci-lint](https://github.com/golangci/golangci-lint) :warning: :floppy_disk:
   * [golangserver](https://github.com/sourcegraph/go-langserver) :warning:
   * [golines](https://github.com/segmentio/golines)
-  * [golint](https://godoc.org/github.com/golang/lint)
-  * [gometalinter](https://github.com/alecthomas/gometalinter) :warning: :floppy_disk:
   * [gopls](https://github.com/golang/go/wiki/gopls)
   * [gosimple](https://github.com/dominikh/go-tools/tree/master/cmd/gosimple) :warning: :floppy_disk:
   * [gotype](https://godoc.org/golang.org/x/tools/cmd/gotype) :warning: :floppy_disk:
@@ -228,6 +235,8 @@ formatting.
   * [eslint](http://eslint.org/)
   * [gqlint](https://github.com/happylinks/gqlint)
   * [prettier](https://github.com/prettier/prettier)
+* Groovy
+  * [npm-groovy-lint](https://github.com/nvuillam/npm-groovy-lint)
 * Hack
   * [hack](http://hacklang.org/)
   * [hackfmt](https://github.com/facebook/hhvm/tree/master/hphp/hack/hackfmt)
@@ -241,6 +250,7 @@ formatting.
   * [cabal-ghc](https://www.haskell.org/cabal/)
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
   * [floskell](https://github.com/ennocramer/floskell)
+  * [fourmolu](https://github.com/fourmolu/fourmolu)
   * [ghc](https://www.haskell.org/ghc/)
   * [ghc-mod](https://github.com/DanielG/ghc-mod)
   * [hdevtools](https://hackage.haskell.org/package/hdevtools)
@@ -261,11 +271,13 @@ formatting.
   * [alex](https://github.com/get-alex/alex)
   * [angular](https://www.npmjs.com/package/@angular/language-server)
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
+  * [eslint](https://github.com/BenoitZugmeyer/eslint-plugin-html)
   * [fecs](http://fecs.baidu.com/)
   * [html-beautify](https://beautifier.io/)
   * [htmlhint](http://htmlhint.com/)
   * [prettier](https://github.com/prettier/prettier)
   * [proselint](http://proselint.com/)
+  * [rustywind](https://github.com/avencera/rustywind)
   * [tidy](http://www.html-tidy.org/)
   * [write-good](https://github.com/btford/write-good)
 * Idris
@@ -279,6 +291,7 @@ formatting.
 * Java
   * [PMD](https://pmd.github.io/)
   * [checkstyle](http://checkstyle.sourceforge.net) :floppy_disk:
+  * [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
   * [eclipselsp](https://github.com/eclipse/eclipse.jdt.ls)
   * [google-java-format](https://github.com/google/google-java-format)
@@ -286,6 +299,7 @@ formatting.
   * [javalsp](https://github.com/georgewfraser/vscode-javac)
   * [uncrustify](https://github.com/uncrustify/uncrustify)
 * JavaScript
+  * [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
   * [deno](https://deno.land/)
   * [dprint](https://dprint.dev/)
@@ -302,6 +316,7 @@ formatting.
   * [xo](https://github.com/sindresorhus/xo)
 * JSON
   * [VSCode JSON language server](https://github.com/hrsh7th/vscode-langservers-extracted)
+  * [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell) :warning:
   * [dprint](https://dprint.dev)
   * [eslint](http://eslint.org/) :warning:
@@ -343,6 +358,7 @@ formatting.
 * Lua
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
   * [lua-format](https://github.com/Koihik/LuaFormatter)
+  * [lua-language-server](https://github.com/LuaLS/lua-language-server)
   * [luac](https://www.lua.org/manual/5.1/luac.html)
   * [luacheck](https://github.com/mpeterv/luacheck)
   * [luafmt](https://github.com/trixnz/lua-fmt)
@@ -360,6 +376,7 @@ formatting.
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
   * [languagetool](https://languagetool.org/) :floppy_disk:
   * [markdownlint](https://github.com/DavidAnson/markdownlint) :floppy_disk:
+  * [marksman](https://github.com/artempyanykh/marksman)
   * [mdl](https://github.com/mivok/markdownlint)
   * [pandoc](https://pandoc.org)
   * [prettier](https://github.com/prettier/prettier)
@@ -375,11 +392,15 @@ formatting.
   * [mmc](http://mercurylang.org) :floppy_disk:
 * NASM
   * [nasm](https://www.nasm.us/) :floppy_disk:
+* Nickel
+  * [nickel_format](https://github.com/tweag/nickel#formatting)
 * Nim
   * [nim check](https://nim-lang.org/docs/nimc.html) :floppy_disk:
   * [nimlsp](https://github.com/PMunch/nimlsp)
   * nimpretty
 * nix
+  * [alejandra](https://github.com/kamadorueda/alejandra)
+  * [deadnix](https://github.com/astro/deadnix)
   * [nix-instantiate](http://nixos.org/nix/manual/#sec-nix-instantiate)
   * [nixfmt](https://github.com/serokell/nixfmt)
   * [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
@@ -392,6 +413,7 @@ formatting.
 * Objective-C
   * [ccls](https://github.com/MaskRay/ccls)
   * [clang](http://clang.llvm.org/)
+  * [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
   * [clangd](https://clang.llvm.org/extra/clangd.html)
   * [uncrustify](https://github.com/uncrustify/uncrustify)
 * Objective-C++
@@ -458,6 +480,7 @@ formatting.
 * proto
   * [buf-format](https://github.com/bufbuild/buf) :floppy_disk:
   * [buf-lint](https://github.com/bufbuild/buf) :floppy_disk:
+  * [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
   * [protoc-gen-lint](https://github.com/ckaznocha/protoc-gen-lint) :floppy_disk:
   * [protolint](https://github.com/yoheimuta/protolint) :floppy_disk:
 * Pug
@@ -482,6 +505,7 @@ formatting.
   * [isort](https://github.com/timothycrosley/isort)
   * [mypy](http://mypy-lang.org/)
   * [prospector](https://github.com/PyCQA/prospector) :warning: :floppy_disk:
+  * [pycln](https://github.com/hadialqattan/pycln)
   * [pycodestyle](https://github.com/PyCQA/pycodestyle) :warning:
   * [pydocstyle](https://www.pydocstyle.org/) :warning:
   * [pyflakes](https://github.com/PyCQA/pyflakes)
@@ -491,8 +515,10 @@ formatting.
   * [pylsp](https://github.com/python-lsp/python-lsp-server) :warning:
   * [pyre](https://github.com/facebook/pyre-check) :warning:
   * [pyright](https://github.com/microsoft/pyright)
+  * [refurb](https://github.com/dosisod/refurb) :floppy_disk:
   * [reorder-python-imports](https://github.com/asottile/reorder_python_imports)
   * [ruff](https://github.com/charliermarsh/ruff)
+  * [ruff-format](https://docs.astral.sh/ruff/formatter/)
   * [unimport](https://github.com/hakancelik96/unimport)
   * [vulture](https://github.com/jendrikseipp/vulture) :warning: :floppy_disk:
   * [yapf](https://github.com/google/yapf)
@@ -535,6 +561,7 @@ formatting.
   * [brakeman](http://brakemanscanner.org/) :floppy_disk:
   * [cspell](https://github.com/streetsidesoftware/cspell/tree/main/packages/cspell)
   * [debride](https://github.com/seattlerb/debride)
+  * [packwerk](https://github.com/Shopify/packwerk) :floppy_disk:
   * [prettier](https://github.com/prettier/plugin-ruby)
   * [rails_best_practices](https://github.com/flyerhzm/rails_best_practices) :floppy_disk:
   * [reek](https://github.com/troessner/reek)
@@ -575,6 +602,7 @@ formatting.
 * SML
   * [smlnj](http://www.smlnj.org/)
 * Solidity
+  * [forge](https://github.com/foundry-rs/forge)
   * [solc](https://solidity.readthedocs.io/)
   * [solhint](https://github.com/protofire/solhint)
   * [solium](https://github.com/duaraghav8/Solium)
@@ -582,6 +610,7 @@ formatting.
   * [dprint](https://dprint.dev)
   * [pgformatter](https://github.com/darold/pgFormatter)
   * [sql-lint](https://github.com/joereynolds/sql-lint)
+  * [sqlfluff](https://github.com/sqlfluff/sqlfluff)
   * [sqlfmt](https://github.com/jackc/sqlfmt)
   * [sqlformat](https://github.com/andialbrecht/sqlparse)
   * [sqlint](https://github.com/purcell/sqlint)
@@ -687,6 +716,7 @@ formatting.
   * [swaglint](https://github.com/byCedric/swaglint) :warning:
   * [yaml-language-server](https://github.com/redhat-developer/yaml-language-server)
   * [yamlfix](https://lyz-code.github.io/yamlfix)
+  * [yamlfmt](https://github.com/google/yamlfmt)
   * [yamllint](https://yamllint.readthedocs.io/)
 * YANG
   * [yang-lsp](https://github.com/theia-ide/yang-lsp)

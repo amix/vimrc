@@ -41,7 +41,8 @@ one in 2013.
 ===============================================================================
 INSTALLATION                                           *gitgutter-installation*
 
-Use your favourite package manager, or use Vim's built-in package support.
+First, use your favourite package manager, or use Vim's built-in package
+support.
 
 Vim:~
 >
@@ -58,6 +59,16 @@ Neovim:~
   git clone https://github.com/airblade/vim-gitgutter.git
   nvim -u NONE -c "helptags vim-gitgutter/doc" -c q
 <
+
+Second, ensure your 'updatetime' and 'signcolumn' options are set appropriately.
+
+When you make a change to a file tracked by git, the diff markers should
+appear automatically after a short delay.  The delay is governed by vim's
+'updatetime' option; the default value is `4000`, i.e. 4 seconds, but I
+suggest reducing it to around 100ms (add `set updatetime=100` to your vimrc).
+Note 'updatetime' also controls the delay before vim writes its swap file.
+
+The 'signcolumn' option can have any value except "off".
 
 
 ===============================================================================
@@ -547,6 +558,13 @@ Default:
 This dictionary is passed directly to |popup_create()| (Vim) or
 |nvim_open_win()| (Neovim).
 
+If you simply want to override one or two of the default values, create a file
+in an after/ directory.  For example:
+>
+    " ~/.vim/after/vim-gitgutter/overrides.vim
+    let g:gitgutter_floating_window_options['border'] = 'single'
+<
+
                                           *g:gitgutter_close_preview_on_escape*
 Default: 0
 
@@ -628,7 +646,7 @@ colorscheme or |vimrc|:
     GitGutterAddLine          " default: links to DiffAdd
     GitGutterChangeLine       " default: links to DiffChange
     GitGutterDeleteLine       " default: links to DiffDelete
-    GitGutterChangeDeleteLine " default: links to GitGutterChangeLineDefault
+    GitGutterChangeDeleteLine " default: links to GitGutterChangeLine
 <
 
 For example, to use |hl-DiffText| instead of |hl-DiffChange|:
@@ -641,7 +659,7 @@ your colorscheme or |vimrc|:
     GitGutterAddLineNr          " default: links to CursorLineNr
     GitGutterChangeLineNr       " default: links to CursorLineNr
     GitGutterDeleteLineNr       " default: links to CursorLineNr
-    GitGutterChangeDeleteLineNr " default: links to CursorLineNr
+    GitGutterChangeDeleteLineNr " default: links to GitGutterChangeLineNr
 <
 For example, to use |hl-Underlined| instead of |hl-CursorLineNr|:
 >

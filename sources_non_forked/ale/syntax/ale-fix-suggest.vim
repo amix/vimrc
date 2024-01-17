@@ -3,7 +3,7 @@ if exists('b:current_syntax')
 endif
 
 syn match aleFixerComment /^.*$/
-syn match aleFixerName /\(^\|, \)'[^']*'/
+syn match aleFixerName /\(^ *\|, \)'[^']*'/
 syn match aleFixerHelp /^See :help ale-fix-configuration/
 
 hi def link aleFixerComment Comment

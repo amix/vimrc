@@ -57,6 +57,7 @@ function! nerdtree#ui_glue#createDefaultBindings() abort
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapToggleFilters, 'scope': 'all', 'callback': s.'toggleIgnoreFilter' })
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapToggleFiles, 'scope': 'all', 'callback': s.'toggleShowFiles' })
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapToggleBookmarks, 'scope': 'all', 'callback': s.'toggleShowBookmarks' })
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapToggleFileLines, 'scope': 'all', 'callback': s.'toggleShowFileLines' })
 
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapCloseDir, 'scope': 'Node', 'callback': s.'closeCurrentDir' })
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapCloseChildren, 'scope': 'DirNode', 'callback': s.'closeChildren' })
@@ -641,6 +642,7 @@ endfunction
 function! nerdtree#ui_glue#setupCommands() abort
     command! -n=? -complete=dir -bar NERDTree :call g:NERDTreeCreator.CreateTabTree('<args>')
     command! -n=? -complete=dir -bar NERDTreeToggle :call g:NERDTreeCreator.ToggleTabTree('<args>')
+    command! -n=? -complete=dir -bar NERDTreeExplore :call g:NERDTreeCreator.CreateExploreTree('<args>')
     command! -n=0 -bar NERDTreeClose :call g:NERDTree.Close()
     command! -n=1 -complete=customlist,nerdtree#completeBookmarks -bar NERDTreeFromBookmark call g:NERDTreeCreator.CreateTabTree('<args>')
     command! -n=0 -bar NERDTreeMirror call g:NERDTreeCreator.CreateMirror()
@@ -683,6 +685,12 @@ endfunction
 " toggles the display of hidden files
 function! s:toggleShowHidden() abort
     call b:NERDTree.ui.toggleShowHidden()
+endfunction
+
+" FUNCTION: s:toggleShowFileLines() {{{1
+" toggles the display of hidden files
+function! s:toggleShowFileLines() abort
+    call b:NERDTree.ui.toggleShowFileLines()
 endfunction
 
 " FUNCTION: s:toggleZoom() {{{1

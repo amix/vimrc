@@ -3,6 +3,13 @@ ALE JSON Integration                                         *ale-json-options*
 
 
 ===============================================================================
+clang-format                                             *ale-json-clangformat*
+
+See |ale-c-clangformat| for information about the available options.
+Note that the C options are also used for JSON.
+
+
+===============================================================================
 cspell                                                        *ale-json-cspell*
 
 See |ale-cspell-options|

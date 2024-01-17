@@ -25,7 +25,7 @@ if get(g:, 'vim_markdown_folding_style_pythonic', 0)
                 let b:fenced_block = 0
             endif
         " else, if we're caring about front matter
-        elseif g:vim_markdown_frontmatter == 1
+        elseif get(g:, 'vim_markdown_frontmatter', 0) == 1
             " if we're in front matter and not on line 1
             if b:front_matter == 1 && a:lnum > 2
                 let l0 = getline(a:lnum-1)
@@ -111,7 +111,7 @@ else " vim_markdown_folding_style_pythonic == 0
             elseif b:fenced_block == 1
                 let b:fenced_block = 0
             endif
-        elseif g:vim_markdown_frontmatter == 1
+        elseif get(g:, 'vim_markdown_frontmatter', 0) == 1
             if b:front_matter == 1
                 if l0 ==# '---'
                     let b:front_matter = 0

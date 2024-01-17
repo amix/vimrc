@@ -12,8 +12,10 @@ let s:cursor_timer = -1
 
 " A wrapper for echon so we can test messages we echo in Vader tests.
 function! ale#cursor#Echom(message) abort
-    " no-custom-checks
-    exec "norm! :echom a:message\n"
+    if mode() is# 'n'
+        " no-custom-checks
+        exec "norm! :echom a:message\n"
+    endif
 endfunction
 
 function! ale#cursor#TruncatedEcho(original_message) abort

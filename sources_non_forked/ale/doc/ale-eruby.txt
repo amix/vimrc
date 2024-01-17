@@ -14,6 +14,19 @@ default parser in Rails between 3.0 and 5.1. `erubi` is the default in Rails
 5.1 and later. `ruumba` can extract Ruby from eruby files and run rubocop on
 the result. To selectively enable a subset, see |g:ale_linters|.
 
+
+===============================================================================
+erb-formatter                                          *ale-eruby-erbformatter*
+
+g:ale_eruby_erbformatter_executable       *g:ale_eruby_erbformatter_executable*
+                                          *b:ale_eruby_erbformatter_executable*
+  Type: |String|
+  Default: `'erb-formatter'`
+
+  Override the invoked erb-formatter binary. This is useful for running
+  erb-formatter from binstubs or a bundle.
+
+
 ===============================================================================
 erblint                                                     *ale-eruby-erblint*
 
@@ -40,7 +53,7 @@ ruumba                                                       *ale-eruby-ruumba*
 g:ale_eruby_ruumba_executable                   *g:ale_eruby_ruumba_executable*
                                                 *b:ale_eruby_ruumba_executable*
   Type: |String|
-  Default: `'ruumba`
+  Default: `'ruumba'`
 
   Override the invoked ruumba binary. This is useful for running ruumba
   from binstubs or a bundle.

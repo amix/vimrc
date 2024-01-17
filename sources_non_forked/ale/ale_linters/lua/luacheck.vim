@@ -4,8 +4,43 @@
 call ale#Set('lua_luacheck_executable', 'luacheck')
 call ale#Set('lua_luacheck_options', '')
 
+function! s:IsInRuntimepath(buffer) abort
+    let l:runtimepath_dirs = split(&runtimepath, ',')
+
+    for l:dir in ale#path#Upwards(expand('#' . a:buffer . ':p:h'))
+        for l:runtime_dir in l:runtimepath_dirs
+            if l:dir is# l:runtime_dir
+                return 1
+            endif
+        endfor
+    endfor
+
+    return 0
+endfunction
+
 function! ale_linters#lua#luacheck#GetCommand(buffer) abort
-    return '%e' . ale#Pad(ale#Var(a:buffer, 'lua_luacheck_options'))
+    let l:options = ale#Var(a:buffer, 'lua_luacheck_options')
+
+    " Add `--globals vim` by default if the file is in runtimepath.
+    if l:options !~# '--globals'
+        let l:in_runtime = getbufvar(a:buffer, 'ale_in_runtimepath', v:null)
+
+        if l:in_runtime is v:null
+            let l:in_runtime = s:IsInRuntimepath(a:buffer)
+            " Save the result of check this buffer so we only check once.
+            call setbufvar(a:buffer, 'ale_in_runtimepath', l:in_runtime)
+        endif
+
+        if l:in_runtime
+            if !empty(l:options)
+                let l:options .= ' '
+            endif
+
+            let l:options .= '--globals vim'
+        endif
+    endif
+
+    return '%e' . ale#Pad(l:options)
     \   . ' --formatter plain --codes --filename %s -'
 endfunction
 

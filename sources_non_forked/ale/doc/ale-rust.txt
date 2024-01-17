@@ -33,11 +33,12 @@ Integration Information
   5. rustfmt -- If you have `rustfmt` installed, you can use it as a fixer to
      consistently reformat your Rust code.
 
-  Only cargo and rls are enabled by default. To switch to using rustc instead
-  of cargo, configure |g:ale_linters| appropriately: >
+  Only cargo and rust-analyze are enabled by default. To switch to using rustc
+  instead of cargo, configure |b:ale_linters| in your ftplugin file
+  appropriately: >
 
   " See the help text for the option for more information.
-  let g:ale_linters = {'rust': ['rustc', 'rls']}
+  let b:ale_linters = ['analyzer', 'rustc']
 <
 
   Also note that rustc 1.18. or later is needed.
@@ -60,8 +61,20 @@ g:ale_rust_analyzer_config                         *g:ale_rust_analyzer_config*
   Type: |Dictionary|
   Default: `{}`
 
-  Dictionary with configuration settings for rust-analyzer.
+  Dictionary with configuration settings for rust-analyzer. Keys of the
+  dictionary are components of configuration keys. For example:
+>
+    let g:ale_rust_analyzer_config = {
+    \  'server': {
+    \    'extraEnv': { 'RUSTUP_TOOLCHAIN': 'stable' },
+    \  }
+    \}
+<
+  corresponds to `rust-analyzer.server.extraEnv = { 'RUSTUP_TOOLCHAIN': 'stable' }`
 
+  For available configuration parameters, see the `rust-analyzer` manual:
+
+  https://rust-analyzer.github.io/manual.html#configuration
 
 ===============================================================================
 cargo                                                          *ale-rust-cargo*
@@ -286,6 +299,14 @@ g:ale_rust_rustfmt_options                         *g:ale_rust_rustfmt_options*
   Default: `''`
 
   This variable can be set to pass additional options to the rustfmt fixer.
+
+
+g:ale_rust_rustfmt_executable                   *g:ale_rust_rustfmt_executable*
+                                                *b:ale_rust_rustfmt_executable*
+  Type: |String|
+  Default: `'rustfmt'`
+
+  This variable can be modified to change the executable path for `rustfmt`.
 
 
 ===============================================================================

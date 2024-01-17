@@ -14,7 +14,7 @@ def complete(tab, opts):
     :return: a string that match with tab
     """
     el = [x for x in tab]
-    pat = "".join(list(map(lambda x: x + "\w*" if re.match("\w", x) else x,
+    pat = "".join(list(map(lambda x: x + r"\w*" if re.match(r"\w", x) else x,
                            el)))
     try:
         opts = [x for x in opts if re.search(pat, x, re.IGNORECASE)]

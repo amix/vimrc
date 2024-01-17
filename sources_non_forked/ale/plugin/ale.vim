@@ -14,6 +14,7 @@ let g:loaded_ale_dont_use_this_in_other_plugins_please = 1
 
 " A flag for detecting if the required features are set.
 if has('nvim')
+    " We check for NeoVim 0.2.0+, but we only officially support NeoVim 0.6.0
     let s:has_features = has('timers') && has('nvim-0.2.0')
 else
     " Check if Job and Channel functions are available, instead of the
@@ -25,7 +26,7 @@ if !s:has_features
     " Only output a warning if editing some special files.
     if index(['', 'gitcommit'], &filetype) == -1
         " no-custom-checks
-        echoerr 'ALE requires NeoVim >= 0.2.0 or Vim 8 with +timers +job +channel'
+        echoerr 'ALE requires NeoVim >= 0.6.0 or Vim 8 with +timers +job +channel'
         " no-custom-checks
         echoerr 'Please update your editor appropriately.'
     endif
@@ -59,6 +60,10 @@ let g:ale_filetype_blacklist = [
 let g:ale_linters = get(g:, 'ale_linters', {})
 " This option can be changed to only enable explicitly selected linters.
 let g:ale_linters_explicit = get(g:, 'ale_linters_explicit', 0)
+" Ignoring linters, for disabling some, or ignoring LSP diagnostics.
+let g:ale_linters_ignore = get(g:, 'ale_linters_ignore', {})
+" Disabling all language server functionality.
+let g:ale_disable_lsp = get(g:, 'ale_disable_lsp', 'auto')
 
 " This Dictionary configures which functions will be used for fixing problems.
 let g:ale_fixers = get(g:, 'ale_fixers', {})
@@ -127,8 +132,8 @@ let g:ale_echo_cursor = get(g:, 'ale_echo_cursor', 1)
 " This flag can be set to 1 to automatically show errors in the preview window.
 let g:ale_cursor_detail = get(g:, 'ale_cursor_detail', 0)
 
-" This flag can be set to 1 to enable virtual text when the cursor moves.
-let g:ale_virtualtext_cursor = get(g:, 'ale_virtualtext_cursor', 0)
+" This flag can be changed to disable/enable virtual text.
+let g:ale_virtualtext_cursor = get(g:, 'ale_virtualtext_cursor', (has('nvim-0.3.2') || has('patch-9.0.0297') && has('textprop') && has('popupwin')) ? 'all' : 'disabled')
 
 " This flag can be set to 1 to enable LSP hover messages at the cursor.
 let g:ale_hover_cursor = get(g:, 'ale_hover_cursor', 1)
@@ -178,6 +183,10 @@ let g:ale_python_auto_pipenv = get(g:, 'ale_python_auto_pipenv', 0)
 " Enable automatic detection of poetry for Python linters.
 let g:ale_python_auto_poetry = get(g:, 'ale_python_auto_poetry', 0)
 
+" Enable automatic adjustment of environment variables for Python linters.
+" The variables are set based on ALE's virtualenv detection.
+let g:ale_python_auto_virtualenv = get(g:, 'ale_python_auto_virtualenv', 0)
+
 " This variable can be overridden to set the GO111MODULE environment variable.
 let g:ale_go_go111module = get(g:, 'ale_go_go111module', '')
 
@@ -186,6 +195,18 @@ let g:ale_deno_executable = get(g:, 'ale_deno_executable', 'deno')
 
 " If 1, enable a popup menu for commands.
 let g:ale_popup_menu_enabled = get(g:, 'ale_popup_menu_enabled', has('gui_running'))
+
+" If 0, save hidden files when code actions are applied.
+let g:ale_save_hidden = get(g:, 'ale_save_hidden', 0)
+
+" If 1, disables ALE's built in error display. Instead, all errors are piped
+" to the diagnostics API.
+let g:ale_use_neovim_diagnostics_api = get(g:, 'ale_use_neovim_diagnostics_api', has('nvim-0.6'))
+
+if g:ale_use_neovim_diagnostics_api && !has('nvim-0.6')
+    " no-custom-checks
+    echoerr('Setting g:ale_use_neovim_diagnostics_api to 1 requires Neovim 0.6+.')
+endif
 
 if g:ale_set_balloons is 1 || g:ale_set_balloons is# 'hover'
     call ale#balloon#Enable()
@@ -225,6 +246,8 @@ command! -bar ALEDisableBuffer :call ale#toggle#DisableBuffer(bufnr(''))
 command! -bar ALEResetBuffer :call ale#toggle#ResetBuffer(bufnr(''))
 " A command to stop all LSP-like clients, including tsserver.
 command! -bar ALEStopAllLSPs :call ale#lsp#reset#StopAllLSPs()
+" A command to stop a specific language server, or tsseserver.
+command! -bar -bang -nargs=1 -complete=customlist,ale#lsp#reset#Complete ALEStopLSP :call ale#lsp#reset#StopLSP(<f-args>, '<bang>')
 
 " A command for linting manually.
 command! -bar ALELint :call ale#Queue(0, 'lint_file')
@@ -236,9 +259,9 @@ command! -bar ALEPopulateQuickfix :call ale#list#ForcePopulateErrorList(1)
 command! -bar ALEPopulateLocList  :call ale#list#ForcePopulateErrorList(0)
 
 " Define a command to get information about current filetype.
-command! -bar ALEInfo :call ale#debugging#Info()
-" The same, but copy output to your clipboard.
-command! -bar ALEInfoToClipboard :call ale#debugging#InfoToClipboard()
+command! -bar -nargs=* ALEInfo :call ale#debugging#InfoCommand(<f-args>)
+" Deprecated and scheduled for removal in 4.0.0.
+command! -bar ALEInfoToClipboard :call ale#debugging#InfoToClipboardDeprecatedCommand()
 " Copy ALE information to a file.
 command! -bar -nargs=1 ALEInfoToFile :call ale#debugging#InfoToFile(<f-args>)
 
@@ -323,6 +346,7 @@ nnoremap <silent> <Plug>(ale_go_to_type_definition) :ALEGoToTypeDefinition<Retur
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_tab) :ALEGoToTypeDefinition -tab<Return>
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_split) :ALEGoToTypeDefinition -split<Return>
 nnoremap <silent> <Plug>(ale_go_to_type_definition_in_vsplit) :ALEGoToTypeDefinition -vsplit<Return>
+nnoremap <silent> <Plug>(ale_go_to_implementation) :ALEGoToImplementation<Return>
 nnoremap <silent> <Plug>(ale_go_to_implementation_in_tab) :ALEGoToImplementation -tab<Return>
 nnoremap <silent> <Plug>(ale_go_to_implementation_in_split) :ALEGoToImplementation -split<Return>
 nnoremap <silent> <Plug>(ale_go_to_implementation_in_vsplit) :ALEGoToImplementation -vsplit<Return>
@@ -335,6 +359,10 @@ nnoremap <silent> <Plug>(ale_rename) :ALERename<Return>
 nnoremap <silent> <Plug>(ale_filerename) :ALEFileRename<Return>
 nnoremap <silent> <Plug>(ale_code_action) :ALECodeAction<Return>
 nnoremap <silent> <Plug>(ale_repeat_selection) :ALERepeatSelection<Return>
+nnoremap <silent> <Plug>(ale_info) :ALEInfo<Return>
+nnoremap <silent> <Plug>(ale_info_echo) :ALEInfo -echo<Return>
+nnoremap <silent> <Plug>(ale_info_clipboard) :ALEInfo -clipboard<Return>
+nnoremap <silent> <Plug>(ale_info_preview) :ALEInfo -preview<Return>
 
 " Set up autocmd groups now.
 call ale#events#Init()

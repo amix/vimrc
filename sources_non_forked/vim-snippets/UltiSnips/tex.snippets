@@ -36,24 +36,6 @@ endglobal
 # ENVIRONMENT #
 ###############
 
-snippet beg "begin{} / end{}" bi
-\begin{$1}
-	${0:${VISUAL}}
-\end{$1}
-endsnippet
-
-snippet cnt "Center" bi
-\begin{center}
-	${0:${VISUAL}}
-\end{center}
-endsnippet
-
-snippet desc "Description" bi
-\begin{description}
-	\item[${1:${VISUAL}}] $0
-\end{description}
-endsnippet
-
 snippet lemma "Lemma" bi
 \begin{lemma}
 	${0:${VISUAL}}
@@ -135,24 +117,6 @@ snippet fig "Figure environment" bi
 \end{figure}
 endsnippet
 
-snippet enum "Enumerate" bi
-\begin{enumerate}
-	\item ${0:${VISUAL}}
-\end{enumerate}
-endsnippet
-
-snippet item "Itemize" bi
-\begin{itemize}
-	\item ${0:${VISUAL}}
-\end{itemize}
-endsnippet
-
-snippet case "cases" bi
-\begin{cases}
-	${0:${VISUAL}}
-\end{cases}
-endsnippet
-
 snippet abs "abstract environment" b
 \begin{abstract}
 	${0:${VISUAL}}
@@ -160,9 +124,9 @@ snippet abs "abstract environment" b
 endsnippet
 
 snippet tab "tabular / array environment" b
-	\begin{${1:t}${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${2:c}}
-	$0${2/(?<=.)(c|l|r)|./(?1: & )/g}
-	\end{$1${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}
+\begin{${1:t}${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${2:c}}
+$0${2/(?<=.)(c|l|r)|./(?1: & )/g}
+\end{$1${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}
 endsnippet
 
 snippet table "Table environment" b
@@ -247,26 +211,6 @@ snippet srto "... Root" wi
 \sqrt[$1]{${2:${VISUAL}}}$0
 endsnippet
 
-snippet bf "Bold" wi
-\bf{${1:${VISUAL}}}$0
-endsnippet
-
-snippet it "Italic" wi
-\it{${1:${VISUAL}}}$0
-endsnippet
-
-snippet un "Underline" wi
-\un{${1:${VISUAL}}}$0
-endsnippet
-
-snippet rm "Text" wi
-\rm{${1:${VISUAL}}}$0
-endsnippet
-
-snippet itm "Item" wi
-\item ${0:${VISUAL}}
-endsnippet
-
 snippet ceil "Ceil" w
 \left\lceil $1 \right\rceil $0
 endsnippet
@@ -283,32 +227,8 @@ snippet bmat "Bmat" w
 \begin{bmatrix} $1 \end{bmatrix} $0
 endsnippet
 
-snippet () "Left( right)" w
-\left( ${1:${VISUAL}} \right) $0
-endsnippet
-
-snippet lr "left( right)" i
-\left( ${1:${VISUAL}} \right) $0
-endsnippet
-
-snippet lr( "left( right)" i
-\left( ${1:${VISUAL}} \right) $0
-endsnippet
-
-snippet lr| "left| right|" i
-\left| ${1:${VISUAL}} \right| $0
-endsnippet
-
-snippet lr{ "left\{ right\}" i
-\left\\{ ${1:${VISUAL}} \right\\} $0
-endsnippet
-
 snippet lrb "left\{ right\}" i
 \left\\{ ${1:${VISUAL}} \right\\} $0
-endsnippet
-
-snippet lr[ "left[ right]" i
-\left[ ${1:${VISUAL}} \right] $0
 endsnippet
 
 snippet lra "leftangle rightangle" wi
@@ -371,11 +291,11 @@ snippet != "Not Equal" w
 \neq 
 endsnippet
 
-snippet <= "leq" Aw
+snippet <= "leq" w
 \le 
 endsnippet
 
-snippet >= "geq" Aw
+snippet >= "geq" w
 \ge 
 endsnippet
 
@@ -384,7 +304,7 @@ snippet nn "Tikz node" w
 $0
 endsnippet
 
-snippet lll "l" Aw
+snippet lll "l" w
 \ell
 endsnippet
 
@@ -400,7 +320,7 @@ snippet <! "normal" Aw
 \triangleleft 
 endsnippet
 
-snippet "(\d|\w)+invs" "inverse" Awr
+snippet "((\d|\w)+)invs" "inverse" Awr
 `!p snip.rv = match.group(1)`^{-1}
 endsnippet
 
@@ -465,59 +385,6 @@ endsnippet
 
 snippet ac "Acroynm normal" bi
 \ac{${1:acronym}}
-endsnippet
-
-snippet ni "Non-indented paragraph" bi
-\noindent
-endsnippet
-
-
-############
-# SECTIONS #
-############
-
-snippet chap "Chapter" wi
-\chapter{$1${VISUAL}}
-endsnippet
-
-snippet sec "Section" wi
-\section{$1${VISUAL}}
-endsnippet
-
-snippet sec* "Section*" wi
-\section*{$1${VISUAL}}
-endsnippet
-
-snippet sub "Subsection" wi
-\subsection{$1${VISUAL}}
-endsnippet
-
-snippet sub* "Subsection*" wi
-\subsection*{$1${VISUAL}}
-endsnippet
-
-snippet subsub "Subsection" wi
-\subsubsection{$1${VISUAL}}
-endsnippet
-
-snippet subsub* "Subsubsection" wi
-\subsubsection*{$1${VISUAL}}
-endsnippet
-
-snippet par "Paragraph" wi
-\paragraph{$1${VISUAL}}
-endsnippet
-
-snippet par* "Paragraph*" wi
-\paragraph*{$1${VISUAL}}
-endsnippet
-
-snippet subpar "Sub Paragraph" wi
-\subparagraph{$1${VISUAL}}
-endsnippet
-
-snippet subpar* "Sub Paragraph*" wi
-\subparagraph*{$1${VISUAL}}
 endsnippet
 
 # vim:ft=snippets:

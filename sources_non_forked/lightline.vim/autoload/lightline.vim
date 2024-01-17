@@ -26,7 +26,11 @@ function! lightline#update() abort
   endif
 endfunction
 
-if exists('*win_gettype')
+if exists('*nvim_win_get_config')
+  function! s:skip() abort
+    return !nvim_win_get_config(0).focusable
+  endfunction
+elseif exists('*win_gettype')
   function! s:skip() abort " Vim 8.2.0257 (00f3b4e007), 8.2.0991 (0fe937fd86), 8.2.0996 (40a019f157)
     return win_gettype() ==# 'popup' || win_gettype() ==# 'autocmd'
   endfunction

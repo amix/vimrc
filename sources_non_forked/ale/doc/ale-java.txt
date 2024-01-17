@@ -42,6 +42,13 @@ g:ale_java_checkstyle_options                   *g:ale_java_checkstyle_options*
 
 
 ===============================================================================
+clang-format                                             *ale-java-clangformat*
+
+See |ale-c-clangformat| for information about the available options.
+Note that the C options are also used for Java.
+
+
+===============================================================================
 cspell                                                        *ale-java-cspell*
 
 See |ale-cspell-options|
@@ -257,7 +264,7 @@ g:ale_java_eclipselsp_workspace_path     *g:ale_java_eclipselsp_workspace_path*
   Type: |String|
   Default: `''`
 
-  If you have Eclipse installed is good idea to set this variable to the
+  If you have Eclipse installed it is a good idea to set this variable to the
   absolute path of the Eclipse workspace. If not set this value will be set to
   the parent folder of the project root.
 

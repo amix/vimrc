@@ -49,6 +49,26 @@ g:ale_ruby_debride_options                         *g:ale_ruby_debride_options*
 
 
 ===============================================================================
+packwerk                                                    *ale-ruby-packwerk*
+
+g:ale_ruby_packwerk_executable                 *g:ale_ruby_packwerk_executable*
+                                               *b:ale_ruby_packwerk_executable*
+  Type: |String|
+  Default: `'packwerk'`
+
+  Override the invoked packwerk binary. Set this to `'bundle'` to invoke
+  `'bundle` `exec` packwerk'.
+
+
+g:ale_ruby_packwerk_options                       *g:ale_ruby_packwerk_options*
+                                                  *b:ale_ruby_packwerk_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be changed to modify flags given to packwerk.
+
+
+===============================================================================
 prettier                                                    *ale-ruby-prettier*
 
 See |ale-javascript-prettier| for information about the available options.

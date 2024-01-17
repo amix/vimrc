@@ -7,9 +7,9 @@ let g:ale_php_phpmd_executable = get(g:, 'ale_php_phpmd_executable', 'phpmd')
 let g:ale_php_phpmd_ruleset = get(g:, 'ale_php_phpmd_ruleset', 'cleancode,codesize,controversial,design,naming,unusedcode')
 
 function! ale_linters#php#phpmd#GetCommand(buffer) abort
-    return '%e %s text'
+    return '%e %t text'
     \   . ale#Pad(ale#Var(a:buffer, 'php_phpmd_ruleset'))
-    \   . ' --ignore-violations-on-exit %t'
+    \   . ' --ignore-violations-on-exit'
 endfunction
 
 function! ale_linters#php#phpmd#Handle(buffer, lines) abort

@@ -5,20 +5,15 @@ ALE Go Integration                                             *ale-go-options*
 ===============================================================================
 Integration Information
 
-The `gometalinter` linter is disabled by default. ALE enables `gofmt`,
-`golint` and `go vet` by default. It also supports `staticcheck`, `go
-build`,  `gosimple`, `golangserver`.
+ALE enables `gofmt`, `gopls` and `go vet` by default. It also supports `staticcheck`,
+`go build, ``gosimple`, `golangserver`, and `golangci-lint.
 
-To enable `gometalinter`, update |g:ale_linters| as appropriate:
+To enable `golangci-lint`, update |g:ale_linters| as appropriate.
+A possible configuration is to enable golangci-lint and `gofmt:
 >
   " Enable all of the linters you want for Go.
-  let g:ale_linters = {'go': ['gometalinter', 'gofmt']}
+  let g:ale_linters = {'go': ['golangci-lint', 'gofmt']}
 <
-A possible configuration is to enable `gometalinter` and `gofmt` but paired
-with the `--fast` option, set by |g:ale_go_gometalinter_options|. This gets you
-the benefit of running a number of linters, more than ALE would by default,
-while ensuring it doesn't run any linters known to be slow or resource
-intensive.
 
 g:ale_go_go_executable                                 *g:ale_go_go_executable*
                                                        *b:ale_go_go_executable*
@@ -120,7 +115,7 @@ g:ale_go_golangci_lint_executable           *g:ale_go_golangci_lint_executable*
 g:ale_go_golangci_lint_options                 *g:ale_go_golangci_lint_options*
                                                *b:ale_go_golangci_lint_options*
   Type: |String|
-  Default: `'--enable-all'`
+  Default: `''`
 
   This variable can be changed to alter the command-line arguments to the
   golangci-lint invocation.
@@ -176,63 +171,6 @@ g:ale_go_golines_options                             *g:ale_go_golines_options*
 
 
 ===============================================================================
-golint                                                          *ale-go-golint*
-
-g:ale_go_golint_executable                         *g:ale_go_golint_executable*
-                                                   *b:ale_go_golint_executable*
-  Type: |String|
-  Default: `'golint'`
-
-  This variable can be set to change the golint executable path.
-
-
-g:ale_go_golint_options                               *g:ale_go_golint_options*
-                                                      *b:ale_go_golint_options*
-  Type: |String|
-  Default: `''`
-
-  This variable can be set to pass additional options to the golint linter.
-
-
-===============================================================================
-gometalinter                                              *ale-go-gometalinter*
-
-`gometalinter` is a `lint_file` linter, which only lints files that are
-written to disk. This differs from the default behavior of linting the buffer.
-See: |ale-lint-file|
-
-g:ale_go_gometalinter_executable             *g:ale_go_gometalinter_executable*
-                                             *b:ale_go_gometalinter_executable*
-  Type: |String|
-  Default: `'gometalinter'`
-
-  The executable that will be run for gometalinter.
-
-
-g:ale_go_gometalinter_options                   *g:ale_go_gometalinter_options*
-                                                *b:ale_go_gometalinter_options*
-  Type: |String|
-  Default: `''`
-
-  This variable can be changed to alter the command-line arguments to the
-  gometalinter invocation.
-
-  Since `gometalinter` runs a number of linters that can consume a lot of
-  resources it's recommended to set this option to a value of `--fast` if you
-  use `gometalinter` as one of the linters in |g:ale_linters|. This disables a
-  number of linters known to be slow or consume a lot of resources.
-
-
-g:ale_go_gometalinter_lint_package         *g:ale_go_gometalinter_lint_package*
-                                           *b:ale_go_gometalinter_lint_package*
-  Type: |Number|
-  Default: `0`
-
-  When set to `1`, the whole Go package will be checked instead of only the
-  current file.
-
-
-===============================================================================
 gopls                                                            *ale-go-gopls*
 
 gopls is the official Go language server, and is enabled for use with ALE by
@@ -267,6 +205,21 @@ g:ale_go_gopls_options                                 *g:ale_go_gopls_options*
   Default: `''`
 
   Command-line options passed to the gopls executable. See `gopls -h`.
+
+
+g:ale_go_gopls_fix_executable                   *g:ale_go_gopls_fix_executable*
+                                                *b:ale_go_gopls_fix_executable*
+  Type: |String|
+  Default: `'gopls'`
+
+  Executable to run to use as the gopls fixer.
+
+g:ale_go_gopls_fix_options                         *g:ale_go_gopls_fix_options*
+                                                   *b:ale_go_gopls_fix_options*
+  Type: |String|
+  Default: `''`
+
+  Options to pass to the gopls fixer.
 
 
 g:ale_go_gopls_init_options                       *g:ale_go_gopls_init_options*

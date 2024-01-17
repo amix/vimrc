@@ -21,6 +21,7 @@ endfunction
 
 call ale#linter#Define('kotlin', {
 \   'name': 'languageserver',
+\   'aliaes': ['kotlin_language_server'],
 \   'lsp': 'stdio',
 \   'executable': {b -> ale#Var(b, 'kotlin_languageserver_executable')},
 \   'command': '%e',

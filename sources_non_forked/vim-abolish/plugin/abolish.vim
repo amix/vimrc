@@ -1,6 +1,6 @@
 " abolish.vim - Language friendly searches, substitutions, and abbreviations
 " Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      1.1
+" Version:      1.2
 " GetLatestVimScripts: 1545 1 :AutoInstall: abolish.vim
 
 " Initialization {{{1
@@ -23,8 +23,8 @@ endif
 " }}}1
 " Utility functions {{{1
 
-function! s:function(name)
-  return function(substitute(a:name,'^s:',matchstr(expand('<sfile>'), '<SNR>\d\+_'),''))
+function! s:function(name) abort
+  return function(substitute(a:name,'^s:',matchstr(expand('<sfile>'), '.*\zs<SNR>\d\+_'),''))
 endfunction
 
 function! s:send(self,func,...)
@@ -142,10 +142,6 @@ function! s:dotcase(word)
   return substitute(s:snakecase(a:word),'_','.','g')
 endfunction
 
-function! s:titlecase(word)
-  return substitute(s:spacecase(a:word), '\(\<\w\)','\=toupper(submatch(1))','g')
-endfunction
-
 call extend(Abolish, {
       \ 'camelcase':  s:function('s:camelcase'),
       \ 'mixedcase':  s:function('s:mixedcase'),
@@ -154,7 +150,6 @@ call extend(Abolish, {
       \ 'dashcase':   s:function('s:dashcase'),
       \ 'dotcase':    s:function('s:dotcase'),
       \ 'spacecase':  s:function('s:spacecase'),
-      \ 'titlecase':  s:function('s:titlecase')
       \ }, 'keep')
 
 function! s:create_dictionary(lhs,rhs,opts)
@@ -382,7 +377,7 @@ function! s:find_command(cmd,flags,word)
   " beginning of the line, and we can't use position flags (e.g., /foo/e).
   " If we use :norm /pattern, we leave ourselves vulnerable to "press enter"
   " prompts (even with :silent).
-  let cmd = (a:cmd =~ '[?!]' ? '?' : '/')
+  let cmd = (a:cmd =~ '[?!]$' ? '?' : '/')
   let @/ = s:pattern(dict,opts.boundaries)
   if opts.flags == "" || !search(@/,'n')
     return "norm! ".cmd."\<CR>"
@@ -565,6 +560,7 @@ endfunction
 call extend(Abolish.Coercions, {
       \ 'c': Abolish.camelcase,
       \ 'm': Abolish.mixedcase,
+      \ 'p': Abolish.mixedcase,
       \ 's': Abolish.snakecase,
       \ '_': Abolish.snakecase,
       \ 'u': Abolish.uppercase,
@@ -573,7 +569,6 @@ call extend(Abolish.Coercions, {
       \ 'k': Abolish.dashcase,
       \ '.': Abolish.dotcase,
       \ ' ': Abolish.spacecase,
-      \ 't': Abolish.titlecase,
       \ "function missing": s:function("s:unknown_coercion")
       \}, "keep")
 
@@ -619,7 +614,7 @@ endfunction
 
 nnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
 vnoremap <expr> <Plug>(abolish-coerce) <SID>coerce(nr2char(getchar()))
-nnoremap <expr> <plug>(abolish-coerce-word) <SID>coerce(nr2char(getchar())).'iw'
+nnoremap <expr> <Plug>(abolish-coerce-word) <SID>coerce(nr2char(getchar())).'iw'
 
 " }}}1
 

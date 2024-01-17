@@ -248,7 +248,9 @@ function! s:hunk_op(op, ...)
 
       let hunk_diff = join(hunk_header + hunk_body, "\n")."\n"
 
-      call s:goto_original_window()
+      if &previewwindow
+        call s:goto_original_window()
+      endif
       call gitgutter#hunk#close_hunk_preview_window()
       call s:stage(hunk_diff)
     endif
@@ -294,12 +296,33 @@ endfunction
 
 function! s:stage(hunk_diff)
   let bufnr = bufnr('')
-  let diff = s:adjust_header(bufnr, a:hunk_diff)
-  " Apply patch to index.
-  call gitgutter#utility#system(
-        \ gitgutter#utility#cd_cmd(bufnr, g:gitgutter_git_executable.' '.g:gitgutter_git_args.' apply --cached --unidiff-zero - '),
-        \ diff)
-  if v:shell_error
+
+  if gitgutter#utility#clean_smudge_filter_applies(bufnr)
+    let choice = input('File uses clean/smudge filter. Stage entire file (y/n)? ')
+    normal! :<ESC>
+    if choice =~ 'y'
+      " We are about to add the file to the index so write the buffer to
+      " ensure the file on disk matches it (the buffer).
+      write
+      let path = gitgutter#utility#repo_path(bufnr, 1)
+      " Add file to index.
+      let cmd = gitgutter#utility#cd_cmd(bufnr,
+            \ gitgutter#git().' add '.
+            \ gitgutter#utility#shellescape(gitgutter#utility#filename(bufnr)))
+      let [_, error_code] = gitgutter#utility#system(cmd)
+    else
+      return
+    endif
+
+  else
+    let diff = s:adjust_header(bufnr, a:hunk_diff)
+    " Apply patch to index.
+    let [_, error_code] = gitgutter#utility#system(
+          \ gitgutter#utility#cd_cmd(bufnr, gitgutter#git().' apply --cached --unidiff-zero - '),
+          \ diff)
+  endif
+
+  if error_code
     call gitgutter#utility#warn('Patch does not apply')
   else
     if exists('#User#GitGutterStage')
@@ -328,6 +351,9 @@ function! s:undo(hunk_diff)
     call append(lnum-1, lines[0:hunk[1]])
     execute (lnum+hunk[1]) .','. (lnum+hunk[1]+hunk[3]) .'d _'
   endif
+
+  " Refresh gitgutter's view of buffer.
+  call gitgutter#process_buffer(bufnr(''), 1)
 endfunction
 
 
@@ -419,6 +445,9 @@ endfunction
 " Floating window: does not move cursor to floating window.
 " Preview window: moves cursor to preview window.
 function! s:open_hunk_preview_window()
+  let source_wrap = &wrap
+  let source_window = winnr()
+
   if g:gitgutter_preview_win_floating
     if exists('*nvim_open_win')
       call gitgutter#hunk#close_hunk_preview_window()
@@ -426,23 +455,22 @@ function! s:open_hunk_preview_window()
       let buf = nvim_create_buf(v:false, v:false)
       " Set default width and height for now.
       let s:winid = nvim_open_win(buf, v:false, g:gitgutter_floating_window_options)
+      call nvim_win_set_option(s:winid, 'wrap', source_wrap ? v:true : v:false)
       call nvim_buf_set_option(buf, 'filetype',  'diff')
       call nvim_buf_set_option(buf, 'buftype',   'acwrite')
       call nvim_buf_set_option(buf, 'bufhidden', 'delete')
       call nvim_buf_set_option(buf, 'swapfile',  v:false)
       call nvim_buf_set_name(buf, 'gitgutter://hunk-preview')
 
-      " Assumes cursor is in original window.
-      autocmd CursorMoved <buffer> ++once call gitgutter#hunk#close_hunk_preview_window()
-
       if g:gitgutter_close_preview_on_escape
-        " Map <Esc> to close the floating preview.
+        let winnr = nvim_win_get_number(s:winid)
+        execute winnr.'wincmd w'
         nnoremap <buffer> <silent> <Esc> :<C-U>call gitgutter#hunk#close_hunk_preview_window()<CR>
-        " Ensure that when the preview window is closed, the map is removed.
-        autocmd User GitGutterPreviewClosed silent! nunmap <buffer> <Esc>
-        autocmd CursorMoved <buffer> ++once silent! nunmap <buffer> <Esc>
-        execute "autocmd WinClosed <buffer=".winbufnr(s:winid)."> doautocmd" s:nomodeline "User GitGutterPreviewClosed"
+        wincmd w
       endif
+
+      " Assumes cursor is in original window.
+      autocmd CursorMoved,TabLeave <buffer> ++once call gitgutter#hunk#close_hunk_preview_window()
 
       return
     endif
@@ -455,6 +483,7 @@ function! s:open_hunk_preview_window()
       let s:winid = popup_create('', g:gitgutter_floating_window_options)
 
       call setbufvar(winbufnr(s:winid), '&filetype', 'diff')
+      call setwinvar(s:winid, '&wrap', source_wrap)
 
       return
     endif
@@ -476,11 +505,13 @@ function! s:open_hunk_preview_window()
     let s:preview_bufnr = bufnr('')
   endif
   setlocal filetype=diff buftype=acwrite bufhidden=delete
+  let &l:wrap = source_wrap
+  let b:source_window = source_window
   " Reset some defaults in case someone else has changed them.
   setlocal noreadonly modifiable noswapfile
   if g:gitgutter_close_preview_on_escape
     " Ensure cursor goes to the expected window.
-    nnoremap <buffer> <silent> <Esc> :<C-U>wincmd p<Bar>pclose<CR>
+    nnoremap <buffer> <silent> <Esc> :<C-U>execute b:source_window . "wincmd w"<Bar>pclose<CR>
   endif
 
   if exists('&previewpopup')
@@ -565,7 +596,7 @@ endfunction
 function! s:screen_lines(lines)
   let [_virtualedit, &virtualedit]=[&virtualedit, 'all']
   let cursor = getcurpos()
-  normal! g$
+  normal! 0g$
   let available_width = virtcol('.')
   call setpos('.', cursor)
   let &virtualedit=_virtualedit
@@ -591,7 +622,7 @@ endfunction
 
 
 function! s:goto_original_window()
-  noautocmd wincmd p
+  noautocmd execute b:source_window . "wincmd w"
   doautocmd WinEnter
 endfunction
 

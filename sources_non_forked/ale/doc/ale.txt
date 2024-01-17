@@ -17,7 +17,7 @@ CONTENTS                                                         *ale-contents*
     5.1 Completion........................|ale-completion|
     5.2 Go To Definition..................|ale-go-to-definition|
     5.3 Go To Type Definition.............|ale-go-to-type-definition|
-    5.4 Go To Implementation..............|ale-go-to-type-implementation|
+    5.4 Go To Implementation..............|ale-go-to-implementation|
     5.5 Find References...................|ale-find-references|
     5.6 Hovering..........................|ale-hover|
     5.7 Symbol Search.....................|ale-symbol-search|
@@ -121,6 +121,7 @@ circumstances.
 ALE will report problems with your code in the following ways, listed with
 their relevant options.
 
+* Via Neovim diagnostics (On in Neovim 0.6+)       - |g:ale_use_neovim_diagnostics_api|
 * By updating loclist. (On by default)             - |g:ale_set_loclist|
 * By updating quickfix. (Off by default)           - |g:ale_set_quickfix|
 * By setting error highlights.                     - |g:ale_set_highlights|
@@ -454,6 +455,11 @@ If you want to use another plugin for LSP features and tsserver, you can use
 the |g:ale_disable_lsp| setting to disable ALE's own LSP integrations, or
 ignore particular linters with |g:ale_linters_ignore|.
 
+If for any reason you want to stop a language server ALE starts, such as when
+a project configuration has significantly changed, or new files have been
+added the language server isn't aware of, use either |ALEStopLSP| or
+|ALEStopAllLSPs| to stop the server until ALE automatically starts it again.
+
 -------------------------------------------------------------------------------
 5.1 Completion                                                 *ale-completion*
 
@@ -736,6 +742,7 @@ You may wish to remove some other menu items you don't want to see: >
 ===============================================================================
 6. Global Options                                                 *ale-options*
 
+
 g:airline#extensions#ale#enabled             *g:airline#extensions#ale#enabled*
 
   Type: |Number|
@@ -814,7 +821,6 @@ g:ale_command_wrapper                                   *g:ale_command_wrapper*
     " Has the same effect as the above.
     let g:ale_command_wrapper = 'nice -n5 %*'
 <
-
   For passing all of the arguments for a command as one argument to a wrapper,
   `%@` can be used instead. >
 
@@ -839,7 +845,6 @@ g:ale_completion_delay                                 *g:ale_completion_delay*
 
 g:ale_completion_enabled                             *g:ale_completion_enabled*
                                                      *b:ale_completion_enabled*
-
   Type: |Number|
   Default: `0`
 
@@ -880,7 +885,7 @@ g:ale_completion_autoimport                       *g:ale_completion_autoimport*
   When this option is set to `1`, ALE will try to automatically import
   completion results from external modules. It can be disabled by setting it
   to `0`. Some LSP servers include auto imports on every completion item so
-  disabling automatic imports may drop some or all completion items returnend
+  disabling automatic imports may drop some or all completion items returned
   by it (e.g. eclipselsp).
 
 
@@ -905,7 +910,7 @@ g:ale_completion_excluded_words               *g:ale_completion_excluded_words*
 g:ale_completion_symbols                             *g:ale_completion_symbols*
 
   Type: |Dictionary|
-
+  Default: See `autoload/ale/completion.vim`
 
   A mapping from completion types to symbols for completions. See
   |ale-symbols| for more information.
@@ -959,6 +964,7 @@ g:ale_completion_max_suggestions             *g:ale_completion_max_suggestions*
   Adjust this option as needed, depending on the complexity of your codebase
   and your available processing power.
 
+
 g:ale_cursor_detail                                       *g:ale_cursor_detail*
 
   Type: |Number|
@@ -983,7 +989,6 @@ g:ale_cursor_detail                                       *g:ale_cursor_detail*
 
 g:ale_default_navigation                             *g:ale_default_navigation*
                                                      *b:ale_default_navigation*
-
   Type: |String|
   Default: `'buffer'`
 
@@ -1002,12 +1007,16 @@ g:ale_detail_to_floating_preview             *g:ale_detail_to_floating_preview*
 
 g:ale_disable_lsp                                           *g:ale_disable_lsp*
                                                             *b:ale_disable_lsp*
+  Type: |Number| OR |String|
+  Default: `'auto'`
 
-  Type: |Number|
-  Default: `0`
+  When this option is set to `'auto'`, ALE will automatically disable linters
+  that it detects as having already been configured with the nvim-lspconfig
+  plugin. When this option is set to `1`, ALE ignores all linters powered by
+  LSP, and also `tsserver`.
 
-  When this option is set to `1`, ALE ignores all linters powered by LSP,
-  and also `tsserver`.
+  Any linters that are disabled will also not be usable for LSP functionality
+  other than just linting.
 
   Please see also |ale-lsp|.
 
@@ -1053,7 +1062,6 @@ g:ale_echo_msg_error_str                             *g:ale_echo_msg_error_str*
 
 g:ale_echo_msg_format                                   *g:ale_echo_msg_format*
                                                         *b:ale_echo_msg_format*
-
   Type: |String|
   Default: `'%code: %%s'`
 
@@ -1063,7 +1071,8 @@ g:ale_echo_msg_format                                   *g:ale_echo_msg_format*
     `%s`           - replaced with the text for the problem
     `%...code...% `- replaced with the error code
     `%linter%`     - replaced with the name of the linter
-    `%severity%`   - replaced with the severity of the problem
+    `%severity%`   - replaced with the severity of the problem (e.g. `Error`)
+    `%type%`       - replaced with the type of the problem (e.g. `E`)
 
   The strings for `%severity%` can be configured with the following options.
 
@@ -1111,7 +1120,6 @@ g:ale_echo_msg_warning_str                         *g:ale_echo_msg_warning_str*
 
 g:ale_enabled                                                   *g:ale_enabled*
                                                                 *b:ale_enabled*
-
   Type: |Number|
   Default: `1`
 
@@ -1126,15 +1134,15 @@ g:ale_enabled                                                   *g:ale_enabled*
   " Disable linting for all minified JS files.
   let g:ale_pattern_options = {'\.min.js$': {'ale_enabled': 0}}
 <
-
   See |g:ale_pattern_options| for more information on that option.
 
 
 g:ale_exclude_highlights                             *g:ale_exclude_highlights*
                                                      *b:ale_exclude_highlights*
-
   Type: |List|
   Default: `[]`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
 
   A list of regular expressions for matching against highlight messages to
   remove. For example: >
@@ -1147,7 +1155,6 @@ g:ale_exclude_highlights                             *g:ale_exclude_highlights*
 
 g:ale_fixers                                                     *g:ale_fixers*
                                                                  *b:ale_fixers*
-
   Type: |Dictionary|
   Default: `{}`
 
@@ -1169,7 +1176,6 @@ g:ale_fixers                                                     *g:ale_fixers*
 
 g:ale_fix_on_save                                           *g:ale_fix_on_save*
                                                             *b:ale_fix_on_save*
-
   Type: |Number|
   Default: `0`
 
@@ -1191,7 +1197,6 @@ g:ale_fix_on_save                                           *g:ale_fix_on_save*
 
 g:ale_fix_on_save_ignore                             *g:ale_fix_on_save_ignore*
                                                      *b:ale_fix_on_save_ignore*
-
   Type: |Dictionary| or |List|
   Default: `{}`
 
@@ -1234,45 +1239,47 @@ g:ale_floating_preview                                 *g:ale_floating_preview*
   |g:ale_detail_to_floating_preview| to `1`.
 
 
-g:ale_floating_preview_popup_opts             *g:ale_floating_preview_popup_opts*
+g:ale_floating_preview_popup_opts           *g:ale_floating_preview_popup_opts*
 
   Type: |String| or |Dictionary|
   Default: `''`
 
-  Either a dictionary of options or the string name of a function that returns a
-  dictionary of options. This will be used as an argument to |popup_create| for
-  Vim users or |nvim_open_win| for NeoVim users. Note that in either case, the
-  resulting dictionary is merged with ALE defaults rather than expliciting overriding
-  them. This only takes effect if |g:ale_floating_preview| is enabled.
+  Either a dictionary of options or the string name of a function that returns
+  a dictionary of options. This will be used as an argument to |popup_create|
+  for Vim users or |nvim_open_win| for NeoVim users. In either case, the
+  resulting dictionary is merged with ALE defaults rather than explicitly
+  overriding them. This only takes effect if |g:ale_floating_preview| is
+  enabled.
 
   NOTE: for Vim users see |popup_create-arguments|, for NeoVim users see
   |nvim_open_win| for argument details
 
   For example, to enhance popups with a title: >
 
-  function! CustomOpts() abort {
+  function! CustomOpts() abort
     let [l:info, l:loc] = ale#util#FindItemAtCursor(bufnr(''))
     return {'title': ' ALE: ' . (l:loc.linter_name) . ' '}
   endfunction
+
+  let g:ale_floating_preview_popup_opts = 'g:CustomOpts'
 <
 
-
-g:ale_floating_window_border                       *g:ale_floating_window_border*
+g:ale_floating_window_border                     *g:ale_floating_window_border*
 
   Type: |List|
   Default: `['|', '-', '+', '+', '+', '+', '|', '-']`
 
   When set to `[]`, window borders are disabled. The elements in the list set
-	the the characters for the left side, top, top-left corner, top-right
-	corner, bottom-right corner, bottom-left corner, right side, and bottom of
-	the floating window, respectively.
+  the characters for the left side, top, top-left corner, top-right
+  corner, bottom-right corner, bottom-left corner, right side, and bottom of
+  the floating window, respectively.
 
   If the terminal supports Unicode, you might try setting the value to
   ` ['│', '─', '╭', '╮', '╯', '╰', '│', '─']`, to make it look nicer.
 
   NOTE: For compatibility with previous versions, if the list does not have
-	elements for the right side and bottom, the left side and top will be used
-	instead.
+  elements for the right side and bottom, the left side and top will be used
+  instead.
 
 
 g:ale_history_enabled                                   *g:ale_history_enabled*
@@ -1340,6 +1347,15 @@ g:ale_hover_to_floating_preview               *g:ale_hover_to_floating_preview*
 
   If set to `1`, Neovim or Vim with |popupwin| will use floating windows for
   hover messages.
+
+
+g:ale_info_default_mode                               *g:ale_info_default_mode*
+                                                      *b:ale_info_default_mode*
+  Type: |String|
+  Default: `'preview'`
+
+  Changes the default mode used for |ALEInfo|. See documentation for |ALEInfo|
+  for more information.
 
 
 g:ale_keep_list_window_open                       *g:ale_keep_list_window_open*
@@ -1453,7 +1469,6 @@ g:ale_lint_on_text_changed                         *g:ale_lint_on_text_changed*
 
 g:ale_lint_on_insert_leave                         *g:ale_lint_on_insert_leave*
                                                    *b:ale_lint_on_insert_leave*
-
   Type: |Number|
   Default: `1`
 
@@ -1541,7 +1556,6 @@ g:ale_linter_aliases                                     *g:ale_linter_aliases*
 
 g:ale_filename_mappings                               *g:ale_filename_mappings*
                                                       *b:ale_filename_mappings*
-
   Type: |Dictionary| or |List|
   Default: `{}`
 
@@ -1637,7 +1651,8 @@ g:ale_linters                                                   *g:ale_linters*
   \   'apkbuild': ['apkbuild_lint', 'secfixes_check'],
   \   'csh': ['shell'],
   \   'elixir': ['credo', 'dialyxir', 'dogma'],
-  \   'go': ['gofmt', 'golint', 'gopls', 'govet'],
+  \   'go': ['gofmt', 'golangci-lint', 'gopls', 'govet'],
+  \   'groovy': ['npm-groovy-lint'],
   \   'hack': ['hack'],
   \   'help': [],
   \   'inko': ['inko'],
@@ -1647,8 +1662,8 @@ g:ale_linters                                                   *g:ale_linters*
   \   'jsonc': [],
   \   'perl': ['perlcritic'],
   \   'perl6': [],
-  \   'python': ['flake8', 'mypy', 'pylint', 'pyright'],
-  \   'rust': ['cargo', 'rls'],
+  \   'python': ['flake8', 'mypy', 'pylint', 'pyright', 'ruff'],
+  \   'rust': ['analyzer', 'cargo'],
   \   'spec': [],
   \   'text': [],
   \   'vader': ['vimls'],
@@ -1708,7 +1723,6 @@ g:ale_linters_explicit                                 *g:ale_linters_explicit*
 
 g:ale_linters_ignore                                     *g:ale_linters_ignore*
                                                          *b:ale_linters_ignore*
-
   Type: |Dictionary| or |List|
   Default: `{}`
 
@@ -1744,7 +1758,6 @@ g:ale_list_vertical                                       *g:ale_list_vertical*
 
 g:ale_loclist_msg_format                             *g:ale_loclist_msg_format*
                                                      *b:ale_loclist_msg_format*
-
   Type: |String|
   Default: `g:ale_echo_msg_format`
 
@@ -1820,6 +1833,8 @@ g:ale_max_signs                                               *g:ale_max_signs*
                                                               *b:ale_max_signs*
   Type: |Number|
   Default: `-1`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
 
   When set to any positive integer, ALE will not render any more than the
   given number of signs for any one buffer.
@@ -1941,7 +1956,6 @@ g:ale_rename_tsserver_find_in_comments *g:ale_rename_tsserver_find_in_comments*
 
 g:ale_rename_tsserver_find_in_strings   *g:ale_rename_tsserver_find_in_strings*
 
-
   Type: |Number|
   Default: `0`
 
@@ -1952,7 +1966,6 @@ g:ale_rename_tsserver_find_in_strings   *g:ale_rename_tsserver_find_in_strings*
 
 g:ale_root                                                         *g:ale_root*
                                                                    *b:ale_root*
-
   Type: |Dictionary| or |String|
   Default: `{}`
 
@@ -1969,9 +1982,18 @@ g:ale_root                                                         *g:ale_root*
   LSP linter, it will not run.
 
 
+g:ale_save_hidden                                           *g:ale_save_hidden*
+
+  Type: |Number|
+  Default: `0`
+
+  When set to `1`, save buffers when 'hidden' is set when applying code
+  actions or rename operations, such as through |ALERename| or
+  |ALEOrganizeImports|.
+
+
 g:ale_set_balloons                                         *g:ale_set_balloons*
                                                            *b:ale_set_balloons*
-
   Type: |Number| or |String|
   Default: `has('balloon_eval') && has('gui_running')`
 
@@ -1989,7 +2011,6 @@ g:ale_set_balloons                                         *g:ale_set_balloons*
 
   let g:ale_set_balloons = has('gui_running') ? 'hover' : 0
 <
-
   Balloons can be enabled for terminal versions of Vim that support balloons,
   but some versions of Vim will produce strange mouse behavior when balloons
   are enabled. To configure balloons for your terminal, you should first
@@ -2022,6 +2043,11 @@ g:ale_set_highlights                                     *g:ale_set_highlights*
 
   Type: |Number|
   Default: `has('syntax')`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
+  In addition, ALE's highlight groups will not be used when setting
+  highlights through Neovim's diagnostics API. See |diagnostic-highlights| for
+  how to configure Neovim diagnostic highlighting.
 
   When this option is set to `1`, highlights will be set for problems.
 
@@ -2083,6 +2109,12 @@ g:ale_set_signs                                               *g:ale_set_signs*
   When this option is set to `1`, the |sign| column will be populated with
   signs marking where problems appear in the file.
 
+  When |g:ale_use_neovim_diagnostics_api| is `1`, the only other setting that
+  will be respected for signs is |g:ale_sign_priority|. ALE's highlight groups
+  will and other sign settings will not apply when setting signs through
+  Neovim's diagnostics API. See |diagnostic-signs| for how to configure signs
+  in Neovim.
+
   ALE will use the following highlight groups for problems:
 
   |ALEErrorSign|        - Items with `'type': 'E'`
@@ -2136,7 +2168,6 @@ g:ale_sign_priority                                       *g:ale_sign_priority*
 
 g:ale_shell                                                       *g:ale_shell*
                                                                   *b:ale_shell*
-
   Type: |String|
   Default: not set
 
@@ -2154,7 +2185,6 @@ g:ale_shell                                                       *g:ale_shell*
 
 g:ale_shell_arguments                                   *g:ale_shell_arguments*
                                                         *b:ale_shell_arguments*
-
   Type: |String|
   Default: not set
 
@@ -2168,6 +2198,8 @@ g:ale_sign_column_always                             *g:ale_sign_column_always*
   Type: |Number|
   Default: `0`
 
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
+
   By default, the sign gutter will disappear when all warnings and errors have
   been fixed for a file. When this option is set to `1`, the sign column will
   remain open. This can be preferable if you don't want the text in your file
@@ -2177,7 +2209,9 @@ g:ale_sign_column_always                             *g:ale_sign_column_always*
 g:ale_sign_error                                             *g:ale_sign_error*
 
   Type: |String|
-  Default: `'>>'`
+  Default: `'E'`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
 
   The sign for errors in the sign gutter.
 
@@ -2185,7 +2219,9 @@ g:ale_sign_error                                             *g:ale_sign_error*
 g:ale_sign_info                                               *g:ale_sign_info*
 
   Type: |String|
-  Default: `g:ale_sign_warning`
+  Default: `'I'`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
 
   The sign for "info" markers in the sign gutter.
 
@@ -2195,6 +2231,8 @@ g:ale_sign_style_error                                 *g:ale_sign_style_error*
   Type: |String|
   Default: `g:ale_sign_error`
 
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
+
   The sign for style errors in the sign gutter.
 
 
@@ -2203,6 +2241,8 @@ g:ale_sign_style_warning                             *g:ale_sign_style_warning*
   Type: |String|
   Default: `g:ale_sign_warning`
 
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
+
   The sign for style warnings in the sign gutter.
 
 
@@ -2210,6 +2250,8 @@ g:ale_sign_offset                                           *g:ale_sign_offset*
 
   Type: |Number|
   Default: `1000000`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
 
   This variable controls offset from which numeric IDs will be generated for
   new signs. Signs cannot share the same ID values, so when two Vim plugins
@@ -2223,7 +2265,9 @@ g:ale_sign_offset                                           *g:ale_sign_offset*
 g:ale_sign_warning                                         *g:ale_sign_warning*
 
   Type: |String|
-  Default: `'--'`
+  Default: `'W'`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
 
   The sign for warnings in the sign gutter.
 
@@ -2232,6 +2276,8 @@ g:ale_sign_highlight_linenrs                     *g:ale_sign_highlight_linenrs*
 
   Type: |Number|
   Default: `0`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
 
   When set to `1`, this option enables highlighting problems on the 'number'
   column in Vim versions that support `numhl` highlights. This option must be
@@ -2287,25 +2333,46 @@ g:ale_use_global_executables                     *g:ale_use_global_executables*
   options.
 
 
+g:ale_use_neovim_diagnostics_api             *g:ale_use_neovim_diagnostics_api*
+
+  Type: |Number|
+  Default: `has('nvim-0.6')`
+
+  If enabled, this option will disable ALE's standard UI, and instead send
+  all linter output to Neovim's diagnostics API. This allows you to collect
+  errors from nvim-lsp, ALE, and anything else that uses diagnostics all in
+  one place. Many options for configuring how problems appear on the screen
+  will not apply when the API is enabled.
+
+  To enable this option, set the value to `1`.
+
+  This option requires Neovim 0.6+, as that version introduces the diagnostics
+  API.
+
+
 g:ale_virtualtext_cursor                             *g:ale_virtualtext_cursor*
 
   Type: |Number|
-  Default: `0`
+  Default: `'all'` (if supported, otherwise `'disabled'`)
 
-  When this option is set to `1`, a message will be shown when a cursor is
-  near a warning or error. ALE will attempt to find the warning or error at a
-  column nearest to the cursor when the cursor is resting on a line which
-  contains a warning or error. This option can be set to `0` to disable this
-  behavior.
-  When this option is set to `2`, then all warnings will be shown for the
-  whole buffer, regardless of if the cursor is currently positioned in that
-  line.
+  This option controls how ALE will display problems using |virtual-text|.
+  The following values can be used.
+
+  `'all'`, `'2'`, or `2`         - Show problems for all lines.
+  `'current'`, `'1'`, or `1`     - Show problems for the current line.
+  `'disabled'`, `'0'`, or `0`    - Do not show problems with virtual-text.
+
+  When |g:ale_use_neovim_diagnostics_api| is `1`, `'current'` will behave the
+  same as `'all'`.
 
   Messages are only displayed after a short delay. See |g:ale_virtualtext_delay|.
 
-  Messages can be prefixed prefixed with a string. See |g:ale_virtualtext_prefix|.
+  Messages can be prefixed with a string if not using Neovim's diagnostics
+  API. See |g:ale_virtualtext_prefix|.
 
-  ALE will use the following highlight groups for problems:
+  If and only if not displaying problems via Neovim's diagnostics API,
+  highlights for configuring ALE's virtualtext messages can be configured with
+  custom highlight groups:
 
   |ALEVirtualTextError|        - Items with `'type': 'E'`
   |ALEVirtualTextWarning|      - Items with `'type': 'W'`
@@ -2316,9 +2383,10 @@ g:ale_virtualtext_cursor                             *g:ale_virtualtext_cursor*
 
 g:ale_virtualtext_delay                               *g:ale_virtualtext_delay*
                                                       *b:ale_virtualtext_delay*
-
   Type: |Number|
   Default: `10`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
 
   Given any integer, this option controls the number of milliseconds before
   ALE will show a message for a problem near the cursor.
@@ -2328,20 +2396,75 @@ g:ale_virtualtext_delay                               *g:ale_virtualtext_delay*
 
 
 g:ale_virtualtext_prefix                             *g:ale_virtualtext_prefix*
-
+                                                     *b:ale_virtualtext_prefix*
   Type: |String|
-  Default: `'> '`
+  Default: `'%comment% %type%: '`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
 
   Prefix to be used with |g:ale_virtualtext_cursor|.
 
+  This setting can be changed in each buffer with `b:ale_virtualtext_prefix`.
+
+  All of the same format markers used for |g:ale_echo_msg_format| can be used
+  for defining the prefix, including some additional sequences of characters.
+
+    `%comment%` - replaced with comment characters in the current language
+
+  ALE will read the comment characters from |&commentstring|, reading only the
+  part before `%s`, with whitespace trimmed. If comment syntax cannot be
+  pulled from |&commentstring|, ALE will default to `'#'`.
+
+
+g:ale_virtualtext_column                             *g:ale_virtualtext_column*
+                                                     *b:ale_virtualtext_column*
+g:ale_virtualtext_maxcolumn                       *g:ale_virtualtext_maxcolumn*
+                                                  *b:ale_virtualtext_maxcolumn*
+  Type: |String| or |Number|
+  Default: `0`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
+
+  Virtualtext column range, from `column` to `maxcolumn`.  If a line is
+  `column` or less characters long, the virtualtext message is shifted right
+  to `column`.
+
+  Where the line is greater than `column` characters long, but less than
+  `maxcolumn`, the virtualtext message is placed at the end of the line.
+
+  Where the line is greater than `maxcolumn` the virtualtext message is
+  omitted.
+
+  A |Number| greater than `0` is used as the fixed column position, however
+  a |String| ending in `%` represents a percentage of the window width.
+  When `column` is set to zero, column positioning is disabled, when `maxcolumn`
+  is set to zero, no maximum line length is enforced.
+
+
+g:ale_virtualtext_single                             *g:ale_virtualtext_single*
+                                                     *b:ale_virtualtext_single*
+  Type: |Number|
+  Default: `1`
+
+  This setting has no effect when |g:ale_use_neovim_diagnostics_api| is `1`.
+
+  Enable or disable concatenation of multiple virtual text messages on a single
+  line. By default, if a line has multiple errors or warnings, each will be
+  appended in turn.
+
+  With `single` set to a non-zero value, only the first problem on a line will
+  be printed with virtual text. The most severe problem on a line will be
+  printed. If two problems exist on a line of equal severity, the problem at
+  the left-most position will be printed.
+
+
 g:ale_virtualenv_dir_names                         *g:ale_virtualenv_dir_names*
                                                    *b:ale_virtualenv_dir_names*
-
   Type: |List|
-  Default: `['.env', '.venv', 'env', 've-py3', 've', 'virtualenv', 'venv']`
+  Default: `['.venv', 'env', 've', 'venv', 'virtualenv', '.env']`
 
   A list of directory names to be used when searching upwards from Python
-  files to discover virtulenv directories with.
+  files to discover virtualenv directories with.
 
   For directory named `'foo'`, ALE will search for `'foo/bin/activate'`
   (`foo\Scripts\activate\` on Windows) in all directories on and above the
@@ -2350,7 +2473,6 @@ g:ale_virtualenv_dir_names                         *g:ale_virtualenv_dir_names*
 
 g:ale_warn_about_trailing_blank_lines   *g:ale_warn_about_trailing_blank_lines*
                                         *b:ale_warn_about_trailing_blank_lines*
-
   Type: |Number|
   Default: `1`
 
@@ -2362,7 +2484,6 @@ g:ale_warn_about_trailing_blank_lines   *g:ale_warn_about_trailing_blank_lines*
 
 g:ale_warn_about_trailing_whitespace     *g:ale_warn_about_trailing_whitespace*
                                          *b:ale_warn_about_trailing_whitespace*
-
   Type: |Number|
   Default: `1`
 
@@ -2379,7 +2500,6 @@ g:ale_warn_about_trailing_whitespace     *g:ale_warn_about_trailing_whitespace*
 
 g:ale_windows_node_executable_path         *g:ale_windows_node_executable_path*
                                            *b:ale_windows_node_executable_path*
-
   Type: |String|
   Default: `'node.exe'`
 
@@ -2510,7 +2630,7 @@ ALEStyleWarningSignLineNr                           *ALEStyleWarningSignLineNr*
 
 ALEVirtualTextError                                       *ALEVirtualTextError*
 
-  Default: `highlight link ALEVirtualTextError ALEError`
+  Default: `highlight link ALEVirtualTextError Comment`
 
   The highlight for virtualtext errors. See |g:ale_virtualtext_cursor|.
 
@@ -2538,7 +2658,7 @@ ALEVirtualTextStyleWarning                         *ALEVirtualTextStyleWarning*
 
 ALEVirtualTextWarning                                   *ALEVirtualTextWarning*
 
-  Default: `highlight link ALEVirtualTextWarning ALEWarning`
+  Default: `highlight link ALEVirtualTextWarning Comment`
 
   The highlight for virtualtext errors. See |g:ale_virtualtext_cursor|.
 
@@ -2767,6 +2887,7 @@ documented in additional help files.
     gnatpp................................|ale-ada-gnatpp|
     ada-language-server...................|ale-ada-language-server|
   ansible.................................|ale-ansible-options|
+    ansible-language-server...............|ale-ansible-language-server|
     ansible-lint..........................|ale-ansible-ansible-lint|
   apkbuild................................|ale-apkbuild-options|
     apkbuild-lint.........................|ale-apkbuild-apkbuild-lint|
@@ -2777,6 +2898,7 @@ documented in additional help files.
     textlint..............................|ale-asciidoc-textlint|
   asm.....................................|ale-asm-options|
     gcc...................................|ale-asm-gcc|
+    llvm_mc...............................|ale-asm-llvm_mc|
   avra....................................|ale-avra-options|
     avra..................................|ale-avra-avra|
   awk.....................................|ale-awk-options|
@@ -2789,12 +2911,14 @@ documented in additional help files.
     bibclean..............................|ale-bib-bibclean|
   bicep...................................|ale-bicep-options|
     bicep.................................|ale-bicep-bicep|
+    az_bicep..............................|ale-bicep-az_bicep|
   bitbake.................................|ale-bitbake-options|
     oelint-adv............................|ale-bitbake-oelint_adv|
   c.......................................|ale-c-options|
     astyle................................|ale-c-astyle|
     cc....................................|ale-c-cc|
     ccls..................................|ale-c-ccls|
+    clangcheck............................|ale-c-clangcheck|
     clangd................................|ale-c-clangd|
     clang-format..........................|ale-c-clangformat|
     clangtidy.............................|ale-c-clangtidy|
@@ -2804,6 +2928,7 @@ documented in additional help files.
     flawfinder............................|ale-c-flawfinder|
     uncrustify............................|ale-c-uncrustify|
   cairo...................................|ale-cairo-options|
+    scarb.................................|ale-cairo-scarb|
     starknet..............................|ale-cairo-starknet|
   chef....................................|ale-chef-options|
     cookstyle.............................|ale-chef-cookstyle|
@@ -2833,6 +2958,7 @@ documented in additional help files.
     flawfinder............................|ale-cpp-flawfinder|
     uncrustify............................|ale-cpp-uncrustify|
   c#......................................|ale-cs-options|
+    clang-format..........................|ale-cs-clangformat|
     csc...................................|ale-cs-csc|
     cspell................................|ale-cs-cspell|
     dotnet-format.........................|ale-cs-dotnet-format|
@@ -2847,9 +2973,9 @@ documented in additional help files.
     stylelint.............................|ale-css-stylelint|
     vscodecss.............................|ale-css-vscode|
   cuda....................................|ale-cuda-options|
-    nvcc..................................|ale-cuda-nvcc|
-    clangd................................|ale-cuda-clangd|
     clang-format..........................|ale-cuda-clangformat|
+    clangd................................|ale-cuda-clangd|
+    nvcc..................................|ale-cuda-nvcc|
   d.......................................|ale-d-options|
     dfmt..................................|ale-d-dfmt|
     dls...................................|ale-d-dls|
@@ -2869,6 +2995,7 @@ documented in additional help files.
     dhall-lint............................|ale-dhall-lint|
   dockerfile..............................|ale-dockerfile-options|
     dockerfile_lint.......................|ale-dockerfile-dockerfile_lint|
+    dockerlinter..........................|ale-dockerfile-dockerlinter|
     dprint................................|ale-dockerfile-dprint|
     hadolint..............................|ale-dockerfile-hadolint|
   elixir..................................|ale-elixir-options|
@@ -2878,6 +3005,7 @@ documented in additional help files.
     elixir-ls.............................|ale-elixir-elixir-ls|
     credo.................................|ale-elixir-credo|
     cspell................................|ale-elixir-cspell|
+    lexical...............................|ale-elixir-lexical|
   elm.....................................|ale-elm-options|
     elm-format............................|ale-elm-elm-format|
     elm-ls................................|ale-elm-elm-ls|
@@ -2890,6 +3018,7 @@ documented in additional help files.
     erlfmt................................|ale-erlang-erlfmt|
     syntaxerl.............................|ale-erlang-syntaxerl|
   eruby...................................|ale-eruby-options|
+    erb-formatter.........................|ale-eruby-erbformatter|
     erblint...............................|ale-eruby-erblint|
     ruumba................................|ale-eruby-ruumba|
   fish....................................|ale-fish-options|
@@ -2914,8 +3043,6 @@ documented in additional help files.
     golangci-lint.........................|ale-go-golangci-lint|
     golangserver..........................|ale-go-golangserver|
     golines...............................|ale-go-golines|
-    golint................................|ale-go-golint|
-    gometalinter..........................|ale-go-gometalinter|
     gopls.................................|ale-go-gopls|
     govet.................................|ale-go-govet|
     revive................................|ale-go-revive|
@@ -2924,6 +3051,8 @@ documented in additional help files.
     eslint................................|ale-graphql-eslint|
     gqlint................................|ale-graphql-gqlint|
     prettier..............................|ale-graphql-prettier|
+  groovy..................................|ale-groovy-options|
+    npm-groovy-lint.......................|ale-groovy-npm-groovy-lint|
   hack....................................|ale-hack-options|
     hack..................................|ale-hack-hack|
     hackfmt...............................|ale-hack-hackfmt|
@@ -2948,6 +3077,7 @@ documented in additional help files.
     stylish-haskell.......................|ale-haskell-stylish-haskell|
     hie...................................|ale-haskell-hie|
     ormolu................................|ale-haskell-ormolu|
+    fourmolu..............................|ale-haskell-fourmolu|
   hcl.....................................|ale-hcl-options|
     packer-fmt............................|ale-hcl-packer-fmt|
     terraform-fmt.........................|ale-hcl-terraform-fmt|
@@ -2960,6 +3090,7 @@ documented in additional help files.
     html-beautify.........................|ale-html-beautify|
     htmlhint..............................|ale-html-htmlhint|
     prettier..............................|ale-html-prettier|
+    rustywind.............................|ale-html-rustywind|
     stylelint.............................|ale-html-stylelint|
     tidy..................................|ale-html-tidy|
     vscodehtml............................|ale-html-vscode|
@@ -2974,6 +3105,7 @@ documented in additional help files.
     ispc..................................|ale-ispc-ispc|
   java....................................|ale-java-options|
     checkstyle............................|ale-java-checkstyle|
+    clang-format..........................|ale-java-clangformat|
     cspell................................|ale-java-cspell|
     javac.................................|ale-java-javac|
     google-java-format....................|ale-java-google-java-format|
@@ -2982,6 +3114,7 @@ documented in additional help files.
     eclipselsp............................|ale-java-eclipselsp|
     uncrustify............................|ale-java-uncrustify|
   javascript..............................|ale-javascript-options|
+    clang-format..........................|ale-javascript-clangformat|
     cspell................................|ale-javascript-cspell|
     deno..................................|ale-javascript-deno|
     dprint................................|ale-javascript-dprint|
@@ -2997,6 +3130,7 @@ documented in additional help files.
     standard..............................|ale-javascript-standard|
     xo....................................|ale-javascript-xo|
   json....................................|ale-json-options|
+    clang-format..........................|ale-json-clangformat|
     cspell................................|ale-json-cspell|
     dprint................................|ale-json-dprint|
     eslint................................|ale-json-eslint|
@@ -3032,6 +3166,7 @@ documented in additional help files.
   lua.....................................|ale-lua-options|
     cspell................................|ale-lua-cspell|
     lua-format............................|ale-lua-lua-format|
+    lua-language-server...................|ale-lua-lua-language-server|
     luac..................................|ale-lua-luac|
     luacheck..............................|ale-lua-luacheck|
     luafmt................................|ale-lua-luafmt|
@@ -3043,6 +3178,7 @@ documented in additional help files.
     cspell................................|ale-markdown-cspell|
     dprint................................|ale-markdown-dprint|
     markdownlint..........................|ale-markdown-markdownlint|
+    marksman..............................|ale-markdown-marksman|
     mdl...................................|ale-markdown-mdl|
     pandoc................................|ale-markdown-pandoc|
     prettier..............................|ale-markdown-prettier|
@@ -3053,21 +3189,26 @@ documented in additional help files.
     mmc...................................|ale-mercury-mmc|
   nasm....................................|ale-nasm-options|
     nasm..................................|ale-nasm-nasm|
+  nickel..................................|ale-nickel-options|
+    nickel_format.........................|ale-nickel-nickel-format|
   nim.....................................|ale-nim-options|
     nimcheck..............................|ale-nim-nimcheck|
     nimlsp................................|ale-nim-nimlsp|
     nimpretty.............................|ale-nim-nimpretty|
   nix.....................................|ale-nix-options|
+    alejandra.............................|ale-nix-alejandra|
     nixfmt................................|ale-nix-nixfmt|
     nixpkgs-fmt...........................|ale-nix-nixpkgs-fmt|
     statix................................|ale-nix-statix|
+    deadnix...............................|ale-nix-deadnix|
   nroff...................................|ale-nroff-options|
     write-good............................|ale-nroff-write-good|
   objc....................................|ale-objc-options|
+    ccls..................................|ale-objc-ccls|
     clang.................................|ale-objc-clang|
+    clang-format..........................|ale-objc-clangformat|
     clangd................................|ale-objc-clangd|
     uncrustify............................|ale-objc-uncrustify|
-    ccls..................................|ale-objc-ccls|
   objcpp..................................|ale-objcpp-options|
     clang.................................|ale-objcpp-clang|
     clangd................................|ale-objcpp-clangd|
@@ -3126,6 +3267,7 @@ documented in additional help files.
   proto...................................|ale-proto-options|
     buf-format............................|ale-proto-buf-format|
     buf-lint..............................|ale-proto-buf-lint|
+    clang-format..........................|ale-proto-clangformat|
     protoc-gen-lint.......................|ale-proto-protoc-gen-lint|
     protolint.............................|ale-proto-protolint|
   pug.....................................|ale-pug-options|
@@ -3152,6 +3294,7 @@ documented in additional help files.
     isort.................................|ale-python-isort|
     mypy..................................|ale-python-mypy|
     prospector............................|ale-python-prospector|
+    pycln.................................|ale-python-pycln|
     pycodestyle...........................|ale-python-pycodestyle|
     pydocstyle............................|ale-python-pydocstyle|
     pyflakes..............................|ale-python-pyflakes|
@@ -3161,8 +3304,10 @@ documented in additional help files.
     pylsp.................................|ale-python-pylsp|
     pyre..................................|ale-python-pyre|
     pyright...............................|ale-python-pyright|
+    refurb................................|ale-python-refurb|
     reorder-python-imports................|ale-python-reorder_python_imports|
     ruff..................................|ale-python-ruff|
+    ruff-format...........................|ale-python-ruff-format|
     unimport..............................|ale-python-unimport|
     vulture...............................|ale-python-vulture|
     yapf..................................|ale-python-yapf|
@@ -3172,6 +3317,9 @@ documented in additional help files.
     languageserver........................|ale-r-languageserver|
     lintr.................................|ale-r-lintr|
     styler................................|ale-r-styler|
+  racket..................................|ale-racket-options|
+    racket_langserver.....................|ale-racket-langserver|
+    raco_fmt..............................|ale-racket-raco-fmt|
   reasonml................................|ale-reasonml-options|
     merlin................................|ale-reasonml-merlin|
     ols...................................|ale-reasonml-ols|
@@ -3191,6 +3339,7 @@ documented in additional help files.
     brakeman..............................|ale-ruby-brakeman|
     cspell................................|ale-ruby-cspell|
     debride...............................|ale-ruby-debride|
+    packwerk..............................|ale-ruby-packwerk|
     prettier..............................|ale-ruby-prettier|
     rails_best_practices..................|ale-ruby-rails_best_practices|
     reek..................................|ale-ruby-reek|
@@ -3236,11 +3385,13 @@ documented in additional help files.
     solc..................................|ale-solidity-solc|
     solhint...............................|ale-solidity-solhint|
     solium................................|ale-solidity-solium|
+    forge.................................|ale-solidity-forge|
   spec....................................|ale-spec-options|
     rpmlint...............................|ale-spec-rpmlint|
   sql.....................................|ale-sql-options|
     dprint................................|ale-sql-dprint|
     pgformatter...........................|ale-sql-pgformatter|
+    sqlfluff..............................|ale-sql-sqlfluff|
     sqlfmt................................|ale-sql-sqlfmt|
     sqlformat.............................|ale-sql-sqlformat|
   stylus..................................|ale-stylus-options|
@@ -3336,6 +3487,7 @@ documented in additional help files.
     swaglint..............................|ale-yaml-swaglint|
     yaml-language-server..................|ale-yaml-language-server|
     yamlfix...............................|ale-yaml-yamlfix|
+    yamlfmt...............................|ale-yaml-yamlfmt|
     yamllint..............................|ale-yaml-yamllint|
     gitlablint............................|ale-yaml-gitlablint|
   yang....................................|ale-yang-options|
@@ -3553,13 +3705,14 @@ ALERename                                                           *ALERename*
   The symbol where the cursor is resting will be the symbol renamed, and a
   prompt will open to request a new name.
 
-  The rename operation will save all modified buffers when `set nohidden` is
-  set, because that disables leaving unsaved buffers in the background. See
-  `:help hidden` for more details.
+  The rename operation will not save modified buffers when 'hidden' is on
+  unless |g:ale_save_hidden| is `1`.
+
 
 ALEFileRename                                                   *ALEFileRename*
 
   Rename a file and fix imports using `tsserver`.
+
 
 ALECodeAction                                                   *ALECodeAction*
 
@@ -3733,7 +3886,7 @@ ALEDetail                                                           *ALEDetail*
 
                                                                      *:ALEInfo*
 ALEInfo                                                               *ALEInfo*
-ALEInfoToClipboard                                         *ALEInfoToClipboard*
+                                                                *ALEInfoToFile*
 
   Print runtime information about ALE, including the values of global and
   buffer-local settings for ALE, the linters that are enabled, the commands
@@ -3745,8 +3898,17 @@ ALEInfoToClipboard                                         *ALEInfoToClipboard*
   |g:ale_history_log_output| to `1` to enable logging of output for commands.
   ALE will only log the output captured for parsing problems, etc.
 
-  The command `:ALEInfoToClipboard` can be used to output ALEInfo directly to
-  your clipboard. This might not work on every machine.
+  You can pass options to the command to control how ALE displays the
+  information, such as `:ALEInfo -echo`, etc. >
+
+  -preview             Show the info in a preview window.
+  -clip OR -clipboard  Copy the information to your clipboard.
+  -echo                echo all of the information with :echo
+<
+  The default mode can be configured with |g:ale_info_default_mode|.
+
+  When shown in a preview window, syntax highlights can be defined for the
+  `ale-info` filetype.
 
   `:ALEInfoToFile` will write the ALE runtime information to a given filename.
   The filename works just like |:w|.
@@ -3777,6 +3939,17 @@ ALEStopAllLSPs                                                 *ALEStopAllLSPs*
   delete all of the problems found for them, updating every linted buffer.
 
   This command can be used when LSP clients mess up and need to be restarted.
+
+
+ALEStopLSP `linter_name`                                           *ALEStopLSP*
+
+  `ALEStopLSP` will stop a specific language server with a given linter name.
+  Completion is supported for currently running language servers. All language
+  servers with the given name will be stopped across all buffers for all
+  projects.
+
+  If the command is run with a bang (`:ALEStopLSP!`), all warnings will be
+  suppressed.
 
 
 ===============================================================================

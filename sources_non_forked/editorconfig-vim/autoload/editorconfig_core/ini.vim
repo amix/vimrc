@@ -49,8 +49,8 @@ let s:SECTCRE = '\v^\s*\[(%([^\\#;]|\\.)+)\]'
 let s:OPTCRE = '\v\s*([^:=[:space:]][^:=]*)\s*([:=])\s*(.*)$'
 
 let s:MAX_SECTION_NAME = 4096
-let s:MAX_PROPERTY_NAME = 50
-let s:MAX_PROPERTY_VALUE = 255
+let s:MAX_PROPERTY_NAME = 1024
+let s:MAX_PROPERTY_VALUE = 4096
 
 lockvar s:SECTCRE s:OPTCRE s:MAX_SECTION_NAME s:MAX_PROPERTY_NAME s:MAX_PROPERTY_VALUE
 
@@ -155,18 +155,6 @@ function! s:parse(config_filename, target_filename, lines)
                     echom printf('Saw raw opt <%s>=<%s>', l:optname, l:optval)
                 endif
 
-                if l:optval =~# '\v[;#]'
-                    " ';' and '#' are comment delimiters only if
-                    " preceded by a spacing character
-                    let l:m = matchlist(l:optval, '\v(.{-})\s[;#]')
-                    if len(l:m)
-                        let l:optval = l:m[1]
-                    endif
-
-                    " ; and # can be escaped with backslash.
-                    let l:optval = substitute(l:optval, '\v\\([;#])', '\1', 'g')
-
-                endif
                 let l:optval = editorconfig_core#util#strip(l:optval)
                 " allow empty values
                 if l:optval ==? '""'
@@ -202,7 +190,7 @@ function! s:parse(config_filename, target_filename, lines)
     endif
 
     return {'root': l:is_root, 'options': l:options}
-endfunction!
+endfunction
 
 " }}}1
 " === Helpers =========================================================== {{{1

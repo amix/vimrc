@@ -97,7 +97,7 @@ g:ale_cpp_cc_header_exts                             *g:ale_cpp_cc_header_exts*
   considered as header files.
 
   This variable is only used when `'-x c++-header'` is used instead of `'-x c++'`,
-  see |ale_cpp_cc_use_header_lang_flag|.
+  see |g:ale_cpp_cc_use_header_lang_flag|.
 
 
 ===============================================================================

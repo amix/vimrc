@@ -1,5 +1,5 @@
 " Author:   Nate Kane <nathanaelkane AT gmail DOT com>
-" Homepage: http://github.com/nathanaelkane/vim-indent-guides
+" Homepage: http://github.com/preservim/vim-indent-guides
 
 " Do not load if vim is too old
 if (v:version == 701 && !exists('*matchadd')) || (v:version < 701)
@@ -35,7 +35,7 @@ command! -bar IndentGuidesDisable call s:IndentGuidesDisable()
 "
 function s:InitVariable(var, value)
   if !exists(a:var)
-    if type(a:value) == type("")
+    if type(a:value) == type('')
       exec 'let ' . a:var . ' = ' . "'" . a:value . "'"
     else
       exec 'let ' . a:var . ' = ' .  a:value
@@ -67,7 +67,7 @@ if !exists('g:indent_guides_exclude_filetypes')
 endif
 
 " Default mapping
-if !hasmapto('<Plug>IndentGuidesToggle', 'n') && maparg('<Leader>ig', 'n') == ''
+if !hasmapto('<Plug>IndentGuidesToggle', 'n') && maparg('<Leader>ig', 'n') ==# ''
     \ && g:indent_guides_default_mapping != 0
   nmap <silent><unique> <Leader>ig <Plug>IndentGuidesToggle
 endif
@@ -86,6 +86,9 @@ augroup indent_guides
   endif
 
   autocmd BufEnter,WinEnter,FileType * call indent_guides#process_autocmds()
+  if (v:version == 704 && has('patch786')) || (v:version > 704)
+    autocmd OptionSet tabstop,shiftwidth,expandtab call indent_guides#process_autocmds()
+  endif
 
   " Trigger BufEnter and process modelines.
   autocmd ColorScheme * doautocmd indent_guides BufEnter

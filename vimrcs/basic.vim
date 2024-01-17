@@ -1,6 +1,6 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Maintainer:
-"       Amir Salihefendic — @amix3k
+"       Amir Salihefendic - @amix3k
 "
 " Awesome_version:
 "       Get this config, nice color schemes and lots of plugins!
@@ -39,7 +39,7 @@ filetype indent on
 
 " Set to auto read when a file is changed from the outside
 set autoread
-au FocusGained,BufEnter * checktime
+au FocusGained,BufEnter * silent! checktime
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file

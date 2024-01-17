@@ -17,7 +17,7 @@ For Vim version 7.0 or later.
 This plugin only works if 'compatible' is not set.
 {Vi does not have any of these features.}
 
-SnipMate depends on vim-addon-mw-utils and tlib.
+SnipMate depends on vim-addon-mw-utils and optionally on tlib.
 
 ==============================================================================
 DESCRIPTION                                             *SnipMate-description*
@@ -74,6 +74,9 @@ Commands~
                                 Only existing files and non-existing .snippets
                                 files will be shown, with the existing files
                                 shown first.
+
+                                The optional dependency tlib is required for
+                                this command to work.
 
 :SnipMateLoadScope[!] scope [scope ...]
                                 Load snippets from additional scopes. Without
@@ -220,6 +223,44 @@ The list of possible <Plug> mappings is as follows:
 
 Additionally, <CR> is mapped in visual mode in .snippets files for retabbing
 snippets.
+
+
+                                                           *SnipMate-autocmds*
+Autocommands~
+
+Autocommands allow code written by the user to be executed automatically at
+certain points within SnipMate's normal execution. Here is a list of events
+available to the User. All of these are subject to change.
+
+SnipTriggerPre                                       *SnipMate-SnipTriggerPre*
+SnipTriggerPost                                     *SnipMate-SnipTriggerPost*
+
+                These two events are run when determining what text to use as
+                the trigger. The Pre version can be used to forgo SnipMate's
+                normal lookups entirely, and the Post version can be used to
+                add to whatever lookups already exist.
+
+                Both events have access to b:snip_word, a variable
+                containining the WORD before the cursor when snippet
+                triggering began, and b:snip_lookups, a |List| containing all
+                possible lookups that SnipMate should try as possible
+                triggers. They are tried in order from the beginning.
+
+                If SnipTriggerPre runs and puts anything in b:snip_lookups,
+                SnipMate's normal lookups will not be tried. SnipTriggerPost
+                runs regardless.
+
+                The following example only allows a '.' as a possible trigger
+                if the WORD before the cursor is not "self.": >
+
+                    au User SnipLookupPost call My_func()
+
+                    function My_func() abort
+                        if match(b:snip_word, 'self\.$') != -1
+                            call filter(b:snip_lookups, "v:val !~# '^\\.$'")
+                        endif
+                    endfunction
+
 
 ==============================================================================
 SNIPPETS                                                   *SnipMate-snippets*
@@ -582,6 +623,14 @@ Perhaps some of these features will be added in a later release.
 
 ==============================================================================
 CHANGELOG                                                 *SnipMate-changelog*
+
+0.90 - 2023-12-29
+-----------------
+
+- Remove empty lines at the end of a `${VISUAL}` expansion
+- Fix code for opening folds when expanding a snippet
+- Deprecate legacy snippet parser
+- Fix jumps when `&sel == 'exclusive'`
 
 0.89 - 2016-05-29
 -----------------

@@ -1,35 +1,9 @@
-*editorconfig.txt*
+*editorconfig.txt*            EditorConfig plugin for vim.
 
 File: editorconfig.txt
 Version: 1.1.1
 Maintainer: EditorConfig Team <http://editorconfig.org>
 Description: EditorConfig vim plugin
-
-License:
-   Copyright (c) 2011-2019 EditorConfig Team
-   All rights reserved.
-
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met:
-
-   1. Redistributions of source code must retain the above copyright notice,
-      this list of conditions and the following disclaimer.
-   2. Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-   POSSIBILITY OF SUCH DAMAGE.
-
 
 CONTENTS~
                                             *editorconfig-contents*
@@ -39,6 +13,7 @@ CONTENTS~
 3.  Commands                                 |editorconfig-commands|
 4.  Settings                                 |editorconfig-settings|
 5.  Advanced                                 |editorconfig-advanced|
+6.  License                                  |editorconfig-license|
 
 
 OVERVIEW~
@@ -124,34 +99,47 @@ is restarted.
 
                                             *g:EditorConfig_max_line_indicator*
 The way to show the line where the maximal length is reached. Accepted values
-are "line", "fill" and "exceeding", otherwise there will be no max line
-indicator.
+are "line", "fill", "exceeding" and "fillexceeding", otherwise there will be
+no max line indicator.
 
-    "line":      the right column of the max line length column will be
-                 highlighted, made possible by adding "+1" to 'colorcolumn'.
+    "line":          the right column of the max line length column will be
+                     highlighted on all lines, by adding +1 to 'colorcolumn'.
 
-    "fill":      all the columns to the right of the max line length column
-                 will be highlighted, made possible by setting 'colorcolumn'
-                 to a list of numbers starting from "max_line_length + 1" to
-                 the number of columns on the screen.
+    "fill":          all the columns to the right of the max line length
+                     column will be highlighted on all lines, by setting
+                     'colorcolumn' to a list starting from "max_line_length +
+                     1" to the number of columns on the screen.
 
-    "exceeding": the right column of the max line length column will be
-                 highlighted on lines that exceed the max line length, made
-                 possible by adding a match for the ColorColumn group.
+    "exceeding":     the right column of the max line length column will be
+                     highlighted on lines that exceed the max line length, by
+                     adding a match for the ColorColumn group.
 
-    "none":      no max line length indicator will be shown. This is the
-                 recommended value when you do not want any indicator to be
-                 shown, but values other than "line" or "fill" would also work
-                 as "none".
+    "fillexceeding": all the columns to the right of the max line length
+                     column will be highlighted on lines that exceed the max
+                     line length, by adding a match for the ColorColumn group.
+
+    "none":          no max line length indicator will be shown. Recommended
+                     when you do not want any indicator to be shown, but any
+                     value other than those listed above also work as "none".
 
 To set this option, add any of the following lines to your |vimrc| file:
 >
  let g:EditorConfig_max_line_indicator = "line"
  let g:EditorConfig_max_line_indicator = "fill"
  let g:EditorConfig_max_line_indicator = "exceeding"
+ let g:EditorConfig_max_line_indicator = "fillexceeding"
  let g:EditorConfig_max_line_indicator = "none"
 <
 The default value is "line".
+
+                                            *g:EditorConfig_enable_for_new_buf*
+Set this to 1 if you want EditorConfig plugin to set options
+for new empty buffers too.
+Path to .editorconfig will be determined based on CWD (see |getcwd()|)
+>
+ let g:EditorConfig_enable_for_new_buf = 1
+<
+This option defaults to 0.
 
                                             *g:EditorConfig_preserve_formatoptions*
 Set this to 1 if you don't want your formatoptions modified when
@@ -217,4 +205,34 @@ And add the following code to your .editorconfig file:
 Then try to open an Objective-C file, you will find the |filetype| is set to
 "objc".
 
-vim:ft=help:tw=78
+License~
+                                               *editorconfig-license*
+----------------------------------------------------------------------------
+
+License:
+   Copyright (c) 2011-2019 EditorConfig Team
+   All rights reserved.
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are met:
+
+   1. Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+
+
+vim:ft=help:tw=78:cc=

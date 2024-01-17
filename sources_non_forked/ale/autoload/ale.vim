@@ -7,9 +7,6 @@ let g:ale_echo_msg_error_str = get(g:, 'ale_echo_msg_error_str', 'Error')
 let g:ale_echo_msg_info_str = get(g:, 'ale_echo_msg_info_str', 'Info')
 let g:ale_echo_msg_log_str = get(g:, 'ale_echo_msg_log_str', 'Log')
 let g:ale_echo_msg_warning_str = get(g:, 'ale_echo_msg_warning_str', 'Warning')
-" Ignoring linters, for disabling some, or ignoring LSP diagnostics.
-let g:ale_linters_ignore = get(g:, 'ale_linters_ignore', {})
-let g:ale_disable_lsp = get(g:, 'ale_disable_lsp', 0)
 
 " LSP window/showMessage format
 let g:ale_lsp_show_message_format = get(g:, 'ale_lsp_show_message_format', '%severity%:%linter%: %s')
@@ -100,7 +97,24 @@ function! s:Lint(buffer, should_lint_file, timer_id) abort
     " Use the filetype from the buffer
     let l:filetype = getbufvar(a:buffer, '&filetype')
     let l:linters = ale#linter#Get(l:filetype)
-    let l:linters = ale#linter#RemoveIgnored(a:buffer, l:filetype, l:linters)
+
+    let l:ignore_config = ale#Var(a:buffer, 'linters_ignore')
+    let l:disable_lsp = ale#Var(a:buffer, 'disable_lsp')
+
+    " Load code to ignore linters only if we need to.
+    if (
+    \   !empty(l:ignore_config)
+    \   || l:disable_lsp is 1
+    \   || l:disable_lsp is v:true
+    \   || (l:disable_lsp is# 'auto' && get(g:, 'lspconfig', 0))
+    \)
+        let l:linters = ale#engine#ignore#Exclude(
+        \   l:filetype,
+        \   l:linters,
+        \   l:ignore_config,
+        \   l:disable_lsp,
+        \)
+    endif
 
     " Tell other sources that they can start checking the buffer now.
     let g:ale_want_results_buffer = a:buffer
@@ -157,7 +171,7 @@ function! ale#Queue(delay, ...) abort
     endif
 endfunction
 
-let s:current_ale_version = [3, 2, 0]
+let s:current_ale_version = [3, 3, 0]
 
 " A function used to check for ALE features in files outside of the project.
 function! ale#Has(feature) abort
@@ -208,7 +222,7 @@ endfunction
 " valid for cmd on Windows, or most shells on Unix.
 function! ale#Env(variable_name, value) abort
     if has('win32')
-        return 'set ' . a:variable_name . '=' . ale#Escape(a:value) . ' && '
+        return 'set ' . ale#Escape(a:variable_name . '=' . a:value) . ' && '
     endif
 
     return a:variable_name . '=' . ale#Escape(a:value) . ' '
@@ -254,6 +268,7 @@ function! ale#GetLocItemMessage(item, format_string) abort
     " \=l:variable is used to avoid escaping issues.
     let l:msg = substitute(l:msg, '\v\%([^\%]*)code([^\%]*)\%', l:code_repl, 'g')
     let l:msg = substitute(l:msg, '\V%severity%', '\=l:severity', 'g')
+    let l:msg = substitute(l:msg, '\V%type%', '\=l:type', 'g')
     let l:msg = substitute(l:msg, '\V%linter%', '\=l:linter_name', 'g')
     " Replace %s with the text.
     let l:msg = substitute(l:msg, '\V%s', '\=a:item.text', 'g')

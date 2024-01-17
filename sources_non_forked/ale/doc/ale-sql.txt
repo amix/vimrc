@@ -28,6 +28,27 @@ g:ale_sql_pgformatter_options                   *g:ale_sql_pgformatter_options*
 
 
 ===============================================================================
+sqlfluff                                                     *ale-sql-sqlfluff*
+
+g:ale_sql_sqlfluff_executable                   *g:ale_sql_sqlfluff_executable*
+                                                *b:ale_sql_sqlfluff_executable*
+  Type: |String|
+  Default: `'sqlfluff'`
+
+  This variable sets executable used for sqlfluff.
+
+g:ale_sql_sqlfluff_options                         *g:ale_sql_sqlfluff_options*
+                                                   *b:ale_sql_sqlfluff_options*
+  Type: |String|
+  Default: `''`
+
+  This variable can be set to pass additional options to the sqlfluff linter.
+
+
+===============================================================================
+
+
+===============================================================================
 sqlfmt                                                         *ale-sql-sqlfmt*
 
 g:ale_sql_sqlfmt_executable                       *g:ale_sql_sqlfmt_executable*
