@@ -111,7 +111,9 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 
 ## Included color schemes
 
-Type `:colorscheme <Tab>` to try out color schemes on the fly or add the command to **my_configs.vim** (see below), for example `colorscheme pyte`.
+Type `:colorscheme <Tab>` to try out color schemes on the fly,
+or add the command to `~/.vim_runtime/my_configs.vim` (see [below](#how-to-include-your-own-stuff)),
+for example `colorscheme pyte`.
 
 * [peaksea](https://github.com/vim-scripts/peaksea): The default
 * [dracula](https://github.com/dracula/vim)
@@ -137,9 +139,14 @@ Type `:colorscheme <Tab>` to try out color schemes on the fly or add the command
 
 ## How to include your own stuff?
 
-After you have installed the setup, you can create **~/.vim_runtime/my_configs.vim** to fill in any configurations that are important for you. For instance, my **my_configs.vim** looks like this:
+After you have installed the setup,
+create an empty `~/.vim_runtime/my_configs.vim` file for further customization.
+This file's syntax matches `vimrc` syntax,
+and add `vimrc` lines like `set number` as needed.
 
-	~/.vim_runtime (master)> cat my_configs.vim
+For instance, my `my_configs.vim` looks like this:
+
+	~/.vim_runtime > cat my_configs.vim
 	map <leader>ct :cd ~/Desktop/Todoist/todoist<cr>
 	map <leader>cw :cd ~/Desktop/Wedoist/wedoist<cr> 
 
