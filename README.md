@@ -1,18 +1,43 @@
 ![VIM](https://dnp4pehkvoo6n.cloudfront.net/43c5af597bd5c1a64eb1829f011c208f/as/Ultimate%20Vimrc.svg)
 
 # Install
-## install vim-plug
 
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    
-## install coc.nvim
-
-    git clone --depth=1 https://github.com/yuanyahao333/vimconfig.git ~/.vim_runtime
+## download repo
+    git clone https://github.com/yuanyahao333/vimconfig.git ~/.vim_runtime
     git checkout myConfig
 
-## basic version
+## install vim-plug
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+ 
+## install coc.nvim
+    download nodejs
+    vim test
+    :PlugInstall
+    :q
+    cd ~/.vim/plugged/coc.nvim
+    npm ci
 
+    config language server
+    vim test
+
+    :CocConfig
+    {
+     "languageserver": {
+       "go": {
+         "command": "gopls",
+         "rootPatterns": ["go.mod"],
+         "trace.server": "verbose",
+         "filetypes": ["go"]
+       },
+       "clangd": {
+         "command": "clangd",
+         "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
+         "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"]
+       }
+     }
+   }
+## basic version
 	sh ~/.vim_runtime/install_basic_vimrc.sh
 ## awesome version
 
