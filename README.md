@@ -148,7 +148,10 @@ For instance, my `my_configs.vim` looks like this:
 
 	~/.vim_runtime > cat my_configs.vim
 	map <leader>ct :cd ~/Desktop/Todoist/todoist<cr>
-	map <leader>cw :cd ~/Desktop/Wedoist/wedoist<cr> 
+	map <leader>cw :cd ~/Desktop/Wedoist/wedoist<cr>
+
+To further structurize your own stuff or to enable integration in *dotfile* managers like [chezmoi](https://chezmoi.io)
+place `.vim` files with `vimrc` matching syntax in the `~/.vim_runtime/my_configs/` directory. 
 
 You can also install your plugins, for instance, via pathogen you can install [vim-rails](https://github.com/tpope/vim-rails):
 
@@ -201,6 +204,7 @@ map <leader>bd :Bclose<cr>
 " Close all buffers
 map <leader>ba :1,1000 bd!<cr>
 ```	
+
 Useful mappings for managing tabs:
 ```vim	
 map <leader>tn :tabnew<cr>
