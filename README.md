@@ -150,7 +150,7 @@ For instance, my `my_configs.vim` looks like this:
 	map <leader>ct :cd ~/Desktop/Todoist/todoist<cr>
 	map <leader>cw :cd ~/Desktop/Wedoist/wedoist<cr>
 
-To further structurize your own stuff or to enable integration in *dotfile* managers like [chezmoi](https://chezmoi.io)
+To further structure your own stuff or to enable integration in *dotfile* managers like [chezmoi](https://chezmoi.io)
 place `.vim` files with `vimrc` matching syntax in the `~/.vim_runtime/my_configs/` directory. 
 
 You can also install your plugins, for instance, via pathogen you can install [vim-rails](https://github.com/tpope/vim-rails):
