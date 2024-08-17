@@ -1,3 +1,4 @@
+
 ![VIM](https://dnp4pehkvoo6n.cloudfront.net/43c5af597bd5c1a64eb1829f011c208f/as/Ultimate%20Vimrc.svg)
 
 # The Ultimate vimrc
@@ -107,6 +108,7 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides) Is a plugin for visually displaying indent levels in Vim
 * [editorconfig-vim](https://github.com/editorconfig/editorconfig-vim) EditorConfig helps maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs
 * [copilot.vim](https://github.com/github/copilot.vim) Plugin for GitHub Copilot (AI autocompletion FTW 😅)
+* [vim-terraform](https://github.com/hashivim/vim-terraform) Plugin for syntax highlighting, indentation and more for HCL and Terraform-related files
 
 
 ## Included color schemes
@@ -415,4 +417,5 @@ Just do following:
 Maintaining this Vim configuration isn't my day job. Daily I am the founder/CEO of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
 
 PS: Using Vim isn't a requirement 😄
+
 
