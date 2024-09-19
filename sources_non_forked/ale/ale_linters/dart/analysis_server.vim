@@ -1,6 +1,7 @@
 " Author: Nelson Yeung <nelsyeung@gmail.com>
 " Description: Check Dart files with dart analysis server LSP
 
+call ale#Set('dart_analysis_server_enable_language_server', 1)
 call ale#Set('dart_analysis_server_executable', 'dart')
 
 function! ale_linters#dart#analysis_server#GetProjectRoot(buffer) abort
@@ -12,12 +13,19 @@ function! ale_linters#dart#analysis_server#GetProjectRoot(buffer) abort
 endfunction
 
 function! ale_linters#dart#analysis_server#GetCommand(buffer) abort
+    let l:language_server = ale#Var(a:buffer, 'dart_analysis_server_enable_language_server')
     let l:executable = ale#Var(a:buffer, 'dart_analysis_server_executable')
     let l:dart = resolve(exepath(l:executable))
-
-    return '%e '
+    let l:output = '%e '
     \   . fnamemodify(l:dart, ':h') . '/snapshots/analysis_server.dart.snapshot'
     \   . ' --lsp'
+
+    " Enable new language-server command
+    if l:language_server == 1
+        let l:output = '%e language-server --protocol=lsp'
+    endif
+
+    return l:output
 endfunction
 
 call ale#linter#Define('dart', {

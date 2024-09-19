@@ -161,7 +161,7 @@ endfunction
 
 function! s:GroupCmd() abort
     if s:supports_sign_groups
-        return ' group=ale '
+        return ' group=ale_signs '
     else
         return ' '
     endif
@@ -180,13 +180,13 @@ endfunction
 function! ale#sign#ParsePattern() abort
     if s:supports_sign_groups
         " Matches output like :
-        " line=4  id=1  group=ale  name=ALEErrorSign
-        " строка=1  id=1000001  группа=ale  имя=ALEErrorSign
-        " 行=1  識別子=1000001  グループ=ale  名前=ALEWarningSign
-        " línea=12 id=1000001 grupo=ale  nombre=ALEWarningSign
-        " riga=1 id=1000001  gruppo=ale   nome=ALEWarningSign
-        " Zeile=235  id=1000001 Gruppe=ale  Name=ALEErrorSign
-        let l:pattern = '\v^.*\=(\d+).*\=(\d+).*\=ale>.*\=(ALE[a-zA-Z]+Sign)'
+        " line=4  id=1  group=ale_signs  name=ALEErrorSign
+        " строка=1  id=1000001  группа=ale_signs  имя=ALEErrorSign
+        " 行=1  識別子=1000001  グループ=ale_signs  名前=ALEWarningSign
+        " línea=12 id=1000001 grupo=ale_signs  nombre=ALEWarningSign
+        " riga=1 id=1000001  gruppo=ale_signs   nome=ALEWarningSign
+        " Zeile=235  id=1000001 Gruppe=ale_signs  Name=ALEErrorSign
+        let l:pattern = '\v^.*\=(\d+).*\=(\d+).*\=ale_signs>.*\=(ALE[a-zA-Z]+Sign)'
     else
         " Matches output like :
         " line=4  id=1  name=ALEErrorSign
@@ -203,7 +203,7 @@ endfunction
 
 " Given a buffer number, return a List of placed signs [line, id, group]
 function! ale#sign#ParseSignsWithGetPlaced(buffer) abort
-    let l:signs = sign_getplaced(a:buffer, { 'group': s:supports_sign_groups ? 'ale' : '' })[0].signs
+    let l:signs = sign_getplaced(a:buffer, { 'group': s:supports_sign_groups ? 'ale_signs' : '' })[0].signs
     let l:result = []
     let l:is_dummy_sign_set = 0
 
@@ -489,7 +489,7 @@ endfunction
 " Remove all signs.
 function! ale#sign#Clear() abort
     if s:supports_sign_groups
-        sign unplace group=ale *
+        sign unplace group=ale_signs *
     else
         sign unplace *
     endif

@@ -1,7 +1,7 @@
-*bufexplorer.txt*              Buffer Explorer       Last Change: 01 May 2023
+*bufexplorer.txt*              Buffer Explorer       Last Change: 13 Aug 2024
 
 Buffer Explorer                                *buffer-explorer* *bufexplorer*
-                                Version 7.4.26
+                                Version 7.4.27
 
 Plugin for easily exploring (or browsing) Vim|:buffers|.
 
@@ -263,6 +263,10 @@ The default is 1.
 ===============================================================================
 CHANGE LOG                                              *bufexplorer-changelog*
 
+7.4.27   May 30, 2024
+       - Thanks to GitHub user NotNormallyAGitUser, for the recommendation to
+         change the display of the relative path to replace $HOME with "~".
+         This save valuable screen real estate.
 7.4.26   May 01, 2023
      What's Changed
        - wipe explorer buffer on hide by @basharh in
@@ -795,9 +799,9 @@ TODO                                                         *bufexplorer-todo*
 ===============================================================================
 CREDITS                                                   *bufexplorer-credits*
 
-Author: Jeff Lanzarotta <delux256-vim at outlook dot com>
+Author: Jeff Lanzarotta <my name at gmail dot com>
 
-Credit must go out to Bram Moolenaar and all the Vim developers for
+Credit must go out to Bram Moolenaar (RIP) and all the Vim developers for
 making the world's best editor (IMHO). I also want to thank everyone who
 helped and gave me suggestions. I wouldn't want to leave anyone out so I
 won't list names.
@@ -805,7 +809,7 @@ won't list names.
 ===============================================================================
 COPYRIGHT                                               *bufexplorer-copyright*
 
-Copyright (c) 2001-2022, Jeff Lanzarotta
+Copyright (c) 2001-2024, Jeff Lanzarotta
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

@@ -183,6 +183,9 @@ let g:ale_python_auto_pipenv = get(g:, 'ale_python_auto_pipenv', 0)
 " Enable automatic detection of poetry for Python linters.
 let g:ale_python_auto_poetry = get(g:, 'ale_python_auto_poetry', 0)
 
+" Enable automatic detection of uv for Python linters.
+let g:ale_python_auto_uv = get(g:, 'ale_python_auto_uv', 0)
+
 " Enable automatic adjustment of environment variables for Python linters.
 " The variables are set based on ALE's virtualenv detection.
 let g:ale_python_auto_virtualenv = get(g:, 'ale_python_auto_virtualenv', 0)

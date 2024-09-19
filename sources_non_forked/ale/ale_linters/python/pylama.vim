@@ -6,6 +6,7 @@ call ale#Set('python_pylama_options', '')
 call ale#Set('python_pylama_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('python_pylama_auto_pipenv', 0)
 call ale#Set('python_pylama_auto_poetry', 0)
+call ale#Set('python_pylama_auto_uv', 0)
 call ale#Set('python_pylama_change_directory', 1)
 
 function! ale_linters#python#pylama#GetExecutable(buffer) abort
@@ -19,12 +20,17 @@ function! ale_linters#python#pylama#GetExecutable(buffer) abort
         return 'poetry'
     endif
 
+    if (ale#Var(a:buffer, 'python_auto_uv') || ale#Var(a:buffer, 'python_pylama_auto_uv'))
+    \ && ale#python#UvPresent(a:buffer)
+        return 'uv'
+    endif
+
     return ale#python#FindExecutable(a:buffer, 'python_pylama', ['pylama'])
 endfunction
 
 function! ale_linters#python#pylama#RunWithVersionCheck(buffer) abort
     let l:executable = ale_linters#python#pylama#GetExecutable(a:buffer)
-    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry\|uv$'
     \   ? ' run pylama'
     \   : ''
 
@@ -53,7 +59,7 @@ endfunction
 
 function! ale_linters#python#pylama#GetCommand(buffer, version) abort
     let l:executable = ale_linters#python#pylama#GetExecutable(a:buffer)
-    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry\|uv$'
     \   ? ' run pylama'
     \   : ''
 

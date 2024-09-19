@@ -1,0 +1,16 @@
+https://goreleaser.com/quick-start/
+
+To make a release...
+
+1. Make changes.
+2. Commit and push changes.
+3. git tag -a v7.4.27 -m "Release v7.4.27."
+4. git push origin v7.4.27
+5. goreleaser release --clean
+6. Go to github and make the release.
+
+If something happens and the tag is messed up, you will need to delete the
+local and remote tag and release again.  To delete the tag:
+
+1. git tag -d v7.4.27
+2. git push --delete origin v7.4.27

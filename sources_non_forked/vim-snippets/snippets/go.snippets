@@ -59,7 +59,7 @@ snippet in "interface"
 	interface{}
 
 snippet inf "full interface "
-	interface ${1:name} {
+	type ${1:name} interface {
 		${2:/* methods */}
 	}
 
@@ -188,7 +188,7 @@ snippet sr "string"
 	string
 
 snippet st "struct"
-	struct ${1:name} {
+	type ${1:name} struct {
 		${2:/* data */}
 	}
 	${0}

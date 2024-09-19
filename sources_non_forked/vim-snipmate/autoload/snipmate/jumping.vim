@@ -35,6 +35,7 @@ endfunction
 " Update state information to correspond to the given tab stop
 function! s:state_set_stop(backwards) dict abort
 	call self.find_next_stop(a:backwards)
+
 	let self.cur_stop    = self.stops[self.stop_no]
 	let self.stop_len = (type(self.cur_stop.placeholder) == type(0))
 				\ ? self.cur_stop.placeholder
@@ -43,13 +44,26 @@ function! s:state_set_stop(backwards) dict abort
 	let self.end_col     = self.start_col + self.stop_len
 	let self.mirrors     = get(self.cur_stop, 'mirrors', [])
 	let self.old_mirrors = deepcopy(self.mirrors)
+
 	call cursor(self.cur_stop.line, self.cur_stop.col)
+
 	let self.prev_len    = col('$')
 	let self.changed = 0
-	let ret = self.select_word()
+
+	for mirror in self.mirrors
+		let mirror.oldSize = self.stop_len
+	endfor
+
+	if exists("self.cur_stop.items")
+		let ret = self.select_item()
+	else
+		let ret = self.select_word()
+	endif
+
 	if (self.stop_no == 0 || self.stop_no == self.stop_count - 1) && !a:backwards
 		call self.remove()
 	endif
+
 	return ret
 endfunction
 
@@ -62,11 +76,18 @@ function! s:state_jump_stop(backwards) dict abort
 
 	" Store placeholder/location changes
 	let self.cur_stop.col = self.start_col
+	unlet! self.cur_stop.placeholder " avoid type error for old parsing version
+	let self.cur_stop.placeholder = [strpart(getline('.'),
+				\ self.start_col - 1, self.end_col - self.start_col)]
 	if self.changed
 		call self.remove_nested()
-		unlet! self.cur_stop.placeholder " avoid type error for old parsing version
-		let self.cur_stop.placeholder = [strpart(getline('.'),
-					\ self.start_col - 1, self.end_col - self.start_col)]
+
+		" Remove selection items if the stop has changed and the new placeholder
+		" is not one of the selection items
+		if exists('self.cur_stop.items') &&
+					\ !count(self.cur_stop.items, self.cur_stop.placeholder)
+			call remove(self.cur_stop, 'items')
+		endif
 	endif
 
 	return self.set_stop(a:backwards)
@@ -151,30 +172,14 @@ function! s:state_update_mirrors(change) dict abort
 			let oldSize = strlen(newWord)
 		endif
 
-		" Split the line into three parts: the mirror, what's before it, and
-		" what's after it. Then combine them using the new mirror string.
-		" Subtract one to go from column index to byte index
-
-		let theline = getline(mirror.line)
-
-		" part before the current mirror
-		let beginline  = strpart(theline, 0, mirror.col - 1)
-
 		" current mirror transformation, and save size
 		let wordMirror= substitute(newWord, get(mirror, 'pat', ''), get(mirror, 'sub', ''), get(mirror, 'flags', ''))
 		let mirror.oldSize = strlen(wordMirror)
 
-		" end of the line, use the oldSize because with the transformation,
-		" the size of the mirror can be different from those of the snippet
-		let endline    = strpart(theline, mirror.col + oldSize -1)
-
-		" Update other object on the line
+		" Update other objects on the line
 		call self.update(mirror, changeLen, mirror.oldSize - oldSize)
 
-		" reconstruct the line
-		let update = beginline.wordMirror.endline
-
-		call setline(mirror.line, update)
+		call s:set_line(mirror.line, mirror.col, oldSize, wordMirror)
 	endfor
 
 	" Reposition the cursor in case a var updates on the same line but before
@@ -194,7 +199,9 @@ function! s:state_find_update_objects(item) dict abort
 			call add(item.update_objects, stop)
 		endif
 
+		let placeholder_len = len(snipMate#sniplist_str(stop.placeholder, b:snip_state.stops))
 		for mirror in get(stop, 'mirrors', [])
+			let mirror.oldSize = placeholder_len
 			if mirror.line == item.line && mirror.col > item.col
 				call add(item.update_objects, mirror)
 			endif
@@ -222,9 +229,37 @@ function! s:state_update(item, change_len, mirror_change) dict abort
 	endfor
 endfunction
 
+" Split the line into three parts: the mirror, what's before it, and
+" what's after it. Then combine them using the new mirror string.
+" Subtract one to go from column index to byte index
+function! s:set_line(line, col, len, word)
+	let theline = getline(a:line)
+	let begin = strpart(theline, 0, a:col - 1)
+	let end = strpart(theline, a:col + a:len - 1)
+	call setline(a:line, begin . a:word . end)
+endfunction
+
+" If &cotl contains at least one of these three, we need to add one to our menu
+" selection hack in s:state_select_item
+function! s:cot_count()
+	let cotl = split(&cot, ',')
+	let c = (has('patch-9.0.0567') && count(cotl, 'longest')) + count(cotl, 'noinsert') + count(cotl, 'noselect')
+	return min([1, c])
+endfunction
+
+function! s:state_select_item() dict abort
+	let items = map(copy(self.cur_stop.items), 'snipMate#sniplist_str(v:val, b:snip_state.stops)')
+	call s:set_line(line('.'), self.start_col, self.end_col - self.start_col, '')
+	call complete(self.start_col, items)
+	for i in range(index(self.cur_stop.items, self.cur_stop.placeholder) + s:cot_count())
+		call feedkeys("\<C-N>")
+	endfor
+	return ''
+endfunction
+
 call extend(s:state_proto, snipmate#util#add_methods(s:sfile(), 'state',
 			\ [ 'remove', 'set_stop', 'jump_stop', 'remove_nested',
-			\ 'select_word', 'update_changes', 'update_mirrors',
+			\ 'select_word', 'update_changes', 'update_mirrors', 'select_item',
 			\ 'find_next_stop', 'find_update_objects', 'update' ]), 'error')
 
 " vim:noet:sw=4:ts=4:ft=vim

@@ -3,6 +3,7 @@
 
 call ale#Set('python_prospector_auto_pipenv', 0)
 call ale#Set('python_prospector_auto_poetry', 0)
+call ale#Set('python_prospector_auto_uv', 0)
 
 let g:ale_python_prospector_executable =
 \   get(g:, 'ale_python_prospector_executable', 'prospector')
@@ -23,13 +24,18 @@ function! ale_linters#python#prospector#GetExecutable(buffer) abort
         return 'poetry'
     endif
 
+    if (ale#Var(a:buffer, 'python_auto_uv') || ale#Var(a:buffer, 'python_prospector_auto_uv'))
+    \ && ale#python#UvPresent(a:buffer)
+        return 'uv'
+    endif
+
     return ale#python#FindExecutable(a:buffer, 'python_prospector', ['prospector'])
 endfunction
 
 function! ale_linters#python#prospector#GetCommand(buffer) abort
     let l:executable = ale_linters#python#prospector#GetExecutable(a:buffer)
 
-    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry\|uv$'
     \   ? ' run prospector'
     \   : ''
 

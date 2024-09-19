@@ -1,6 +1,9 @@
 describe 'snippet parser'
 
     before
+        " two optional arguments:
+        " first one:  whether or not to create the stop stubs
+        " second one: whether or not to return the stops
         function! Parse(snippet, ...)
             let [snip, stops] = snipmate#parse#snippet(a:snippet, (a:0 ? a:1 : 1))
             return (a:0 > 1 && a:2) ? [snip, stops] : snip
@@ -147,6 +150,21 @@ describe 'snippet parser'
 
     it 'represents empty lines as an empty string'
         Expect Parse("foo\n\nbar") == [['foo'], [''], ['bar']]
+    end
+
+    it 'parses a selection as a special var named "select" with each item'
+        Expect Parse("${1|foo|bar|baz|select}") ==
+                    \ [[[1, ['select', 'foo', 'bar', 'baz', 'select']]]]
+    end
+
+    it 'stores selection items in the var dictionary'
+        let [snip, stops] = Parse("${1|foo|bar|baz|select}", 0, 1)
+        Expect stops[1].items == ['foo', 'bar', 'baz', 'select']
+    end
+
+    it 'sets a selections placeholder to the first item'
+        let [snip, stops] = Parse("${1|foo|bar|baz|select}", 0, 1)
+        Expect stops[1].placeholder == 'foo'
     end
 
 end

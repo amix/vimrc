@@ -113,7 +113,7 @@ syntax keyword typescriptStorageClass let var const
 syntax keyword typescriptOperator delete new instanceof typeof
 syntax keyword typescriptBoolean true false
 syntax keyword typescriptNull null undefined
-syntax keyword typescriptMessage alert confirm prompt status
+syntax keyword typescriptMessage alert confirm prompt
 syntax keyword typescriptGlobal self top parent
 syntax keyword typescriptDeprecated escape unescape all applets alinkColor bgColor fgColor linkColor vlinkColor xmlEncoding
 "}}}
@@ -129,7 +129,7 @@ syntax keyword typescriptGlobalNodeObjects  module exports global process __dirn
 
 syntax keyword typescriptExceptions try catch throw finally Error EvalError RangeError ReferenceError SyntaxError TypeError URIError
 
-syntax keyword typescriptReserved constructor declare as interface module abstract enum int short export interface static byte extends long super char final native synchronized class float package throws goto private transient debugger implements protected volatile double import public type namespace from get set keyof
+syntax keyword typescriptReserved constructor declare as interface module abstract enum int short export interface static byte extends long super char final native synchronized class float package throws goto private transient debugger implements protected volatile double import public type namespace from get set keyof satisfies
 "}}}
 "" typescript/DOM/HTML/CSS specified things"{{{
 

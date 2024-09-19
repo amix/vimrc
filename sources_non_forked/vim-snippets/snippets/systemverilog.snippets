@@ -71,3 +71,594 @@ snippet pkg
 	package ${1:package_name};
 		${0}
 	endpackage : $1
+
+snippet uvm_object
+	//  Class: $1
+	//
+	class ${1:my_class} extends ${2:uvm_object};
+		\`uvm_object_utils($1);
+
+		//  Group: Variables
+
+
+		//  Group: Constraints
+
+
+		//  Group: Functions
+
+		//  Constructor: new
+		function new(string name = "$1");
+			super.new(name);
+		endfunction: new
+		$0
+	endclass: $1
+
+
+snippet uvm_object_with_parameters
+	//  Class: $1
+	//
+	class ${1:my_class} #(${2:parameters}) extends ${3:uvm_object};
+		typedef $1 #(${2/(\b(parameter|type)\s+([A-Za-z_][A-Za-z0-9_$]*)(\s*=\s*([A-Za-z0-9_$]+))?)*\b/$3/g}) this_type_t;
+		\`uvm_object_param_utils(this_type_t);
+
+		//  Group: Variables
+
+
+		//  Group: Constraints
+
+
+		//  Group: Functions
+
+		//  Constructor: new
+		function new(string name = "$1");
+			super.new(name);
+		endfunction: new
+		$0
+	endclass: $1
+
+
+snippet uvm_component
+	//  Class: $1
+	//
+	class ${1:my_class} extends ${2:uvm_component};
+		\`uvm_component_utils($1);
+
+		//  Group: Configuration Object(s)
+
+		//  Var: config_obj
+		${3:config_obj_t} config_obj;
+
+
+		//  Group: Components
+
+
+		//  Group: Variables
+
+
+		//  Group: Functions
+
+		//  Constructor: new
+		function new(string name = "$1", uvm_component parent);
+			super.new(name, parent);
+		endfunction: new
+
+		$0
+	endclass: $1
+
+
+snippet uvm_component_with_parameters
+	//  Class: $1
+	//
+	class ${1:my_class} #(${2:parameters}) extends ${3:uvm_component};
+		typedef $1 #(${2/(\b(parameter|type)\s+([A-Za-z_][A-Za-z0-9_$]*)(\s*=\s*([A-Za-z0-9_$]+))?)*\b/$3/g}) this_type_t;
+		\`uvm_component_param_utils(this_type_t);
+
+		//  Group: Configuration Object(s)
+
+		//  Var: config_obj
+		${4:config_obj_t} config_obj;
+
+
+		//  Group: Components
+
+
+		//  Group: Variables
+
+
+		//  Constructor: new
+		function new(string name = "$1", uvm_component parent);
+			super.new(name, parent);
+		endfunction: new
+
+		$0
+	endclass: $1
+
+
+snippet uvm_component_extended
+	//  Class: $1
+	//
+	class ${1:my_class} extends ${2:base_class};
+		\`uvm_component_utils($1);
+
+		//  Group: Configuration Object(s)
+
+
+		//  Group: Components
+
+
+		//  Group: Variables
+
+
+		//  Group: Functions
+
+		//  Constructor: new
+		function new(string name = "$1", uvm_component parent);
+			super.new(name, parent);
+		endfunction: new
+
+		/*---  UVM Build Phases            ---*/
+		/*------------------------------------*/
+		//  Function: build_phase
+		extern function void build_phase(uvm_phase phase);
+		//  Function: connect_phase
+		extern function void connect_phase(uvm_phase phase);
+		//  Function: end_of_elaboration_phase
+		extern function void end_of_elaboration_phase(uvm_phase phase);
+
+		/*---  UVM Run Phases              ---*/
+		/*------------------------------------*/
+		//  Function: start_of_simulation_phase
+		extern function void start_of_simulation_phase(uvm_phase phase);
+		//  Function: reset_phase
+		extern task reset_phase(uvm_phase phase);
+		//  Function: configure_phase
+		extern task configure_phase(uvm_phase phase);
+		//  Function: main_phase
+		extern task main_phase(uvm_phase phase);
+		//  Function: shutdown_phase
+		extern task shutdown_phase(uvm_phase phase);
+
+		/*---  UVM Cleanup Phases          ---*/
+		/*------------------------------------*/
+		//  Function: extract_phase
+		extern function void extract_phase(uvm_phase phase);
+		//  Function: report_phase
+		extern function void report_phase(uvm_phase phase);
+		$0
+	endclass: $1
+
+
+	/*----------------------------------------------------------------------------*/
+	/*  UVM Build Phases                                                          */
+	/*----------------------------------------------------------------------------*/
+	function void $1::build_phase(uvm_phase phase);
+		/*  note: Do not call super.build_phase() from any class that is extended from an UVM base class!  */
+		/*  For more information see UVM Cookbook v1800.2 p.503  */
+		// super.build_phase(phase);
+	endfunction: build_phase
+
+
+	function void $1::connect_phase(uvm_phase phase);
+		super.connect_phase(phase);
+	endfunction: connect_phase
+
+
+	function void $1::end_of_elaboration_phase(uvm_phase phase);
+		super.end_of_elaboration_phase(phase);
+	endfunction: end_of_elaboration_phase
+
+
+	/*----------------------------------------------------------------------------*/
+	/*  UVM Run Phases                                                            */
+	/*----------------------------------------------------------------------------*/
+	function void $1::start_of_simulation_phase(uvm_phase phase);
+		super.start_of_simulation_phase(phase);
+	endfunction: start_of_simulation_phase
+
+
+	task $1::reset_phase(uvm_phase phase);
+	endtask: reset_phase
+
+
+	task $1::configure_phase(uvm_phase phase);
+	endtask: configure_phase
+
+
+	task $1::main_phase(uvm_phase phase);
+	endtask: main_phase
+
+
+	task $1::shutdown_phase(uvm_phase phase);
+	endtask: shutdown_phase
+
+
+	/*----------------------------------------------------------------------------*/
+	/*  UVM Cleanup Phases                                                        */
+	/*----------------------------------------------------------------------------*/
+	function void $1::report_phase(uvm_phase phase);
+		super.report_phase(phase);
+	endfunction: report_phase
+
+
+	function void $1::extract_phase(uvm_phase phase);
+		super.extract_phase(phase);
+	endfunction: extract_phase
+
+
+
+snippet uvm_sequence
+	//  Class: $1
+	//
+	class ${1:my_class} extends ${2:uvm_sequence};
+		\`uvm_object_utils($1);
+
+		//  Group: Variables
+
+
+		//  Group: Constraints
+
+
+		//  Group: Functions
+
+		//  Constructor: new
+		function new(string name = "$1");
+			super.new(name);
+		endfunction: new
+
+		//  Task: pre_start
+		//  This task is a user-definable callback that is called before the optional 
+		//  execution of <pre_body>.
+		// extern virtual task pre_start();
+
+		//  Task: pre_body
+		//  This task is a user-definable callback that is called before the execution 
+		//  of <body> ~only~ when the sequence is started with <start>.
+		//  If <start> is called with ~call_pre_post~ set to 0, ~pre_body~ is not called.
+		// extern virtual task pre_body();
+
+		//  Task: pre_do
+		//  This task is a user-definable callback task that is called ~on the parent 
+		//  sequence~, if any. The sequence has issued a wait_for_grant() call and after
+		//  the sequencer has selected this sequence, and before the item is randomized.
+		//
+		//  Although pre_do is a task, consuming simulation cycles may result in unexpected
+		//  behavior on the driver.
+		// extern virtual task pre_do(bit is_item);
+
+		//  Function: mid_do
+		//  This function is a user-definable callback function that is called after the 
+		//  sequence item has been randomized, and just before the item is sent to the 
+		//  driver.
+		// extern virtual function void mid_do(uvm_sequence_item this_item);
+
+		//  Task: body
+		//  This is the user-defined task where the main sequence code resides.
+		extern virtual task body();
+
+		//  Function: post_do
+		//  This function is a user-definable callback function that is called after the 
+		//  driver has indicated that it has completed the item, using either this 
+		//  item_done or put methods. 
+		// extern virtual function void post_do(uvm_sequence_item this_item);
+
+		//  Task: post_body
+		//  This task is a user-definable callback task that is called after the execution 
+		//  of <body> ~only~ when the sequence is started with <start>.
+		//  If <start> is called with ~call_pre_post~ set to 0, ~post_body~ is not called.
+		// extern virtual task post_body();
+
+		//  Task: post_start
+		//  This task is a user-definable callback that is called after the optional 
+		//  execution of <post_body>.
+		// extern virtual task post_start();
+		$0
+	endclass: $1
+
+snippet uvm_sequence_with_parameters
+	//  Class: $1
+	//
+	class ${1:my_class} #(${2:parameters}) extends ${3:uvm_sequence};
+		typedef $1 #(${2/(\b(parameter|type)\s+([A-Za-z_][A-Za-z0-9_$]*)(\s*=\s*([A-Za-z0-9_$]+))?)*\b/$3/g}) this_type_t;
+		\`uvm_object_param_utils(this_type_t);
+
+		//  Group: Variables
+
+
+		//  Group: Constraints
+
+
+		//  Group: Functions
+
+		//  Constructor: new
+		function new(string name = "$1");
+			super.new(name);
+		endfunction: new
+
+		//  Task: pre_start
+		//  This task is a user-definable callback that is called before the optional 
+		//  execution of <pre_body>.
+		// extern virtual task pre_start();
+
+		//  Task: pre_body
+		//  This task is a user-definable callback that is called before the execution 
+		//  of <body> ~only~ when the sequence is started with <start>.
+		//  If <start> is called with ~call_pre_post~ set to 0, ~pre_body~ is not called.
+		// extern virtual task pre_body();
+
+		//  Task: pre_do
+		//  This task is a user-definable callback task that is called ~on the parent 
+		//  sequence~, if any. The sequence has issued a wait_for_grant() call and after
+		//  the sequencer has selected this sequence, and before the item is randomized.
+		//
+		//  Although pre_do is a task, consuming simulation cycles may result in unexpected
+		//  behavior on the driver.
+		// extern virtual task pre_do(bit is_item);
+
+		//  Function: mid_do
+		//  This function is a user-definable callback function that is called after the 
+		//  sequence item has been randomized, and just before the item is sent to the 
+		//  driver.
+		// extern virtual function void mid_do(uvm_sequence_item this_item);
+
+		//  Task: body
+		//  This is the user-defined task where the main sequence code resides.
+		extern virtual task body();
+
+		//  Function: post_do
+		//  This function is a user-definable callback function that is called after the 
+		//  driver has indicated that it has completed the item, using either this 
+		//  item_done or put methods. 
+		// extern virtual function void post_do(uvm_sequence_item this_item);
+
+		//  Task: post_body
+		//  This task is a user-definable callback task that is called after the execution 
+		//  of <body> ~only~ when the sequence is started with <start>.
+		//  If <start> is called with ~call_pre_post~ set to 0, ~post_body~ is not called.
+		// extern virtual task post_body();
+
+		//  Task: post_start
+		//  This task is a user-definable callback that is called after the optional 
+		//  execution of <post_body>.
+		// extern virtual task post_start();
+		$0
+	endclass: $1
+
+snippet uvm_sequence_functions
+	// task ${1:my_class::}pre_start();
+	// endtask: pre_start
+
+
+	// task $1pre_body();
+	// endtask: pre_body
+
+
+	// task $1pre_do(bit is_item);
+	// endtask: pre_do
+
+
+	// function void $1mid_do(uvm_sequence_item this_item);
+	// endfunction: mid_do
+
+
+	task $1body();
+		$0
+	endtask: body
+
+
+	// function void $1post_do(uvm_sequence_item this_item);
+	// endfunction: post_do
+
+
+	// task $1post_body();
+	// endtask: post_body
+
+
+	// task $1post_start();
+	// endtask: post_start
+
+
+snippet uvm_sequence_item
+	//  Class: $1
+	//
+	class ${1:my_class} extends ${2:uvm_sequence_item};
+		typedef $1 this_type_t;
+		\`uvm_object_utils($1);
+
+		//  Group: Variables
+
+
+		//  Group: Constraints
+
+
+		//  Group: Functions
+
+		//  Constructor: new
+		function new(string name = "$1");
+			super.new(name);
+		endfunction: new
+
+		//  Function: do_copy
+		// extern function void do_copy(uvm_object rhs);
+		//  Function: do_compare
+		// extern function bit do_compare(uvm_object rhs, uvm_comparer comparer);
+		//  Function: convert2string
+		// extern function string convert2string();
+		//  Function: do_print
+		// extern function void do_print(uvm_printer printer);
+		//  Function: do_record
+		// extern function void do_record(uvm_recorder recorder);
+		//  Function: do_pack
+		// extern function void do_pack();
+		//  Function: do_unpack
+		// extern function void do_unpack();
+		$0
+	endclass: $1
+
+
+	/*----------------------------------------------------------------------------*/
+	/*  Constraints                                                               */
+	/*----------------------------------------------------------------------------*/
+	
+
+
+
+	/*----------------------------------------------------------------------------*/
+	/*  Functions                                                                 */
+	/*----------------------------------------------------------------------------*/
+	
+
+
+snippet uvm_sequence_item_with_parameters
+	//  Class: $1
+	//
+	class ${1:my_class} #(${2:parameters}) extends ${3:uvm_sequence_item};
+		typedef $1 #(${2/(\b(parameter|type)\s+([A-Za-z_][A-Za-z0-9_$]*)(\s*=\s*([A-Za-z0-9_$]+))?)*\b/$3/g}) this_type_t;
+		\`uvm_object_param_utils(this_type_t);
+
+		//  Group: Variables
+
+
+		//  Group: Constraints
+
+
+		//  Group: Functions
+
+		//  Constructor: new
+		function new(string name = "$1");
+			super.new(name);
+		endfunction: new
+
+		//  Function: do_copy
+		// extern function void do_copy(uvm_object rhs);
+		//  Function: do_compare
+		// extern function bit do_compare(uvm_object rhs, uvm_comparer comparer);
+		//  Function: convert2string
+		// extern function string convert2string();
+		//  Function: do_print
+		// extern function void do_print(uvm_printer printer);
+		//  Function: do_record
+		// extern function void do_record(uvm_recorder recorder);
+		//  Function: do_pack
+		// extern function void do_pack();
+		//  Function: do_unpack
+		// extern function void do_unpack();
+		$0
+	endclass: $1
+
+
+	/*----------------------------------------------------------------------------*/
+	/*  Constraints                                                               */
+	/*----------------------------------------------------------------------------*/
+	
+
+
+
+	/*----------------------------------------------------------------------------*/
+	/*  Functions                                                                 */
+	/*----------------------------------------------------------------------------*/
+	
+
+
+snippet uvm_sequence_item_do_copy
+	function void ${1:my_class}${2:::}do_copy(uvm_object rhs);
+		this_type_t rhs_;
+
+		if (!\$cast(rhs_, rhs)) begin
+			\`uvm_error({this.get_name(), ".do_copy()"}, "Cast failed!");
+			return;
+		end
+		// \`uvm_info({this.get_name(), ".do_copy()"}, "Cast succeded.", UVM_HIGH);
+
+		/*  chain the copy with parent classes  */
+		super.do_copy(rhs);
+
+		/*  list of local properties to be copied  */
+		// <this.property_name = rhs_.property_name>;
+	endfunction: do_copy$0
+
+
+
+snippet uvm_sequence_item_do_compare
+	function bit ${1:my_class}${2:::}do_compare(uvm_object rhs, uvm_comparer comparer);
+		this_type_t rhs_;
+
+		if (!\$cast(rhs_, rhs)) begin
+			\`uvm_error({this.get_name(), ".do_compare()"}, "Cast failed!");
+			return;
+		end
+		// \`uvm_info({this.get_name(), ".do_compare()"}, "Cast succeded.", UVM_HIGH);
+
+		/*  chain the compare with parent classes  */
+		do_compare = super.do_compare(rhs, comparer);
+
+		/*  list of local properties to be compared:  */
+		do_compare &= (
+			// <this.property_name == rhs_.property_name> &&
+			// <this.property_name == rhs_.property_name>
+		);
+	endfunction: do_compare$0
+
+
+
+snippet uvm_sequence_item_convert2string
+	function string ${1:my_class}${2:::}convert2string();
+		string s;
+
+		/*  chain the convert2string with parent classes  */
+		s = super.convert2string();
+
+		/*  list of local properties to be printed:  */
+		//  guide             0---4---8--12--16--20--24--28--32--36--40--44--48--
+		// s = {s, \$sformatf("property_label      : 0x%0h\n", property_name)};
+		// s = {s, \$sformatf("property_label      :   %0d\n", property_name)};
+
+		return s;
+	endfunction: convert2string$0
+
+
+
+snippet uvm_sequence_item_do_print
+	function void ${1:my_class}${2:::}do_print(uvm_printer printer)
+		/*  chain the print with parent classes  */
+		super.do_print(printer);
+
+		/*  list of local properties to be printed:  */
+		// printer.print_string("property_label", property_name);
+		// printer.print_field_int("property_label", property_name, \$bits(property_name), UVM_HEX);
+	endfunction: do_print$0
+
+snippet uvm_sequence_item_do_record
+	function void ${1:my_class}${2:::}do_record(uvm_recorder recorder);
+		/*  chain the record with parent classes  */
+		super.do_record(recorder);
+
+		/*  list of local properties to be recorded:  */
+		/*  note: use uvm_record_int, uvm_record_string, uvm_record_time, uvm_record_real for known basic types.  */
+		// \`uvm_record_string("property_label", property_name);
+		// \`uvm_record_int("property_label", property_name, \$bits(property_name), UVM_HEX);
+	endfunction: do_record$0
+
+snippet uvm_sequence_item_do_pack
+	function void ${1:my_class}${2:::}do_pack(uvm_packer packer);
+		/*  chain the pack with parent classes  */
+		super.do_pack(packer);
+
+		/*  list of local properties to be packed:  */
+		//  note: look up the appropriate macro(s) for your properties!
+		// \`uvm_pack_int(property_name);
+		// \`uvm_pack_queue(property_name);
+		// \`uvm_pack_string(property_name);
+	endfunction: do_pack$0
+
+snippet uvm_sequence_item_do_unpack
+	function void ${1:my_class}${2:::}do_unpack(uvm_packer packer);
+		/*  chain the unpack with parent classes  */
+		super.do_unpack(packer);
+
+		/*  list of local properties to be unpacked:  */
+		//  note: look up the appropriate macro(s) for your properties!
+		// \`uvm_unpack_int(property_name);
+		// \`uvm_unpack_queue(property_name);
+		// \`uvm_unpack_string(property_name);
+	endfunction: do_unpack$0
+

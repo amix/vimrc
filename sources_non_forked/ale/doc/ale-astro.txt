@@ -1,0 +1,16 @@
+===============================================================================
+ALE Astro Integration                                       *ale-astro-options*
+
+
+===============================================================================
+eslint                                                       *ale-astro-eslint*
+
+See |ale-javascript-eslint| for information about the available options.
+
+===============================================================================
+prettier                                                   *ale-astro-prettier*
+
+See |ale-javascript-prettier| for information about the available options.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

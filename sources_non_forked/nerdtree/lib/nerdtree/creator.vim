@@ -118,7 +118,7 @@ function! s:Creator.createWindowTree(dir)
 
     "we need a unique name for each window tree buffer to ensure they are
     "all independent
-    exec g:NERDTreeCreatePrefix . ' edit ' . self._nextBufferName()
+    exec g:NERDTreeCreatePrefix . ' edit ' . self._nextBufferName('win')
 
     call self._createNERDTree(path, 'window')
     let b:NERDTree._previousBuf = bufnr(previousBuf)
@@ -210,7 +210,7 @@ function! s:Creator._createTreeWin()
     let l:splitSize = g:NERDTreeWinSize
 
     if !g:NERDTree.ExistsForTab()
-        let t:NERDTreeBufName = self._nextBufferName()
+        let t:NERDTreeBufName = self._nextBufferName('tab')
         silent! execute l:splitLocation . l:splitDirection . ' ' . l:splitSize . ' new'
         silent! execute 'edit ' . t:NERDTreeBufName
         silent! execute l:splitDirection . ' resize '. l:splitSize
@@ -244,10 +244,22 @@ function! s:Creator.New()
     return newCreator
 endfunction
 
-" FUNCTION: s:Creator._nextBufferName() {{{1
-" returns the buffer name for the next nerd tree
-function! s:Creator._nextBufferName()
-    let name = s:Creator.BufNamePrefix() . self._nextBufferNumber()
+" FUNCTION: s:Creator._nextBufferName(type='') {{{1
+" gets an optional buffer type of either 'tab' or 'win'.
+" returns the buffer name for the next nerd tree of such type.
+function! s:Creator._nextBufferName(...)
+    if a:0 > 0
+        let type = a:1
+    else
+        let type = ''
+    end
+    let name = s:Creator.BufNamePrefix()
+    if type ==# 'tab'
+        let name = name . 'tab_'
+    elseif type ==# 'win'
+        let name = name . 'win_'
+    endif
+    let name = name . self._nextBufferNumber()
     return name
 endfunction
 

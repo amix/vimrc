@@ -287,7 +287,7 @@ I........Toggle whether hidden files displayed......................|NERDTree-I|
 f........Toggle whether the file filters are used...................|NERDTree-f|
 F........Toggle whether files are displayed.........................|NERDTree-F|
 B........Toggle whether the bookmark table is displayed.............|NERDTree-B|
-L........Toggle whether the number of lines in files is displayed...|NERDTree-L|
+L........Toggle whether the number of lines in files is displayed..|NERDTree-FL|
 
 q........Close the NERDTree window..................................|NERDTree-q|
 A........Zoom (maximize/minimize) the NERDTree window...............|NERDTree-A|
@@ -603,8 +603,8 @@ Applies to: no restrictions.
 Toggles whether the bookmarks table is displayed.
 
 ------------------------------------------------------------------------------
-                                                                    *NERDTree-L*
-Default key: L
+                                                                   *NERDTree-FL*
+Default key: FL
 Map setting: *NERDTreeMapToggleFileLines*
 Applies to: no restrictions.
 
@@ -1073,18 +1073,18 @@ mapping and is useful for drastically shrinking the tree when you are
 navigating to a different part of the tree.
 
 ------------------------------------------------------------------------------
-                                                        *NERDTreeShowFilesLines*
+                                                             *NERDTreeFileLines*
 Values: 0 or 1.
 Default: 0.
 
 If this setting is set to 1 then the NERDTree shows number of lines for each
 file.
 
-This setting can be toggled dynamically, per tree, with the |NERDTree-L|
+This setting can be toggled dynamically, per tree, with the |NERDTree-FL|
 mapping.
 Use one of the follow lines for this setting: >
-    let NERDTreeShowFilesLines=0
-    let NERDTreeShowFilesLines=1
+    let NERDTreeFileLines=0
+    let NERDTreeFileLines=1
 <
 ------------------------------------------------------------------------------
                                                             *NERDTreeShowHidden*
