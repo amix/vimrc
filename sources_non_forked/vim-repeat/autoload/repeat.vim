@@ -44,7 +44,7 @@
 "   \   call <SID>MyFunction(v:register, ...)<Bar>
 "   \   silent! call repeat#set("\<lt>Plug>MyMap")<CR>
 
-if exists("g:loaded_repeat") || &cp || v:version < 700
+if exists("g:loaded_repeat") || &cp || v:version < 800
     finish
 endif
 let g:loaded_repeat = 1
@@ -108,21 +108,10 @@ function! repeat#run(count)
             let c = g:repeat_count
             let s = g:repeat_sequence
             let cnt = c == -1 ? "" : (a:count ? a:count : (c ? c : ''))
-            if ((v:version == 703 && has('patch100')) || (v:version == 704 && !has('patch601')))
-                exe 'norm ' . r . cnt . s
-            elseif v:version <= 703
-                call feedkeys(r . cnt, 'n')
-                call feedkeys(s, '')
-            else
-                call feedkeys(s, 'i')
-                call feedkeys(r . cnt, 'ni')
-            endif
+            call feedkeys(s, 'i')
+            call feedkeys(r . cnt, 'ni')
         else
-            if ((v:version == 703 && has('patch100')) || (v:version == 704 && !has('patch601')))
-                exe 'norm! '.(a:count ? a:count : '') . '.'
-            else
-                call feedkeys((a:count ? a:count : '') . '.', 'ni')
-            endif
+            call feedkeys((a:count ? a:count : '') . '.', 'ni')
         endif
     catch /^Vim(normal):/
         let s:errmsg = v:errmsg
@@ -135,18 +124,15 @@ function! repeat#errmsg()
 endfunction
 
 function! repeat#wrap(command,count)
-    let preserve = (g:repeat_tick == b:changedtick)
-    call feedkeys((a:count ? a:count : '').a:command, 'n')
-    exe (&foldopen =~# 'undo\|all' ? 'norm! zv' : '')
-    if preserve
-        let g:repeat_tick = b:changedtick
-    endif
+    let foldopen = &foldopen =~# 'undo\|all' ? 'zv' : ''
+    let preserve = g:repeat_tick == b:changedtick ? ":let g:repeat_tick = b:changedtick\r" : ''
+    return (a:count ? a:count : '') . a:command . preserve . foldopen
 endfunction
 
 nnoremap <silent> <Plug>(RepeatDot)      :<C-U>if !repeat#run(v:count)<Bar>echoerr repeat#errmsg()<Bar>endif<CR>
-nnoremap <silent> <Plug>(RepeatUndo)     :<C-U>call repeat#wrap('u',v:count)<CR>
-nnoremap <silent> <Plug>(RepeatUndoLine) :<C-U>call repeat#wrap('U',v:count)<CR>
-nnoremap <silent> <Plug>(RepeatRedo)     :<C-U>call repeat#wrap("\<Lt>C-R>",v:count)<CR>
+nmap <silent><expr><script> <Plug>(RepeatUndo)     repeat#wrap('u',v:count)
+nmap <silent><expr><script> <Plug>(RepeatUndoLine) repeat#wrap('U',v:count)
+nmap <silent><expr><script> <Plug>(RepeatRedo)     repeat#wrap("\022",v:count)
 
 if !hasmapto('<Plug>(RepeatDot)', 'n')
     nmap . <Plug>(RepeatDot)

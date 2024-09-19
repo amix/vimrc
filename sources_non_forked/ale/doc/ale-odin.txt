@@ -1,0 +1,29 @@
+===============================================================================
+ALE Odin Integration                                         *ale-odin-options*
+                                                         *ale-integration-odin*
+
+===============================================================================
+Integration Information
+
+  Currently, the only supported linter for Odin is ols.
+
+===============================================================================
+ols                                                              *ale-odin-ols*
+
+g:ale_odin_ols_executable                           *g:ale_odin_ols_executable*
+                                                    *b:ale_odin_ols_executable*
+  Type: |String|
+  Default: `'ols'`
+
+  This variable can be modified to change the executable path for `ols`.
+
+
+g:ale_odin_ols_config                                   *g:ale_odin_ols_config*
+                                                        *b:ale_odin_ols_config*
+  Type: |Dictionary|
+  Default: `{}`
+
+  Dictionary with configuration settings for ols.
+
+===============================================================================
+  vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

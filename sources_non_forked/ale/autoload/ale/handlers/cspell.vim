@@ -11,12 +11,31 @@ function! ale#handlers#cspell#GetExecutable(buffer) abort
     \)
 endfunction
 
+function! ale#handlers#cspell#GetLanguageId(buffer) abort
+    let l:filetype = getbufvar(a:buffer, '&filetype')
+
+    if l:filetype is# 'tex'
+        " Vim's tex corresponds to latex language-id in cspell
+        return 'latex'
+    elseif l:filetype is# 'plaintex'
+        " Vim's plaintex corresponds to tex language-id in cspell
+        return 'tex'
+    else
+        " Fallback to filetype for everything else.
+        return l:filetype
+    endif
+endfunction
+
 function! ale#handlers#cspell#GetCommand(buffer) abort
     let l:executable = ale#handlers#cspell#GetExecutable(a:buffer)
     let l:options = ale#Var(a:buffer, 'cspell_options')
+    let l:language_id = ale#handlers#cspell#GetLanguageId(a:buffer)
+
+    let l:language_id_option = empty(l:language_id) ? '' : '--language-id="' . l:language_id . '"'
 
     return ale#node#Executable(a:buffer, l:executable)
     \   . ' lint --no-color --no-progress --no-summary'
+    \   . ale#Pad(l:language_id_option)
     \   . ale#Pad(l:options)
     \   . ' -- stdin'
 endfunction

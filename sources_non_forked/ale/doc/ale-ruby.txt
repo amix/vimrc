@@ -258,6 +258,24 @@ g:ale_ruby_syntax_tree_options                 *g:ale_ruby_syntax_tree_options*
 
   This variable can be changed to modify flags given to SyntaxTree.
 
+===============================================================================
+rubyfmt                                                       *ale-ruby-rubyfmt*
+
+g:ale_ruby_rubyfmt_executable                    *g:ale_ruby_rubyfmt_executable*
+                                                 *b:ale_ruby_rubyfmt_executable*
+  Type: |String|
+  Default: `'rubyfmt'`
+
+  This option can be changed to change the path for `rubyfmt`.
+
+
+g:ale_ruby_rubyfmt_options                          *g:ale_ruby_rubyfmt_options*
+                                                    *b:ale_ruby_rubyfmt_options*
+  Type: |String|
+  Default: `''`
+
+  This option can be changed to pass extra options to `'rubyfmt'`.
+
 
 ===============================================================================
   vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

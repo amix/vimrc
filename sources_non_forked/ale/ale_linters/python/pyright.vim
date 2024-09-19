@@ -3,6 +3,7 @@ call ale#Set('python_pyright_executable', 'pyright-langserver')
 call ale#Set('python_pyright_config', {})
 call ale#Set('python_pyright_auto_pipenv', 0)
 call ale#Set('python_pyright_auto_poetry', 0)
+call ale#Set('python_pyright_auto_uv', 0)
 
 " Force the cwd of the server to be the same as the project root to
 " fix issues with treating local files matching first or third party library
@@ -59,12 +60,17 @@ function! ale_linters#python#pyright#GetExecutable(buffer) abort
         return 'poetry'
     endif
 
+    if (ale#Var(a:buffer, 'python_auto_uv') || ale#Var(a:buffer, 'python_pyright_auto_uv'))
+    \ && ale#python#UvPresent(a:buffer)
+        return 'uv'
+    endif
+
     return ale#python#FindExecutable(a:buffer, 'python_pyright', ['pyright-langserver'])
 endfunction
 
 function! ale_linters#python#pyright#GetCommand(buffer) abort
     let l:executable = ale_linters#python#pyright#GetExecutable(a:buffer)
-    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry\|uv$'
     \   ? ' run pyright-langserver'
     \   : ''
     let l:env_string = ''

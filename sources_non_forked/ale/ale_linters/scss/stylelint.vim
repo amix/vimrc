@@ -11,6 +11,7 @@ endfunction
 
 call ale#linter#Define('scss', {
 \   'name': 'stylelint',
+\   'output_stream': 'both',
 \   'executable': {b -> ale#path#FindExecutable(b, 'scss_stylelint', [
 \       'node_modules/.bin/stylelint',
 \   ])},

@@ -49,6 +49,7 @@ function! ale#handlers#shellcheck#GetCommand(buffer, version) abort
     let l:exclude_option = ale#Var(a:buffer, 'sh_shellcheck_exclusions')
     let l:dialect = ale#Var(a:buffer, 'sh_shellcheck_dialect')
     let l:external_option = ale#semver#GTE(a:version, [0, 4, 0]) ? ' -x' : ''
+    let l:format = ale#semver#GTE(a:version, [0, 7, 0]) ? 'json1' : 'gcc'
 
     if l:dialect is# 'auto'
         let l:dialect = ale#handlers#shellcheck#GetDialectArgument(a:buffer)
@@ -59,10 +60,69 @@ function! ale#handlers#shellcheck#GetCommand(buffer, version) abort
     \   . (!empty(l:options) ? ' ' . l:options : '')
     \   . (!empty(l:exclude_option) ? ' -e ' . l:exclude_option : '')
     \   . l:external_option
-    \   . ' -f gcc -'
+    \   . ' -f ' . l:format . ' -'
 endfunction
 
-function! ale#handlers#shellcheck#Handle(buffer, lines) abort
+function! s:HandleShellcheckJSON(buffer, lines) abort
+    try
+        let l:errors = json_decode(a:lines[0])
+    catch
+        return []
+    endtry
+
+    if !has_key(l:errors, 'comments')
+        return []
+    endif
+
+    let l:output = []
+
+    for l:error in l:errors['comments']
+        if l:error['level'] is# 'error'
+            let l:type = 'E'
+        elseif l:error['level'] is# 'info'
+            let l:type = 'I'
+        elseif l:error['level'] is# 'style'
+            let l:type = 'I'
+        else
+            let l:type = 'W'
+        endif
+
+        let l:item = {
+        \   'lnum': l:error['line'],
+        \   'type': l:type,
+        \   'text': l:error['message'],
+        \   'code': 'SC' . l:error['code'],
+        \   'detail': l:error['message'] . "\n\nFor more information:\n  https://www.shellcheck.net/wiki/SC" . l:error['code'],
+        \}
+
+        if has_key(l:error, 'column')
+            let l:item.col = l:error['column']
+        endif
+
+        if has_key(l:error, 'endColumn')
+            let l:item.end_col = l:error['endColumn'] - 1
+        endif
+
+        if has_key(l:error, 'endLine')
+            let l:item.end_lnum = l:error['endLine']
+        endif
+
+
+        " If the filename is something like <stdin>, <nofile> or -, then
+        " this is an error for the file we checked.
+        if has_key(l:error, 'file')
+            if l:error['file'] isnot# '-' && l:error['file'][0] isnot# '<'
+                let l:item['filename'] = l:error['file']
+            endif
+        endif
+
+        call add(l:output, l:item)
+    endfor
+
+    return l:output
+endfunction
+
+function! s:HandleShellcheckGCC(buffer, lines) abort
     let l:pattern = '\v^([a-zA-Z]?:?[^:]+):(\d+):(\d+)?:? ([^:]+): (.+) \[([^\]]+)\]$'
     let l:output = []
 
@@ -80,6 +140,7 @@ function! ale#handlers#shellcheck#Handle(buffer, lines) abort
         \   'type': l:type,
         \   'text': l:match[5],
         \   'code': l:match[6],
+        \   'detail': l:match[5] . "\n\nFor more information:\n  https://www.shellcheck.net/wiki/" . l:match[6],
         \}
 
         if !empty(l:match[3])
@@ -96,6 +157,12 @@ function! ale#handlers#shellcheck#Handle(buffer, lines) abort
     endfor
 
     return l:output
+endfunction
+
+function! ale#handlers#shellcheck#Handle(buffer, version, lines) abort
+    return ale#semver#GTE(a:version, [0, 7, 0])
+    \   ? s:HandleShellcheckJSON(a:buffer, a:lines)
+    \   : s:HandleShellcheckGCC(a:buffer, a:lines)
 endfunction
 
 function! ale#handlers#shellcheck#DefineLinter(filetype) abort
@@ -118,6 +185,14 @@ function! ale#handlers#shellcheck#DefineLinter(filetype) abort
     \       '%e --version',
     \       function('ale#handlers#shellcheck#GetCommand'),
     \   )},
-    \   'callback': 'ale#handlers#shellcheck#Handle',
+    \   'callback': {buffer, lines -> ale#semver#RunWithVersionCheck(
+    \       buffer,
+    \       ale#Var(buffer, 'sh_shellcheck_executable'),
+    \       '%e --version',
+    \       {buffer, version -> ale#handlers#shellcheck#Handle(
+    \           buffer,
+    \           l:version,
+    \           lines)},
+    \   )},
     \})
 endfunction

@@ -4,3 +4,7 @@ dist.bat
 *.zip
 tags
 *.sw[a-p]
+
+# Github token.
+github_token
+

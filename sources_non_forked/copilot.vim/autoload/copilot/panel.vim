@@ -1,8 +1,3 @@
-if exists('g:autoloaded_copilot_panel')
-  finish
-endif
-let g:autoloaded_copilot_panel = 1
-
 scriptencoding utf-8
 
 if !exists('s:panel_id')
@@ -11,29 +6,35 @@ endif
 
 let s:separator = repeat('─', 72)
 
-function! s:Solutions(state) abort
-  return sort(values(get(a:state, 'solutions', {})), { a, b -> a.score < b.score })
-endfunction
-
-function! s:Render(panel_id) abort
-  let bufnr = bufnr('^' . a:panel_id . '$')
-  let state = getbufvar(bufnr, 'copilot_panel')
-  if !bufloaded(bufnr) || type(state) != v:t_dict
+function! s:Render(state) abort
+  let bufnr = bufnr('^' . a:state.panel . '$')
+  let state = a:state
+  if !bufloaded(bufnr)
     return
   endif
-  let sorted = s:Solutions(state)
-  if !empty(get(state, 'status', ''))
-    let lines = ['Error: ' . state.status]
+  let sorted = a:state.items
+  if !empty(get(a:state, 'error'))
+    let lines = ['Error: ' . a:state.error.message]
+    let sorted = []
+  elseif get(a:state, 'percentage') == 100
+    let lines = ['Synthesized ' . (len(sorted) == 1 ? '1 completion' : len(sorted) . ' completions')]
   else
-    let target = get(state, 'count_target', '?')
-    let received = has_key(state, 'status') ? target : len(sorted)
-    let lines = ['Synthesiz' . (has_key(state, 'status') ? 'ed ' : 'ing ') . received . '/' . target . ' solutions (Duplicates hidden)']
+    let lines = [substitute('Synthesizing ' . matchstr(get(a:state, 'message', ''), '\d\+\%(/\d\+\)\=') . ' completions', ' \+', ' ', 'g')]
   endif
   if len(sorted)
-    call add(lines, 'Press <CR> on a solution to accept')
+    call add(lines, 'Press <CR> on a completion to accept')
   endif
-  for solution in sorted
-    let lines += [s:separator] + split(solution.displayText, "\n", 1)
+  let leads = {}
+  for item in sorted
+    let insert = split(item.insertText, "\r\n\\=\\|\n", 1)
+    let insert[0] = strpart(a:state.line, 0, copilot#util#UTF16ToByteIdx(a:state.line, item.range.start.character)) . insert[0]
+    let lines += [s:separator] + insert
+    if !has_key(leads, string(item.range.start))
+      let match = insert[0 : a:state.position.line - item.range.start.line]
+      let match[-1] = strpart(match[-1], 0, copilot#util#UTF16ToByteIdx(match[-1], a:state.position.character))
+      call map(match, { k, v -> escape(v, '][^$.*\~') })
+      let leads[string(item.range.start)] = join(match, '\n')
+    endif
   endfor
   try
     call setbufvar(bufnr, '&modifiable', 1)
@@ -41,64 +42,61 @@ function! s:Render(panel_id) abort
     call setbufline(bufnr, 1, lines)
   finally
     call setbufvar(bufnr, '&modifiable', 0)
-    call setbufvar(bufnr, '&readonly', 1)
   endtry
+  call clearmatches()
+  call matchadd('CopilotSuggestion', '\C^' . s:separator . '\n\zs\%(' . join(sort(values(leads), { a, b -> len(b) - len(a) }), '\|') . '\)', 10, 4)
 endfunction
 
-function! copilot#panel#Solution(params, ...) abort
-  let state = getbufvar('^' . a:params.panelId . '$', 'copilot_panel')
-  if !bufloaded(a:params.panelId) || type(state) != v:t_dict
-    return
-  endif
-  let state.solutions[a:params.solutionId] = a:params
-  call s:Render(a:params.panelId)
+function! s:PartialResult(state, value) abort
+  let items = type(a:value) == v:t_list ? a:value : a:value.items
+  call extend(a:state.items, items)
+  call s:Render(a:state)
 endfunction
 
-function! copilot#panel#SolutionsDone(params, ...) abort
-  let state = getbufvar('^' . a:params.panelId . '$', 'copilot_panel')
-  if !bufloaded(a:params.panelId) || type(state) != v:t_dict
-    call copilot#logger#Debug('SolutionsDone: ' . a:params.panelId)
-    return
+function! s:WorkDone(state, value) abort
+  if has_key(a:value, 'message')
+    let a:state.message = a:value.message
   endif
-  let state.status = get(a:params, 'message', '')
-  call s:Render(a:params.panelId)
+  if has_key(a:value, 'percentage')
+    let a:state.percentage = a:value.percentage
+    call s:Render(a:state)
+  endif
 endfunction
 
 function! copilot#panel#Accept(...) abort
   let state = get(b:, 'copilot_panel', {})
-  let solutions = s:Solutions(state)
-  if empty(solutions)
+  if empty(state.items)
     return ''
   endif
   if !has_key(state, 'bufnr') || !bufloaded(get(state, 'bufnr', -1))
     return "echoerr 'Buffer was closed'"
   endif
   let at = a:0 ? a:1 : line('.')
-  let solution_index = 0
+  let index = 0
   for lnum in range(1, at)
     if getline(lnum) ==# s:separator
-      let solution_index += 1
+      let index += 1
     endif
   endfor
-  if solution_index > 0 && solution_index <= len(solutions)
-    let solution = solutions[solution_index - 1]
-    let lnum = solution.range.start.line + 1
+  if index > 0 && index <= len(state.items)
+    let item = state.items[index - 1]
+    let lnum = item.range.start.line + 1
     if getbufline(state.bufnr, lnum) !=# [state.line]
-      return 'echoerr "Buffer has changed since synthesizing solution"'
+      return 'echoerr "Buffer has changed since synthesizing completion"'
     endif
-    let lines = split(solution.displayText, "\n", 1)
-    let old_first = getline(solution.range.start.line + 1)
-    let lines[0] = strpart(old_first, 0, copilot#doc#UTF16ToByteIdx(old_first, solution.range.start.character)) . lines[0]
-    let old_last = getline(solution.range.end.line + 1)
-    let lines[-1] .= strpart(old_last, copilot#doc#UTF16ToByteIdx(old_last, solution.range.start.character))
-    call setbufline(state.bufnr, solution.range.start.line + 1, lines[0])
-    call appendbufline(state.bufnr, solution.range.start.line + 1, lines[1:-1])
-    call copilot#Request('notifyAccepted', {'uuid': solution.solutionId})
+    let lines = split(item.insertText, "\n", 1)
+    let old_first = getbufline(state.bufnr, item.range.start.line + 1)[0]
+    let lines[0] = strpart(old_first, 0, copilot#util#UTF16ToByteIdx(old_first, item.range.start.character)) . lines[0]
+    let old_last = getbufline(state.bufnr, item.range.end.line + 1)[0]
+    let lines[-1] .= strpart(old_last, copilot#util#UTF16ToByteIdx(old_last, item.range.end.character))
+    call deletebufline(state.bufnr, item.range.start.line + 1, item.range.end.line + 1)
+    call appendbufline(state.bufnr, item.range.start.line, lines)
+    call copilot#Request('workspace/executeCommand', item.command)
     bwipeout
     let win = bufwinnr(state.bufnr)
     if win > 0
       exe win . 'wincmd w'
-      exe solution.range.start.line + len(lines)
+      exe item.range.start.line + len(lines)
       if state.was_insert
         startinsert!
       else
@@ -112,49 +110,58 @@ endfunction
 function! s:Initialize(state) abort
   let &l:filetype = 'copilot' . (empty(a:state.filetype) ? '' : '.' . a:state.filetype)
   let &l:tabstop = a:state.tabstop
-  call clearmatches()
-  call matchadd('CopilotSuggestion', '\C^' . s:separator . '\n\zs' . escape(a:state.line, '][^$.*\~'), 10, 4)
   nmap <buffer><script> <CR> <Cmd>exe copilot#panel#Accept()<CR>
   nmap <buffer><script> [[ <Cmd>call search('^─\{9,}\n.', 'bWe')<CR>
   nmap <buffer><script> ]] <Cmd>call search('^─\{9,}\n.', 'We')<CR>
 endfunction
 
 function! s:BufReadCmd() abort
-  setlocal bufhidden=wipe buftype=nofile nobuflisted readonly nomodifiable
+  setlocal bufhidden=wipe buftype=nofile nobuflisted nomodifiable
   let state = get(b:, 'copilot_panel')
   if type(state) != v:t_dict
     return
   endif
   call s:Initialize(state)
-  call s:Render(expand('<amatch>'))
+  call s:Render(state)
   return ''
+endfunction
+
+function! s:Result(state, result) abort
+  let a:state.percentage = 100
+  call s:PartialResult(a:state, a:result)
+endfunction
+
+function! s:Error(state, error) abort
+  let a:state.error = a:error
+  call s:Render(a:state)
 endfunction
 
 function! copilot#panel#Open(opts) abort
   let s:panel_id += 1
-  let state = {'solutions': {}, 'filetype': &filetype, 'line': getline('.'), 'bufnr': bufnr(''), 'tabstop': &tabstop}
-  let bufname = 'copilot:///' . s:panel_id
-  let params = copilot#doc#Params({'panelId': bufname})
-  let state.was_insert = mode() =~# '^[iR]'
+  let state = {'items': [], 'filetype': &filetype, 'was_insert': mode() =~# '^[iR]', 'bufnr': bufnr(''), 'tabstop': &tabstop}
+  let state.panel = 'copilot:///panel/' . s:panel_id
   if state.was_insert
+    let state.position = copilot#util#AppendPosition()
     stopinsert
   else
-    let params.doc.position.character = copilot#doc#UTF16Width(state.line)
-    let params.position.character = params.doc.position.character
+    let state.position = {'line': a:opts.line1 >= 1 ? a:opts.line1 - 1 : 0, 'character': copilot#util#UTF16Width(getline('.'))}
   endif
-  let response = copilot#Request('getPanelCompletions', params).Wait()
-  if response.status ==# 'error'
-    return 'echoerr ' . string(response.error.message)
-  endif
-  let state.count_target = response.result.solutionCountTarget
-  exe substitute(a:opts.mods, '\C\<tab\>', '-tab', 'g') 'keepalt split' bufname
+  let state.line = getline(state.position.line + 1)
+  let params = {
+        \ 'textDocument': {'uri': state.bufnr},
+        \ 'position': state.position,
+        \ 'partialResultToken': function('s:PartialResult', [state]),
+        \ 'workDoneToken': function('s:WorkDone', [state]),
+        \ }
+  let response = copilot#Request('textDocument/copilotPanelCompletion', params, function('s:Result', [state]), function('s:Error', [state]))
+  exe substitute(a:opts.mods, '\C\<tab\>', '-tab', 'g') 'keepalt split' state.panel
   let b:copilot_panel = state
   call s:Initialize(state)
-  call s:Render(@%)
+  call s:Render(state)
   return ''
 endfunction
 
 augroup github_copilot_panel
   autocmd!
-  autocmd BufReadCmd copilot:///* exe s:BufReadCmd()
+  autocmd BufReadCmd copilot:///panel/* exe s:BufReadCmd()
 augroup END

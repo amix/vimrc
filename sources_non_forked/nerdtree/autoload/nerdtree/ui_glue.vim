@@ -70,6 +70,7 @@ function! nerdtree#ui_glue#createDefaultBindings() abort
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapJumpRoot, 'scope': 'all', 'callback': s.'jumpToRoot' })
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapJumpNextSibling, 'scope': 'Node', 'callback': s.'jumpToNextSibling' })
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapJumpPrevSibling, 'scope': 'Node', 'callback': s.'jumpToPrevSibling' })
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapJumpBookmarks, 'scope': 'all', 'callback': s.'jumpToBookmarks' })
 
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTab, 'scope': 'Node', 'callback': s . 'openInNewTab' })
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTabSilent, 'scope': 'Node', 'callback': s . 'openInNewTabSilent' })
@@ -494,6 +495,21 @@ function! s:jumpToSibling(node, forward) abort
 
     call l:sibling.putCursorHere(1, 0)
     call b:NERDTree.ui.centerView()
+endfunction
+
+" FUNCTION: s:jumpToBookmarks() {{{1
+" moves the cursor to the bookmark table
+function! s:jumpToBookmarks() abort
+    try
+        if b:NERDTree.ui.getShowBookmarks()
+            call g:NERDTree.CursorToBookmarkTable()
+        else
+            call b:NERDTree.ui.setShowBookmarks(1)
+        endif
+    catch /^NERDTree/
+        call nerdtree#echoError('Failed to jump to the bookmark table')
+        return
+    endtry
 endfunction
 
 " FUNCTION: nerdtree#ui_glue#openBookmark(name) {{{1

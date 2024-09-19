@@ -18,7 +18,11 @@ call ale#Set('javascript_eslint_suppress_missing_config', 0)
 function! ale#handlers#eslint#FindConfig(buffer) abort
     for l:path in ale#path#Upwards(expand('#' . a:buffer . ':p:h'))
         for l:basename in [
+        \   'eslint.config.js',
+        \   'eslint.config.mjs',
+        \   'eslint.config.cjs',
         \   '.eslintrc.js',
+        \   '.eslintrc.cjs',
         \   '.eslintrc.yaml',
         \   '.eslintrc.yml',
         \   '.eslintrc.json',
@@ -41,31 +45,7 @@ endfunction
 
 " Given a buffer, return an appropriate working directory for ESLint.
 function! ale#handlers#eslint#GetCwd(buffer) abort
-    " ESLint 6 loads plugins/configs/parsers from the project root
-    " By default, the project root is simply the CWD of the running process.
-    " https://github.com/eslint/rfcs/blob/master/designs/2018-simplified-package-loading/README.md
-    " https://github.com/dense-analysis/ale/issues/2787
-    "
-    " If eslint is installed in a directory which contains the buffer, assume
-    " it is the ESLint project root.  Otherwise, use nearest node_modules.
-    " Note: If node_modules not present yet, can't load local deps anyway.
-    let l:executable = ale#path#FindNearestExecutable(a:buffer, s:executables)
-
-    if !empty(l:executable)
-        let l:modules_index = strridx(l:executable, 'node_modules')
-        let l:modules_root = l:modules_index > -1 ? l:executable[0:l:modules_index - 2] : ''
-
-        let l:sdks_index = strridx(l:executable, ale#path#Simplify('.yarn/sdks'))
-        let l:sdks_root = l:sdks_index > -1 ? l:executable[0:l:sdks_index - 2] : ''
-    else
-        let l:modules_dir = ale#path#FindNearestDirectory(a:buffer, 'node_modules')
-        let l:modules_root = !empty(l:modules_dir) ? fnamemodify(l:modules_dir, ':h:h') : ''
-
-        let l:sdks_dir = ale#path#FindNearestDirectory(a:buffer, ale#path#Simplify('.yarn/sdks'))
-        let l:sdks_root = !empty(l:sdks_dir) ? fnamemodify(l:sdks_dir, ':h:h:h') : ''
-    endif
-
-    return strlen(l:modules_root) > strlen(l:sdks_root) ? l:modules_root : l:sdks_root
+    return ale#path#Dirname(ale#handlers#eslint#FindConfig(a:buffer))
 endfunction
 
 function! ale#handlers#eslint#GetCommand(buffer) abort

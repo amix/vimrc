@@ -5,6 +5,7 @@ call ale#Set('python_pyre_executable', 'pyre')
 call ale#Set('python_pyre_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('python_pyre_auto_pipenv', 0)
 call ale#Set('python_pyre_auto_poetry', 0)
+call ale#Set('python_pyre_auto_uv', 0)
 
 function! ale_linters#python#pyre#GetExecutable(buffer) abort
     if (ale#Var(a:buffer, 'python_auto_pipenv') || ale#Var(a:buffer, 'python_pyre_auto_pipenv'))
@@ -17,12 +18,17 @@ function! ale_linters#python#pyre#GetExecutable(buffer) abort
         return 'poetry'
     endif
 
+    if (ale#Var(a:buffer, 'python_auto_uv') || ale#Var(a:buffer, 'python_pyre_auto_uv'))
+    \ && ale#python#UvPresent(a:buffer)
+        return 'uv'
+    endif
+
     return ale#python#FindExecutable(a:buffer, 'python_pyre', ['pyre'])
 endfunction
 
 function! ale_linters#python#pyre#GetCommand(buffer) abort
     let l:executable = ale_linters#python#pyre#GetExecutable(a:buffer)
-    let l:exec_args = (l:executable =~? 'pipenv\|poetry$' ? ' run pyre' : '') . ' persistent'
+    let l:exec_args = (l:executable =~? 'pipenv\|poetry\|uv$' ? ' run pyre' : '') . ' persistent'
 
     return ale#Escape(l:executable) . l:exec_args
 endfunction

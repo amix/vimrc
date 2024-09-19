@@ -20,6 +20,15 @@ g:ale_python_auto_poetry                             *g:ale_python_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_auto_uv                                     *g:ale_python_auto_uv*
+                                                         *b:ale_python_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 g:ale_python_auto_virtualenv                     *g:ale_python_auto_virtualenv*
                                                  *b:ale_python_auto_virtualenv*
   Type: |Number|
@@ -96,6 +105,33 @@ g:ale_python_autoflake_use_global           *g:ale_python_autoflake_use_global*
   See |ale-integrations-local-executables|
 
 
+g:ale_python_autoflake_auto_pipenv         *g:ale_python_autoflake_auto_pipenv*
+                                           *b:ale_python_autoflake_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_autoflake_auto_poetry            *g:ale_python_autoflake_auto_poetry*
+                                              *b:ale_python_autoflake_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_autoflake_auto_uv                 *g:ale_python_autoflake_auto_uv*
+                                               *b:ale_python_autoflake_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 autoimport                                              *ale-python-autoimport*
 
@@ -123,6 +159,33 @@ g:ale_python_autoimport_use_global         *g:ale_python_autoimport_use_global*
   See |ale-integrations-local-executables|
 
 
+g:ale_python_autoimport_auto_pipenv       *g:ale_python_autoimport_auto_pipenv*
+                                          *b:ale_python_autoimport_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_autoimport_auto_poetry          *g:ale_python_autoimport_auto_poetry*
+                                             *b:ale_python_autoimport_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_autoimport_auto_uv               *g:ale_python_autoimport_auto_uv*
+                                              *b:ale_python_autoimport_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 autopep8                                                  *ale-python-autopep8*
 
@@ -148,6 +211,33 @@ g:ale_python_autopep8_use_global             *g:ale_python_autopep8_use_global*
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
+
+
+g:ale_python_autopep8_auto_pipenv           *g:ale_python_autopep8_auto_pipenv*
+                                            *b:ale_python_autopep8_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_autopep8_auto_poetry              *g:ale_python_autopep8_auto_poetry*
+                                               *b:ale_python_autopep8_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_autopep8_auto_uv                   *g:ale_python_autopep8_auto_uv*
+                                                *b:ale_python_autopep8_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 ===============================================================================
@@ -210,6 +300,15 @@ g:ale_python_bandit_auto_poetry               *g:ale_python_bandit_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_bandit_auto_uv                       *g:ale_python_bandit_auto_uv*
+                                                  *b:ale_python_bandit_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 black                                                        *ale-python-black*
 
@@ -253,6 +352,15 @@ g:ale_python_black_auto_poetry                 *g:ale_python_black_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_black_auto_uv                         *g:ale_python_black_auto_uv*
+                                                   *b:ale_python_black_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 g:ale_python_black_change_directory       *g:ale_python_black_change_directory*
@@ -345,6 +453,15 @@ g:ale_python_flake8_auto_poetry               *g:ale_python_flake8_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_flake8_auto_uv                       *g:ale_python_flake8_auto_uv*
+                                                  *b:ale_python_flake8_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 flakehell                                                *ale-python-flakehell*
 
@@ -410,6 +527,15 @@ g:ale_python_flakehell_auto_poetry         *g:ale_python_flakehell_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_flakehell_auto_uv                 *g:ale_python_flakehell_auto_uv*
+                                               *b:ale_python_flakehell_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 isort                                                        *ale-python-isort*
 
@@ -455,6 +581,15 @@ g:ale_python_isort_auto_poetry                 *g:ale_python_isort_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_isort_auto_uv                         *g:ale_python_isort_auto_uv*
+                                                   *b:ale_python_isort_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 mypy                                                          *ale-python-mypy*
 
@@ -481,6 +616,15 @@ g:ale_python_mypy_auto_poetry                   *g:ale_python_mypy_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_mypy_auto_uv                           *g:ale_python_mypy_auto_uv*
+                                                    *b:ale_python_mypy_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 g:ale_python_mypy_executable                     *g:ale_python_mypy_executable*
@@ -591,6 +735,15 @@ g:ale_python_prospector_auto_poetry       *g:ale_python_prospector_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_prospector_auto_uv               *g:ale_python_prospector_auto_uv*
+                                              *b:ale_python_prospector_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 pycln                                                        *ale-python-pycln*
 
@@ -663,6 +816,15 @@ g:ale_python_pycln_auto_poetry                 *g:ale_python_pycln_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pycln_auto_uv                         *g:ale_python_pycln_auto_uv*
+                                                   *b:ale_python_pycln_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 pycodestyle                                            *ale-python-pycodestyle*
 
@@ -710,6 +872,15 @@ g:ale_python_pycodestyle_auto_poetry     *g:ale_python_pycodestyle_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pycodestyle_auto_uv             *g:ale_python_pycodestyle_auto_uv*
+                                             *b:ale_python_pycodestyle_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 ===============================================================================
@@ -761,6 +932,15 @@ g:ale_python_pydocstyle_auto_poetry       *g:ale_python_pydocstyle_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pydocstyle_auto_uv               *g:ale_python_pydocstyle_auto_uv*
+                                              *b:ale_python_pydocstyle_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 pyflakes                                                  *ale-python-pyflakes*
 
@@ -791,6 +971,15 @@ g:ale_python_pyflakes_auto_poetry           *g:ale_python_pyflakes_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pyflakes_auto_uv                   *g:ale_python_pyflakes_auto_uv*
+                                                *b:ale_python_pyflakes_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 ===============================================================================
@@ -837,6 +1026,15 @@ g:ale_python_pyflyby_auto_poetry             *g:ale_python_pyflyby_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pyflyby_auto_uv                     *g:ale_python_pyflyby_auto_uv*
+                                                 *b:ale_python_pyflyby_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 ===============================================================================
@@ -901,6 +1099,14 @@ g:ale_python_pylama_auto_poetry               *g:ale_python_pylama_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
+g:ale_python_pylama_auto_uv                       *g:ale_python_pylama_auto_uv*
+                                                  *b:ale_python_pylama_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 ===============================================================================
@@ -976,6 +1182,15 @@ g:ale_python_pylint_auto_poetry               *g:ale_python_pylint_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pylint_auto_uv                       *g:ale_python_pylint_auto_uv*
+                                                  *b:ale_python_pylint_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 g:ale_python_pylint_use_msg_id                 *g:ale_python_pylint_use_msg_id*
                                                *b:ale_python_pylint_use_msg_id*
   Type: |Number|
@@ -1026,6 +1241,15 @@ g:ale_python_pylsp_auto_poetry                 *g:ale_python_pylsp_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pylsp_auto_uv                         *g:ale_python_pylsp_auto_uv*
+                                                   *b:ale_python_pylsp_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 g:ale_python_pylsp_config                           *g:ale_python_pylsp_config*
@@ -1109,6 +1333,15 @@ g:ale_python_pyre_auto_poetry                   *g:ale_python_pyre_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_pyre_auto_uv                           *g:ale_python_pyre_auto_uv*
+                                                    *b:ale_python_pyre_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 pyright                                                    *ale-python-pyright*
 
@@ -1167,6 +1400,33 @@ g:ale_python_pyright_config                       *g:ale_python_pyright_config*
   \ },
   \}
 <
+
+g:ale_python_pyright_auto_pipenv             *g:ale_python_pyright_auto_pipenv*
+                                             *b:ale_python_pyright_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pyright_auto_poetry             *g:ale_python_pyright_auto_poetry*
+                                             *b:ale_python_pyright_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_pyright_auto_uv                     *g:ale_python_pyright_auto_uv*
+                                                 *b:ale_python_pyright_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
 
 ===============================================================================
 refurb                                                      *ale-python-refurb*
@@ -1229,6 +1489,15 @@ g:ale_python_refurb_auto_poetry               *g:ale_python_refurb_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_refurb_auto_uv                       *g:ale_python_refurb_auto_uv*
+                                                  *b:ale_python_refurb_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 reorder-python-imports                      *ale-python-reorder_python_imports*
 
@@ -1257,6 +1526,36 @@ g:ale_python_reorder_python_imports_use_global
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
+
+
+g:ale_python_reorder_python_imports_auto_pipenv
+                              *g:ale_python_reorder_python_imports_auto_pipenv*
+                              *b:ale_python_reorder_python_imports_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_reorder_python_imports_auto_poetry
+                              *g:ale_python_reorder_python_imports_auto_poetry*
+                              *b:ale_python_reorder_python_imports_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_reorder_python_imports_auto_uv
+                                  *g:ale_python_reorder_python_imports_auto_uv*
+                                  *b:ale_python_reorder_python_imports_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 ===============================================================================
@@ -1320,6 +1619,15 @@ g:ale_python_ruff_auto_poetry                   *g:ale_python_ruff_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_ruff_auto_uv                           *g:ale_python_ruff_auto_uv*
+                                                    *b:ale_python_ruff_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 ===============================================================================
@@ -1386,6 +1694,15 @@ g:ale_python_ruff_format_auto_poetry     *g:ale_python_ruff_format_auto_poetry*
   if true. This is overridden by a manually-set executable.
 
 
+g:ale_python_ruff_format_auto_uv             *g:ale_python_ruff_format_auto_uv*
+                                             *b:ale_python_ruff_format_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
+
 ===============================================================================
 unimport                                                  *ale-python-unimport*
 
@@ -1408,6 +1725,15 @@ g:ale_python_unimport_auto_poetry           *g:ale_python_unimport_auto_poetry*
 
   Detect whether the file is inside a poetry, and set the executable to `poetry`
   if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_unimport_auto_uv                   *g:ale_python_unimport_auto_uv*
+                                                *b:ale_python_unimport_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 g:ale_python_unimport_executable             *g:ale_python_unimport_executable*
@@ -1476,6 +1802,32 @@ g:ale_python_vulture_use_global               *g:ale_python_vulture_use_global*
 
   See |ale-integrations-local-executables|
 
+g:ale_python_vulture_auto_pipenv             *g:ale_python_vulture_auto_pipenv*
+                                             *b:ale_python_vulture_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_vulture_auto_poetry             *g:ale_python_vulture_auto_poetry*
+                                             *b:ale_python_vulture_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_vulture_auto_uv                     *g:ale_python_vulture_auto_uv*
+                                                 *b:ale_python_vulture_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
+
 
 ===============================================================================
 yapf                                                          *ale-python-yapf*
@@ -1494,6 +1846,33 @@ g:ale_python_yapf_use_global                     *g:ale_python_yapf_use_global*
   Default: `get(g:, 'ale_use_global_executables', 0)`
 
   See |ale-integrations-local-executables|
+
+
+g:ale_python_yapf_auto_pipenv                   *g:ale_python_yapf_auto_pipenv*
+                                                *b:ale_python_yapf_auto_pipenv*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a pipenv, and set the executable to `pipenv`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_yapf_auto_poetry                   *g:ale_python_yapf_auto_poetry*
+                                                *b:ale_python_yapf_auto_poetry*
+  Type: |Number|
+  Default: `0`
+
+  Detect whether the file is inside a poetry, and set the executable to `poetry`
+  if true. This is overridden by a manually-set executable.
+
+
+g:ale_python_yapf_auto_uv                           *g:ale_python_yapf_auto_uv*
+                                                    *b:ale_python_yapf_auto_uv*
+  Type: |Number|
+  Default: `0`
+
+  Set the executable to `uv` if true. This is overridden by a manually-set
+  executable.
 
 
 ===============================================================================

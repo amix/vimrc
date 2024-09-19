@@ -7,6 +7,7 @@ call ale#Set('python_ruff_format_use_global', get(g:, 'ale_use_global_executable
 call ale#Set('python_ruff_format_change_directory', 1)
 call ale#Set('python_ruff_format_auto_pipenv', 0)
 call ale#Set('python_ruff_format_auto_poetry', 0)
+call ale#Set('python_ruff_format_auto_uv', 0)
 
 function! ale#fixers#ruff_format#GetCwd(buffer) abort
     if ale#Var(a:buffer, 'python_ruff_format_change_directory')
@@ -30,12 +31,17 @@ function! ale#fixers#ruff_format#GetExecutable(buffer) abort
         return 'poetry'
     endif
 
+    if (ale#Var(a:buffer, 'python_auto_uv') || ale#Var(a:buffer, 'python_ruff_format_auto_uv'))
+    \ && ale#python#UvPresent(a:buffer)
+        return 'uv'
+    endif
+
     return ale#python#FindExecutable(a:buffer, 'python_ruff_format', ['ruff'])
 endfunction
 
 function! ale#fixers#ruff_format#GetCommand(buffer) abort
     let l:executable = ale#fixers#ruff_format#GetExecutable(a:buffer)
-    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry\|uv$'
     \   ? ' run ruff'
     \   : ''
 
@@ -46,7 +52,7 @@ function! ale#fixers#ruff_format#Fix(buffer) abort
     let l:executable = ale#fixers#ruff_format#GetExecutable(a:buffer)
     let l:cmd = [ale#Escape(l:executable)]
 
-    if l:executable =~? 'pipenv\|poetry$'
+    if l:executable =~? 'pipenv\|poetry\|uv$'
         call extend(l:cmd, ['run', 'ruff'])
     endif
 

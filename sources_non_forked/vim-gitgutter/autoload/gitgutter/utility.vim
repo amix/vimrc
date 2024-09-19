@@ -66,7 +66,7 @@ function! gitgutter#utility#is_active(bufnr) abort
 endfunction
 
 function! s:not_git_dir(bufnr) abort
-  return s:dir(a:bufnr) !~ '[/\\]\.git\($\|[/\\]\)'
+  return gitgutter#utility#dir(a:bufnr) !~ '[/\\]\.git\($\|[/\\]\)'
 endfunction
 
 function! s:is_file_buffer(bufnr) abort
@@ -162,9 +162,8 @@ function! gitgutter#utility#set_repo_path(bufnr, continuation) abort
   " *               -3 - assume unchanged
 
   call gitgutter#utility#setbufvar(a:bufnr, 'path', -1)
-  let cmd = gitgutter#utility#cd_cmd(a:bufnr,
-        \ gitgutter#git().' ls-files -v --error-unmatch --full-name -z -- '.
-        \ gitgutter#utility#shellescape(gitgutter#utility#filename(a:bufnr)))
+  let cmd = gitgutter#git(a:bufnr).' ls-files -v --error-unmatch --full-name -z -- '.
+        \ gitgutter#utility#shellescape(gitgutter#utility#filename(a:bufnr))
 
   if g:gitgutter_async && gitgutter#async#available() && !has('vim_starting')
     let handler = copy(s:set_path_handler)
@@ -193,9 +192,8 @@ endfunction
 function! gitgutter#utility#clean_smudge_filter_applies(bufnr)
   let filtered = gitgutter#utility#getbufvar(a:bufnr, 'filter', -1)
   if filtered == -1
-    let cmd = gitgutter#utility#cd_cmd(a:bufnr,
-          \ gitgutter#git().' check-attr filter -- '.
-          \ gitgutter#utility#shellescape(gitgutter#utility#filename(a:bufnr)))
+    let cmd = gitgutter#git(a:bufnr).' check-attr filter -- '.
+          \ gitgutter#utility#shellescape(gitgutter#utility#filename(a:bufnr))
     let [out, _] = gitgutter#utility#system(cmd)
     let filtered = out !~ 'unspecified'
     call gitgutter#utility#setbufvar(a:bufnr, 'filter', filtered)
@@ -203,19 +201,6 @@ function! gitgutter#utility#clean_smudge_filter_applies(bufnr)
   return filtered
 endfunction
 
-
-function! gitgutter#utility#cd_cmd(bufnr, cmd) abort
-  let cd = s:unc_path(a:bufnr) ? 'pushd' : (gitgutter#utility#windows() && s:dos_shell() ? 'cd /d' : 'cd')
-  return cd.' '.s:dir(a:bufnr).' && '.a:cmd
-endfunction
-
-function! s:unc_path(bufnr)
-  return s:abs_path(a:bufnr, 0) =~ '^\\\\'
-endfunction
-
-function! s:dos_shell()
-  return &shell == 'cmd.exe' || &shell == 'command.com'
-endfunction
 
 function! s:use_known_shell() abort
   if has('unix') && &shell !=# 'sh'
@@ -303,12 +288,12 @@ endfunction
 " Returns a dict of current path to original path at the given base.
 function! s:obtain_file_renames(bufnr, base)
   let renames = {}
-  let cmd = gitgutter#git()
+  let cmd = gitgutter#git(a:bufnr)
   if gitgutter#utility#git_supports_command_line_config_override()
     let cmd .= ' -c "core.safecrlf=false"'
   endif
   let cmd .= ' diff --diff-filter=R --name-status '.a:base
-  let [out, error_code] = gitgutter#utility#system(gitgutter#utility#cd_cmd(a:bufnr, cmd))
+  let [out, error_code] = gitgutter#utility#system(cmd)
   if error_code
     " Assume the problem is the diff base.
     call gitgutter#utility#warn('g:gitgutter_diff_base ('.a:base.') is invalid')
@@ -335,7 +320,8 @@ function! s:abs_path(bufnr, shellesc)
   return a:shellesc ? gitgutter#utility#shellescape(p) : p
 endfunction
 
-function! s:dir(bufnr) abort
+" Shellescaped
+function! gitgutter#utility#dir(bufnr) abort
   return gitgutter#utility#shellescape(fnamemodify(s:abs_path(a:bufnr, 0), ':h'))
 endfunction
 

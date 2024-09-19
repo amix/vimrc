@@ -3,7 +3,7 @@
 
 call ale#Set('go_golangci_lint_options', '')
 call ale#Set('go_golangci_lint_executable', 'golangci-lint')
-call ale#Set('go_golangci_lint_package', 0)
+call ale#Set('go_golangci_lint_package', 1)
 
 function! ale_linters#go#golangci_lint#GetCommand(buffer) abort
     let l:filename = expand('#' . a:buffer . ':t')

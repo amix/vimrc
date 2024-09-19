@@ -168,7 +168,7 @@ endfunction
 " argument can be either the object returned by FugitiveConfig(), or a Git
 " dir or buffer number to be passed along to FugitiveConfig().
 function! FugitiveConfigGet(name, ...) abort
-  return get(call('FugitiveConfigGetAll', [a:name] + (a:0 ? [a:1] : [])), 0, get(a:, 2, ''))
+  return get(call('FugitiveConfigGetAll', [a:name] + (a:0 ? [a:1] : [])), -1, get(a:, 2, ''))
 endfunction
 
 " FugitiveConfigGetAll() is like FugitiveConfigGet() but returns a list of

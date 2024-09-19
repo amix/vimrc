@@ -3,6 +3,12 @@ ALE JSONC Integration                                       *ale-jsonc-options*
 
 
 ===============================================================================
+biome                                                         *ale-jsonc-biome*
+
+Check the docs over at |ale-typescript-biome|.
+
+
+===============================================================================
 eslint                                                       *ale-jsonc-eslint*
 
 The `eslint` linter for JSON uses the JavaScript options for `eslint`; see:

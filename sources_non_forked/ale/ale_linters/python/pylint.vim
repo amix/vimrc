@@ -7,6 +7,7 @@ call ale#Set('python_pylint_use_global', get(g:, 'ale_use_global_executables', 0
 call ale#Set('python_pylint_change_directory', 1)
 call ale#Set('python_pylint_auto_pipenv', 0)
 call ale#Set('python_pylint_auto_poetry', 0)
+call ale#Set('python_pylint_auto_uv', 0)
 call ale#Set('python_pylint_use_msg_id', 0)
 
 function! ale_linters#python#pylint#GetExecutable(buffer) abort
@@ -18,6 +19,11 @@ function! ale_linters#python#pylint#GetExecutable(buffer) abort
     if (ale#Var(a:buffer, 'python_auto_poetry') || ale#Var(a:buffer, 'python_pylint_auto_poetry'))
     \ && ale#python#PoetryPresent(a:buffer)
         return 'poetry'
+    endif
+
+    if (ale#Var(a:buffer, 'python_auto_uv') || ale#Var(a:buffer, 'python_pylint_auto_uv'))
+    \ && ale#python#UvPresent(a:buffer)
+        return 'uv'
     endif
 
     return ale#python#FindExecutable(a:buffer, 'python_pylint', ['pylint'])
@@ -38,7 +44,7 @@ endfunction
 
 function! ale_linters#python#pylint#GetCommand(buffer, version) abort
     let l:executable = ale_linters#python#pylint#GetExecutable(a:buffer)
-    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry\|uv$'
     \   ? ' run pylint'
     \   : ''
 
