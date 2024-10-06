@@ -35,19 +35,91 @@ function! ale#definition#UpdateTagStack() abort
     endif
 endfunction
 
+function! ale#definition#FormatTSServerResponse(response_item, options) abort
+    if get(a:options, 'open_in') is# 'quickfix'
+        return {
+        \ 'filename': a:response_item.file,
+        \ 'lnum': a:response_item.start.line,
+        \ 'col': a:response_item.start.offset,
+        \}
+    else
+        return {
+        \ 'filename': a:response_item.file,
+        \ 'line': a:response_item.start.line,
+        \ 'column': a:response_item.start.offset,
+        \}
+    endif
+endfunction
+
 function! ale#definition#HandleTSServerResponse(conn_id, response) abort
     if has_key(a:response, 'request_seq')
     \&& has_key(s:go_to_definition_map, a:response.request_seq)
         let l:options = remove(s:go_to_definition_map, a:response.request_seq)
 
         if get(a:response, 'success', v:false) is v:true && !empty(a:response.body)
-            let l:filename = a:response.body[0].file
-            let l:line = a:response.body[0].start.line
-            let l:column = a:response.body[0].start.offset
+            let l:item_list = []
 
-            call ale#definition#UpdateTagStack()
-            call ale#util#Open(l:filename, l:line, l:column, l:options)
+            for l:response_item in a:response.body
+                call add(
+                \ l:item_list,
+                \ ale#definition#FormatTSServerResponse(l:response_item, l:options)
+                \)
+            endfor
+
+            if empty(l:item_list)
+                call ale#util#Execute('echom ''No definitions found''')
+            elseif len(l:item_list) == 1
+                let l:filename = l:item_list[0].filename
+
+                if get(l:options, 'open_in') is# 'quickfix'
+                    let l:line = l:item_list[0].lnum
+                    let l:column = l:item_list[0].col
+                else
+                    let l:line = l:item_list[0].line
+                    let l:column = l:item_list[0].column
+                endif
+
+                call ale#definition#UpdateTagStack()
+                call ale#util#Open(l:filename, l:line, l:column, l:options)
+            else
+                if get(l:options, 'open_in') is# 'quickfix'
+                    call setqflist([], 'r')
+                    call setqflist(l:item_list, 'a')
+                    call ale#util#Execute('cc 1')
+                else
+                    call ale#definition#UpdateTagStack()
+                    call ale#preview#ShowSelection(l:item_list, l:options)
+                endif
+            endif
         endif
+    endif
+endfunction
+
+function! ale#definition#FormatLSPResponse(response_item, options) abort
+    if has_key(a:response_item, 'targetUri')
+        " LocationLink items use targetUri
+        let l:uri = a:response_item.targetUri
+        let l:line = a:response_item.targetRange.start.line + 1
+        let l:column = a:response_item.targetRange.start.character + 1
+    else
+        " LocationLink items use uri
+        let l:uri = a:response_item.uri
+        let l:line = a:response_item.range.start.line + 1
+        let l:column = a:response_item.range.start.character + 1
+    endif
+
+    if get(a:options, 'open_in') is# 'quickfix'
+        return {
+        \ 'filename': ale#util#ToResource(l:uri),
+        \ 'lnum': l:line,
+        \ 'col': l:column,
+        \}
+    else
+        return {
+        \ 'filename': ale#util#ToResource(l:uri),
+        \ 'line': l:line,
+        \ 'column': l:column,
+        \}
     endif
 endfunction
 
@@ -65,20 +137,28 @@ function! ale#definition#HandleLSPResponse(conn_id, response) abort
             let l:result = []
         endif
 
-        for l:item in l:result
-            if has_key(l:item, 'targetUri')
-                " LocationLink items use targetUri
-                let l:uri = l:item.targetUri
-                let l:line = l:item.targetRange.start.line + 1
-                let l:column = l:item.targetRange.start.character + 1
-            else
-                " LocationLink items use uri
-                let l:uri = l:item.uri
-                let l:line = l:item.range.start.line + 1
-                let l:column = l:item.range.start.character + 1
-            endif
+        let l:item_list = []
 
+        for l:response_item in l:result
+            call add(l:item_list,
+            \ ale#definition#FormatLSPResponse(l:response_item, l:options)
+            \)
+        endfor
+
+        if empty(l:item_list)
+            call ale#util#Execute('echom ''No definitions found''')
+        elseif len(l:item_list) == 1
             call ale#definition#UpdateTagStack()
+
+            let l:uri = ale#util#ToURI(l:item_list[0].filename)
+
+            if get(l:options, 'open_in') is# 'quickfix'
+                let l:line = l:item_list[0].lnum
+                let l:column = l:item_list[0].col
+            else
+                let l:line = l:item_list[0].line
+                let l:column = l:item_list[0].column
+            endif
 
             let l:uri_handler = ale#uri#GetURIHandler(l:uri)
 
@@ -88,9 +168,16 @@ function! ale#definition#HandleLSPResponse(conn_id, response) abort
             else
                 call l:uri_handler.OpenURILink(l:uri, l:line, l:column, l:options, a:conn_id)
             endif
-
-            break
-        endfor
+        else
+            if get(l:options, 'open_in') is# 'quickfix'
+                call setqflist([], 'r')
+                call setqflist(l:item_list, 'a')
+                call ale#util#Execute('cc 1')
+            else
+                call ale#definition#UpdateTagStack()
+                call ale#preview#ShowSelection(l:item_list, l:options)
+            endif
+        endif
     endif
 endfunction
 

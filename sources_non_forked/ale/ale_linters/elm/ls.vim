@@ -16,7 +16,7 @@ function! ale_linters#elm#ls#GetProjectRoot(buffer) abort
     return !empty(l:elm_json) ? fnamemodify(l:elm_json, ':p:h') : ''
 endfunction
 
-function! ale_linters#elm#ls#GetOptions(buffer) abort
+function! ale_linters#elm#ls#GetInitializationOptions(buffer) abort
     return {
     \   'elmPath': ale#Var(a:buffer, 'elm_ls_elm_path'),
     \   'elmFormatPath': ale#Var(a:buffer, 'elm_ls_elm_format_path'),
@@ -37,5 +37,5 @@ call ale#linter#Define('elm', {
 \   'command': '%e --stdio',
 \   'project_root': function('ale_linters#elm#ls#GetProjectRoot'),
 \   'language': 'elm',
-\   'initialization_options': function('elm_ls#GetOptions')
+\   'initialization_options': function('ale_linters#elm#ls#GetInitializationOptions')
 \})

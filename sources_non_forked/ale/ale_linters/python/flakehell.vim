@@ -7,6 +7,7 @@ call ale#Set('python_flakehell_use_global', get(g:, 'ale_use_global_executables'
 call ale#Set('python_flakehell_change_directory', 'project')
 call ale#Set('python_flakehell_auto_pipenv', 0)
 call ale#Set('python_flakehell_auto_poetry', 0)
+call ale#Set('python_flakehell_auto_uv', 0)
 
 function! s:UsingModule(buffer) abort
     return ale#Var(a:buffer, 'python_flakehell_executable') is? 'python'
@@ -21,6 +22,11 @@ function! ale_linters#python#flakehell#GetExecutable(buffer) abort
     if (ale#Var(a:buffer, 'python_auto_poetry') || ale#Var(a:buffer, 'python_flakehell_auto_poetry'))
     \ && ale#python#PoetryPresent(a:buffer)
         return 'poetry'
+    endif
+
+    if (ale#Var(a:buffer, 'python_auto_uv') || ale#Var(a:buffer, 'python_flakehell_auto_uv'))
+    \ && ale#python#UvPresent(a:buffer)
+        return 'uv'
     endif
 
     if !s:UsingModule(a:buffer)
@@ -68,7 +74,7 @@ endfunction
 function! ale_linters#python#flakehell#GetCommand(buffer, version) abort
     let l:executable = ale_linters#python#flakehell#GetExecutable(a:buffer)
 
-    if (l:executable =~? 'pipenv\|poetry$')
+    if (l:executable =~? 'pipenv\|poetry\|uv$')
         let l:exec_args = ' run flakehell'
     elseif (l:executable is? 'python')
         let l:exec_args = ' -m flakehell'

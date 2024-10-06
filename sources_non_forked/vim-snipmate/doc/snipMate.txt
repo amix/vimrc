@@ -482,6 +482,20 @@ empty string if it hasn't. The second returns the filename if it's been named,
 and "name" if it hasn't. The third returns the filename followed by "_foo" if
 it has been named, and an empty string if it hasn't.
 
+                                                         *SnipMate-selections*
+Selections~
+
+Note: Version 1 of the parser is required for selections.
+
+In addition to providing sample text as a placeholder, you can specify a list
+of options that the user can choose from via |popupmenu-completion|:
+>
+    snippet todo
+        # ${1|TODO|FIXME|BUG}: $2
+< Notice that the : is replaced by the pipe |. Currently mirrors and
+placeholders are not supported within selection text. If alterations are made
+to the selected text, the stop becomes a regular stop, losing the selections.
+
                                                              *SnipMate-visual*
 The VISUAL Stop~
 

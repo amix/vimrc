@@ -116,14 +116,14 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
 
     " Write file from index to temporary file.
     let index_name = gitgutter#utility#get_diff_base(a:bufnr).':'.gitgutter#utility#base_path(a:bufnr)
-    let cmd .= gitgutter#git().' --no-pager show --textconv '.index_name.' > '.from_file.' || exit 0) && ('
+    let cmd .= gitgutter#git(a:bufnr).' --no-pager show --textconv '.index_name.' > '.from_file.' || exit 0) && ('
 
   elseif a:from ==# 'working_tree'
     let from_file = gitgutter#utility#repo_path(a:bufnr, 1)
   endif
 
   " Call git-diff.
-  let cmd .= gitgutter#git().' --no-pager'
+  let cmd .= gitgutter#git(a:bufnr).' --no-pager'
   if gitgutter#utility#git_supports_command_line_config_override()
     let cmd .= ' -c "diff.autorefreshindex=0"'
     let cmd .= ' -c "diff.noprefix=false"'
@@ -143,8 +143,6 @@ function! gitgutter#diff#run_diff(bufnr, from, preserve_full_diff) abort
   let cmd .= ' || exit 0'
 
   let cmd .= ')'
-
-  let cmd = gitgutter#utility#cd_cmd(a:bufnr, cmd)
 
   if g:gitgutter_async && gitgutter#async#available()
     call gitgutter#async#execute(cmd, a:bufnr, {

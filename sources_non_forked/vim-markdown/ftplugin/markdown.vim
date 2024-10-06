@@ -162,16 +162,19 @@ function! s:GetHeaderList()
     let l:front_matter = 0
     let l:header_list = []
     let l:vim_markdown_frontmatter = get(g:, 'vim_markdown_frontmatter', 0)
+    let l:fence_str = ''
     for i in range(1, line('$'))
         let l:lineraw = getline(i)
         let l:l1 = getline(i+1)
         let l:line = substitute(l:lineraw, '#', "\\\#", 'g')
         " exclude lines in fenced code blocks
-        if l:line =~# '````*' || l:line =~# '\~\~\~\~*'
+        if l:line =~# '\v^[[:space:]>]*(`{3,}|\~{3,})\s*(\w+)?\s*$'
             if l:fenced_block == 0
                 let l:fenced_block = 1
-            elseif l:fenced_block == 1
+                let l:fence_str = matchstr(l:line, '\v(`{3,}|\~{3,})')
+            elseif l:fenced_block == 1 && matchstr(l:line, '\v(`{3,}|\~{3,})') ==# l:fence_str
                 let l:fenced_block = 0
+                let l:fence_str = ''
             endif
         " exclude lines in frontmatters
         elseif l:vim_markdown_frontmatter == 1

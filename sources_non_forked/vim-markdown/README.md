@@ -68,8 +68,10 @@ The following commands are useful to open and close folds:
 - `zR`: opens all folds
 - `zm`: increases fold level throughout the buffer
 - `zM`: folds everything all the way
-- `za`: open a fold your cursor is on
-- `zA`: open a fold your cursor is on recursively
+- `za`: toggle a fold your cursor is on
+- `zA`: toggle a fold your cursor is on recursively
+- `zo`: open a fold your cursor is on
+- `zO`: open a fold your cursor is on recursively
 - `zc`: close a fold your cursor is on
 - `zC`: close a fold your cursor is on recursively
 

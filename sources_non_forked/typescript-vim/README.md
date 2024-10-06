@@ -1,8 +1,18 @@
-Typescript Syntax for Vim
+An old Typescript Syntax for Vim
 =========================
 
+---
+
+NOTE: This Typescript syntax was created before Typescript's 1.0 release, more than a decade ago. I hope it 
+has been helpful but there are now other options available. Vim has included 
+[Typescript syntax](https://github.com/vim/vim/blob/master/runtime/syntax/typescript.vim) for some years,
+which receives more frequent updates at its own [repository](https://github.com/HerringtonDarkholme/yats.vim).
+Neovim can also use a [treesitter grammar](https://github.com/tree-sitter/tree-sitter-typescript) for highlighting.
+
+---
+
 Syntax file and other settings for [TypeScript](http://typescriptlang.org). The
-syntax file is taken from this [blog
+syntax file was originally from this 2012 [blog
 post](https://docs.microsoft.com/en-us/archive/blogs/interoperability/sublime-text-vi-emacs-typescript-enabled).
 
 Checkout [Tsuquyomi](https://github.com/Quramy/tsuquyomi) for omni-completion

@@ -7,6 +7,7 @@ There are four linters for `eruby` files:
 - `erblint`
 - `erubis`
 - `erubi`
+- `htmlbeautifier`
 - `ruumba`
 
 `erb` is in the Ruby standard library and is mostly universal. `erubis` is the
@@ -45,6 +46,18 @@ g:ale_eruby_erblint_options                        *g:ale_ruby_erblint_options*
   Default: `''`
 
   This variable can be change to modify flags given to erblint.
+
+
+===============================================================================
+htmlbeautifier                                       *ale-eruby-htmlbeautifier*
+
+g:ale_eruby_htmlbeautifier_executable   *g:ale_eruby_htmlbeautifier_executable*
+                                        *b:ale_eruby_htmlbeautifier_executable*
+  Type: |String|
+  Default: `'htmlbeautifier'`
+
+  Override the invoked htmlbeautifier binary. This is useful for running
+  htmlbeautifier from binstubs or a bundle.
 
 
 ===============================================================================

@@ -37,6 +37,9 @@ Notes:
 * ASM
   * `gcc`
   * `llvm-mc`
+* Astro
+  * `eslint`
+  * `prettier`
 * AVRA
   * `avra`
 * Awk
@@ -182,6 +185,7 @@ Notes:
   * `erblint`
   * `erubi`
   * `erubis`
+  * `htmlbeautifier`
   * `ruumba`
 * Erlang
   * `SyntaxErl`
@@ -202,6 +206,9 @@ Notes:
   * `fusion-lint`
 * Git Commit Messages
   * `gitlint`
+* Gleam
+  * `gleam_format`
+  * `gleamlsp`
 * GLSL
   * `glslang`
   * `glslls`
@@ -271,6 +278,8 @@ Notes:
   * `rustywind`
   * `tidy`
   * `write-good`
+* Hurl
+  * `hurlfmt`
 * Idris
   * `idris`
 * Ink
@@ -290,6 +299,7 @@ Notes:
   * `javalsp`
   * `uncrustify`
 * JavaScript
+  * `biome`
   * `clang-format`
   * `cspell`
   * `deno`
@@ -307,6 +317,7 @@ Notes:
   * `xo`
 * JSON
   * `VSCode JSON language server`
+  * `biome`
   * `clang-format`
   * `cspell`
   * `dprint`
@@ -319,6 +330,7 @@ Notes:
 * JSON5
   * `eslint`
 * JSONC
+  * `biome`
   * `eslint`
 * Jsonnet
   * `jsonnet-lint`
@@ -417,6 +429,8 @@ Notes:
   * `ocamlformat`
   * `ocamllsp`
   * `ocp-indent`
+  * `ols`
+* Odin
   * `ols`
 * OpenApi
   * `ibm_validator`
@@ -558,10 +572,12 @@ Notes:
   * `reek`
   * `rubocop`
   * `ruby`
+  * `rubyfmt`
   * `rufo`
   * `solargraph`
   * `sorbet`
   * `standardrb`
+  * `steep`
   * `syntax_tree`
 * Rust
   * `cargo`!!
@@ -650,6 +666,7 @@ Notes:
 * TOML
   * `dprint`
 * TypeScript
+  * `biome`
   * `cspell`
   * `deno`
   * `dprint`
@@ -669,6 +686,7 @@ Notes:
 * Verilog
   * `hdl-checker`
   * `iverilog`
+  * slang
   * `verilator`
   * `vlog`
   * `xvlog`

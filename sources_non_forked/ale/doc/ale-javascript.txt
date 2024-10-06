@@ -26,6 +26,12 @@ To this: >
 
 
 ===============================================================================
+biome                                                    *ale-javascript-biome*
+
+Check the docs over at |ale-typescript-biome|.
+
+
+===============================================================================
 clang-format                                       *ale-javascript-clangformat*
 
 See |ale-c-clangformat| for information about the available options.

@@ -106,7 +106,7 @@ function! s:insert_snippet_text(snippet, lnum, col, indent)
 endfunction
 
 function! snipMate#placeholder_str(num, stops) abort
-	return snipMate#sniplist_str(a:stops[a:num].placeholder, a:stops)
+	return snipMate#sniplist_str(get(get(a:stops, a:num, {}), 'placeholder', []), a:stops)
 endfunction
 
 function! snipMate#sniplist_str(snippet, stops) abort
@@ -176,7 +176,7 @@ function! s:build_loc_info(snippet, stops, lnum, col, seen_items) abort
 			call s:add_update_objects(stub, seen_items)
 
 			" if we've found a stop?
-			if len(item) > 2 && type(item[1]) != type({})
+			if len(item) > 2 && type(item[1]) != type({}) && !exists('stub.items')
 				let col = s:build_loc_info(item[1:-2], stops, lnum, col, seen_items)
 			else
 				let col += len(snipMate#placeholder_str(id, stops))

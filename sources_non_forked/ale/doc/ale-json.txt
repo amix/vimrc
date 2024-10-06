@@ -3,6 +3,12 @@ ALE JSON Integration                                         *ale-json-options*
 
 
 ===============================================================================
+biome                                                          *ale-json-biome*
+
+Check the docs over at |ale-typescript-biome|.
+
+
+===============================================================================
 clang-format                                             *ale-json-clangformat*
 
 See |ale-c-clangformat| for information about the available options.

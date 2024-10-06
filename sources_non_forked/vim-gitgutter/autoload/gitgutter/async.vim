@@ -46,7 +46,7 @@ function! s:build_command(cmd)
   endif
 
   if has('win32')
-    return has('nvim') ? ['cmd.exe', '/c', a:cmd] : 'cmd.exe /c '.a:cmd
+    return has('nvim') ? a:cmd : 'cmd.exe /c '.a:cmd
   endif
 
   throw 'unknown os'

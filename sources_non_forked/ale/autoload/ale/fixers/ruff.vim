@@ -7,6 +7,7 @@ call ale#Set('python_ruff_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('python_ruff_change_directory', 1)
 call ale#Set('python_ruff_auto_pipenv', 0)
 call ale#Set('python_ruff_auto_poetry', 0)
+call ale#Set('python_ruff_auto_uv', 0)
 
 function! ale#fixers#ruff#GetCwd(buffer) abort
     if ale#Var(a:buffer, 'python_ruff_change_directory')
@@ -30,12 +31,17 @@ function! ale#fixers#ruff#GetExecutable(buffer) abort
         return 'poetry'
     endif
 
+    if (ale#Var(a:buffer, 'python_auto_uv') || ale#Var(a:buffer, 'python_ruff_auto_uv'))
+    \ && ale#python#UvPresent(a:buffer)
+        return 'uv'
+    endif
+
     return ale#python#FindExecutable(a:buffer, 'python_ruff', ['ruff'])
 endfunction
 
 function! ale#fixers#ruff#GetCommand(buffer) abort
     let l:executable = ale#fixers#ruff#GetExecutable(a:buffer)
-    let l:exec_args = l:executable =~? 'pipenv\|poetry$'
+    let l:exec_args = l:executable =~? 'pipenv\|poetry\|uv$'
     \   ? ' run ruff'
     \   : ''
 
@@ -46,8 +52,13 @@ function! ale#fixers#ruff#FixForVersion(buffer, version) abort
     let l:executable = ale#fixers#ruff#GetExecutable(a:buffer)
     let l:cmd = [ale#Escape(l:executable)]
 
-    if l:executable =~? 'pipenv\|poetry$'
+    if l:executable =~? 'pipenv\|poetry\|uv$'
         call extend(l:cmd, ['run', 'ruff'])
+    endif
+
+    " NOTE: ruff 0.5.0 removes `ruff <path>` in favor of `ruff check <path>`
+    if ale#semver#GTE(a:version, [0, 5, 0])
+        call extend(l:cmd, ['check'])
     endif
 
     let l:options = ale#Var(a:buffer, 'python_ruff_options')

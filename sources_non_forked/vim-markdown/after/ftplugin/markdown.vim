@@ -14,15 +14,21 @@ endfunction
 
 if get(g:, 'vim_markdown_folding_style_pythonic', 0)
     function! Foldexpr_markdown(lnum)
+        if (a:lnum == 1)
+            let b:fence_str = ''
+        endif
+
         let l1 = getline(a:lnum)
         "~~~~~ keep track of fenced code blocks ~~~~~
         "If we hit a code block fence
-        if l1 =~# '````*' || l1 =~# '\~\~\~\~*'
+        if l1 =~# '\v^[[:space:]>]*\v(`{3,}|\~{3,})\s*(\w+)?\s*$'
             " toggle the variable that says if we're in a code block
             if b:fenced_block == 0
                 let b:fenced_block = 1
-            elseif b:fenced_block == 1
+                let b:fence_str = matchstr(l1, '\v(`{3,}|\~{3,})')
+            elseif b:fenced_block == 1 && matchstr(l1, '\v(`{3,}|\~{3,})') ==# b:fence_str
                 let b:fenced_block = 0
+                let b:fence_str = ''
             endif
         " else, if we're caring about front matter
         elseif get(g:, 'vim_markdown_frontmatter', 0) == 1
@@ -100,16 +106,19 @@ else " vim_markdown_folding_style_pythonic == 0
     function! Foldexpr_markdown(lnum)
         if (a:lnum == 1)
             let l0 = ''
+            let b:fence_str = ''
         else
             let l0 = getline(a:lnum-1)
         endif
 
         " keep track of fenced code blocks
-        if l0 =~# '````*' || l0 =~# '\~\~\~\~*'
+        if l0 =~# '\v^[[:space:]>]*\v(`{3,}|\~{3,})\s*(\w+)?\s*$'
             if b:fenced_block == 0
                 let b:fenced_block = 1
-            elseif b:fenced_block == 1
+                let b:fence_str = matchstr(l0, '\v(`{3,}|\~{3,})')
+            elseif b:fenced_block == 1 && matchstr(l0, '\v(`{3,}|\~{3,})') ==# b:fence_str
                 let b:fenced_block = 0
+                let b:fence_str = ''
             endif
         elseif get(g:, 'vim_markdown_frontmatter', 0) == 1
             if b:front_matter == 1

@@ -26,6 +26,10 @@ support:
     git clone https://tpope.io/vim/commentary.git
     vim -u NONE -c "helptags commentary/doc" -c q
 
+Make sure this line is in your vimrc, if it isn't already:
+
+    filetype plugin indent on
+
 ## FAQ
 
 > My favorite file type isn't supported!

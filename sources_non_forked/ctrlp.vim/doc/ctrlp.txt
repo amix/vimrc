@@ -456,7 +456,7 @@ Set this to list of names to customize core types: >
   let g:ctrlp_types = ['mru', 'fil']
 
 By default, the types are: >
-  let g:ctrlp_types = ['fil', 'buf', 'mru'].
+  let g:ctrlp_types = ['fil', 'buf', 'mru']
 
                                                              *'g:ctrlp_abbrev'*
 Define input abbreviations that can be expanded (either internally or visibly)

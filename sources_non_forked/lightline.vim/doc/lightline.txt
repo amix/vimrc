@@ -963,8 +963,11 @@ Problem 6:					*lightline-problem-6*
 	How to use a powerline font and the triangles for separators.
 
 		Using a patched font is not recommended due to less
-		portability. Also the powerline fonts project is not actively
-		maintained (https://github.com/powerline/fonts).
+		portability. Also the original powerline fonts project is
+		not actively maintained (https://github.com/powerline/fonts).
+		However, there are alternatives which offer both patching of
+		local fonts as well as downloads of already patched fonts,
+		e.g. Nerd Fonts (https://github.com/ryanoasis/nerd-fonts).
 
 		If you still want to use a patched font, you can configure
 >

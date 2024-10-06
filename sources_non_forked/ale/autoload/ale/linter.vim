@@ -40,6 +40,7 @@ let s:default_ale_linter_aliases = {
 " NOTE: Update the g:ale_linters documentation when modifying this.
 let s:default_ale_linters = {
 \   'apkbuild': ['apkbuild_lint', 'secfixes_check'],
+\   'astro': ['eslint'],
 \   'csh': ['shell'],
 \   'elixir': ['credo', 'dialyxir', 'dogma'],
 \   'go': ['gofmt', 'golangci-lint', 'gopls', 'govet'],
@@ -47,9 +48,9 @@ let s:default_ale_linters = {
 \   'hack': ['hack'],
 \   'help': [],
 \   'inko': ['inko'],
-\   'json': ['jsonlint', 'spectral', 'vscodejson'],
+\   'json': ['biome', 'jsonlint', 'spectral', 'vscodejson'],
 \   'json5': [],
-\   'jsonc': [],
+\   'jsonc': ['biome'],
 \   'perl': ['perlcritic'],
 \   'perl6': [],
 \   'python': ['flake8', 'mypy', 'pylint', 'pyright', 'ruff'],
@@ -60,7 +61,7 @@ let s:default_ale_linters = {
 \   'vue': ['eslint', 'vls'],
 \   'zsh': ['shell'],
 \   'v': ['v'],
-\   'yaml': ['spectral', 'yaml-language-server', 'yamllint'],
+\   'yaml': ['actionlint', 'spectral', 'yaml-language-server', 'yamllint'],
 \}
 
 " Testing/debugging helper to unload all linters.

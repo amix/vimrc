@@ -4,6 +4,7 @@
 call ale#Set('php_cs_fixer_executable', 'php-cs-fixer')
 call ale#Set('php_cs_fixer_use_global', get(g:, 'ale_use_global_executables', 0))
 call ale#Set('php_cs_fixer_options', '')
+call ale#Set('php_cs_fixer_fix_options', '')
 
 function! ale#fixers#php_cs_fixer#GetExecutable(buffer) abort
     return ale#path#FindExecutable(a:buffer, 'php_cs_fixer', [
@@ -18,7 +19,8 @@ function! ale#fixers#php_cs_fixer#Fix(buffer) abort
     return {
     \   'command': ale#Escape(l:executable)
     \       . ' ' . ale#Var(a:buffer, 'php_cs_fixer_options')
-    \       . ' fix %t',
+    \       . ' fix ' . ale#Var(a:buffer, 'php_cs_fixer_fix_options')
+    \       . ' %t',
     \   'read_temporary_file': 1,
     \}
 endfunction

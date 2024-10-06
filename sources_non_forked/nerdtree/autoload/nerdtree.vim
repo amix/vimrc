@@ -234,6 +234,38 @@ function! nerdtree#pathEquals(lhs, rhs) abort
     endif
 endfunction
 
+"FUNCTION: nerdtree#onBufLeave() {{{2
+" used for handling the nerdtree BufLeave/WinLeave events.
+function! nerdtree#onBufLeave() abort
+    " detect whether we are in the middle of sourcing a session.
+    " if it is a buffer from the sourced session we need to restore it.
+    if exists('g:SessionLoad') && !exists('b:NERDTree')
+        let bname = bufname('%')
+        " is the buffer for a tab tree?
+        if bname =~# '^' . g:NERDTreeCreator.BufNamePrefix() . 'tab_\d\+$'
+            " rename loaded buffer and mark it as trash to prevent this event
+            " getting fired again
+            exec 'file TRASH_' . bname
+            " delete the trash buffer
+            exec 'bwipeout!'
+            " rescue the tab tree at the current working directory
+            call g:NERDTreeCreator.CreateTabTree(getcwd())
+        " is the buffer for a window tree?
+        elseif bname =~# '^' . g:NERDTreeCreator.BufNamePrefix(). 'win_\d\+$'
+            " rescue the window tree at the current working directory
+            call g:NERDTreeCreator.CreateWindowTree(getcwd())
+        else " unknown buffer type
+            " rename buffer to mark it as broken.
+            exec 'file BROKEN_' . bname
+            call nerdtree#echoError('Failed to restore "' . bname . '" from session. Is this session created with an older version of NERDTree?')
+        endif
+    else
+        if g:NERDTree.IsOpen()
+            call b:NERDTree.ui.saveScreenState()
+        endif
+    endif
+endfunction
+
 " SECTION: View Functions {{{1
 "============================================================
 

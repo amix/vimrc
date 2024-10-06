@@ -1,4 +1,4 @@
-# Copilot.vim
+# GitHub Copilot for Vim and Neovim
 
 GitHub Copilot uses OpenAI Codex to suggest code and entire functions in
 real-time right from your editor.  Trained on billions of lines of public
@@ -48,7 +48,7 @@ Terms](https://docs.github.com/en/site-policy/github-terms/github-terms-for-addi
           git clone https://github.com/github/copilot.vim.git `
             $HOME/AppData/Local/nvim/pack/github/start/copilot.vim
 
-4.  Start Neovim and invoke `:Copilot setup`.
+4.  Start Vim/Neovim and invoke `:Copilot setup`.
 
 [Node.js]: https://nodejs.org/en/download/
 [Neovim]: https://github.com/neovim/neovim/releases/latest

@@ -1,11 +1,6 @@
-if exists('g:autoloaded_copilot_job')
-  finish
-endif
-let g:autoloaded_copilot_job = 1
-
 scriptencoding utf-8
 
-function copilot#job#Nop(...) abort
+function! copilot#job#Nop(...) abort
 endfunction
 
 function! s:Jobs(job_or_jobs) abort

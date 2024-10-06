@@ -117,10 +117,10 @@ function! ale#hover#ParseLSPResult(contents) abort
             for l:line in split(l:item, "\n")
                 if l:fence_language is v:null
                     " Look for the start of a code fence. (```python, etc.)
-                    let l:match = matchlist(l:line, '^``` *\([^ ]\+\) *$')
+                    let l:match = matchlist(l:line, '^``` *\([^ ]\+\)\? *$')
 
                     if !empty(l:match)
-                        let l:fence_language = l:match[1]
+                        let l:fence_language = len(l:match) > 1 ? l:match[1] : 'text'
 
                         if !empty(l:marked_list)
                             call add(l:fence_lines, '')

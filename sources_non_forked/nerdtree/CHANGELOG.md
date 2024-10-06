@@ -13,6 +13,16 @@
             - Pull Request Title n (PR Author) [PR Number](Link to PR)
 -->
 #### 7.1
+- **.3**:
+    - docs: update FAQ snippets containing quit command. (rzvxa) [#1417](https://github.com/preservim/nerdtree/pull/1417)
+    - feat: jump to bookmark table shortcut. (ds2606, rzvxa) [#1394](https://github.com/preservim/nerdtree/pull/1394)
+    - fix: typo in docs for show file lines setting. (lothardp) [#1426](https://github.com/preservim/nerdtree/pull/1426)
+- **.2**:
+    - fix: GetWinNum regex pattern. (rzvxa) [#1409](https://github.com/preservim/nerdtree/pull/1409)
+    - fix: session restore for nerdtree buffers. (rzvxa) [#1405](https://github.com/preservim/nerdtree/pull/1405)
+- **.1**:
+    - fix: change default binding of filelines to `FL`. (rzvxa) [#1400](https://github.com/preservim/nerdtree/pull/1400)
+    - fix: toggle zoom resizing. (ds2606) [#1395](https://github.com/preservim/nerdtree/pull/1395)
 - **.0**:
     - fix: typo in the docs. (bl4kraven) [#1390](https://github.com/preservim/nerdtree/pull/1390)
     - feat: add NERDTreeExplore command. (msibal6) [#1389](https://github.com/preservim/nerdtree/pull/1389)

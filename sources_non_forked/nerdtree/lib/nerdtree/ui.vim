@@ -62,6 +62,7 @@ function! s:UI._dumpHelp()
         let help .= "\"\n\" ----------------------------\n"
         let help .= "\" Bookmark table mappings~\n"
         let help .= "\" double-click,\n"
+        let help .= '" '. g:NERDTreeMapJumpBookmarks .": jump to bookmark table\n"
         let help .= '" '. g:NERDTreeMapActivateNode .": open bookmark\n"
         let help .= '" '. g:NERDTreeMapPreview .": preview file\n"
         let help .= '" '. g:NERDTreeMapPreview .": find dir in tree\n"
@@ -482,10 +483,10 @@ function! s:UI.toggleIgnoreFilter()
     call self.centerView()
 endfunction
 
-" FUNCTION: s:UI.toggleShowBookmarks() {{{1
-" Toggle the visibility of the Bookmark table.
-function! s:UI.toggleShowBookmarks()
-    let self._showBookmarks = !self._showBookmarks
+" FUNCTION: s:UI.setShowBookmarks() {{{1
+" Sets the visibility of the Bookmark table.
+function! s:UI.setShowBookmarks(value)
+    let self._showBookmarks = a:value
 
     if self.getShowBookmarks()
         call self.nerdtree.render()
@@ -501,6 +502,12 @@ function! s:UI.toggleShowBookmarks()
     endif
 
     call self.centerView()
+endfunction
+
+" FUNCTION: s:UI.toggleShowBookmarks() {{{1
+" Toggle the visibility of the Bookmark table.
+function! s:UI.toggleShowBookmarks()
+    call self.setShowBookmarks(!self._showBookmarks)
 endfunction
 
 " FUNCTION: s:UI.toggleShowFiles() {{{1

@@ -102,9 +102,13 @@ The following commands are useful to open and close folds:
                                                               *vim-markdown-zM*
 - 'zM': folds everything all the way
                                                               *vim-markdown-za*
-- 'za': open a fold your cursor is on
+- 'za': toggle a fold your cursor is on
                                                               *vim-markdown-zA*
-- 'zA': open a fold your cursor is on recursively
+- 'zA': toggle a fold your cursor is on recursively
+                                                              *vim-markdown-zo*
+- 'zo': open a fold your cursor is on
+                                                              *vim-markdown-zO*
+- 'zO': open a fold your cursor is on recursively
                                                               *vim-markdown-zc*
 - 'zc': close a fold your cursor is on
                                                               *vim-markdown-zC*

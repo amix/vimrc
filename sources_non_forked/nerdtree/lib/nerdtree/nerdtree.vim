@@ -144,7 +144,7 @@ function! s:NERDTree.GetWinNum()
 
     " If WindowTree, there is no t:NERDTreeBufName variable. Search all windows.
     for w in range(1,winnr('$'))
-        if bufname(winbufnr(w)) =~# '^' . g:NERDTreeCreator.BufNamePrefix() . '\d\+$'
+        if bufname(winbufnr(w)) =~# '^' . g:NERDTreeCreator.BufNamePrefix() . 'win_\d\+$'
             return w
         endif
     endfor
