@@ -56,6 +56,9 @@ command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Add lines of relative number to the left
+set relativenumber
+
 " Set 7 lines to the cursor - when moving vertically using j/k
 set so=7
 
