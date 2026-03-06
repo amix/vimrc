@@ -1,1 +1,0 @@
-runtime! compiler/typescript.vim

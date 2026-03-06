@@ -1,7 +1,0 @@
-*cached_file_contents*  read contents of a file then cache extracted data
-                    Author: Marc Weber, marco-oweber@gmx.de
-
------------------------------------------------------------------------
-HOWTO~
-
-  see cached_file_contents#Test()

@@ -1,6 +1,0 @@
-[filter "reverse"]
-  clean = "rev"
-  smudge = "rev"
-
-[diff "reverse"]
-  textconv = "cat"

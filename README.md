@@ -1,5 +1,6 @@
+**This repo is no longer maintained. Refer to my [vim-config](https://github.com/Willie169/vim-config) and [nvim-config](https://github.com/Willie169/nvim-config) repos for my new configurations for Vim and Neovim.**
 
-![VIM](https://dnp4pehkvoo6n.cloudfront.net/43c5af597bd5c1a64eb1829f011c208f/as/Ultimate%20Vimrc.svg)
+![VIM](https://www.vim.org/images/vim_small.gif)
 
 # The Ultimate vimrc
 
@@ -69,19 +70,6 @@ Just do a git rebase! Python 3 is required.
     git pull --rebase
     python update_plugins.py  # use python3 if python is unavailable
 
-## Some screenshots
-
-Colors when editing a Python file:
-
-![Screenshot 1](https://dnp4pehkvoo6n.cloudfront.net/07583008e4da885801657e8781777844/as/Python%20editing.png)
-
-[NERD Tree](https://github.com/preservim/nerdtree) plugin in a terminal window:
-![Screenshot 3](https://dnp4pehkvoo6n.cloudfront.net/ae719203166585d64728f28398f4b1b7/as/Terminal%20usage.png)
-
-Distraction free mode using [goyo.vim](https://github.com/junegunn/goyo.vim) and [vim-zenroom2](https://github.com/amix/vim-zenroom2):
-![Screenshot 4](https://dnp4pehkvoo6n.cloudfront.net/f0dcc4c9739148c56cbf8285a910ac41/as/Zen%20mode.png)
-
-
 ## Included Plugins
 
 I recommend reading the docs of these plugins to understand them better. Each plugin provides a much better Vim experience!
@@ -103,7 +91,7 @@ I recommend reading the docs of these plugins to understand them better. Each pl
 * [vim-multiple-cursors](https://github.com/terryma/vim-multiple-cursors): Sublime Text style multiple selections for Vim, CTRL+N is remapped to CTRL+S (due to YankRing)
 * [vim-yankstack](https://github.com/maxbrunsfeld/vim-yankstack): Maintains a history of previous yanks, changes and deletes
 * [vim-zenroom2](https://github.com/amix/vim-zenroom2) Remove all clutter and focus only on the essential. Similar to iA Writer or Write Room
-* [gist-vim](https://github.com/mattn/gist-vim) Easily create gists from Vim using the `:Gist` command
+* [vim-gist](https://github.com/mattn/vim-gist) Easily create gists from Vim using the `:Gist` command
 * [vim-indent-guides](https://github.com/nathanaelkane/vim-indent-guides) Is a plugin for visually displaying indent levels in Vim
 * [editorconfig-vim](https://github.com/editorconfig/editorconfig-vim) EditorConfig helps maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs
 * [copilot.vim](https://github.com/github/copilot.vim) Plugin for GitHub Copilot (AI autocompletion FTW 😅)
@@ -417,12 +405,3 @@ map <leader>p :cp<cr>
 Just do following:
 * Remove `~/.vim_runtime`
 * Remove any lines that reference `.vim_runtime` in your `~/.vimrc`
-
-
-## Looking for a remote-first job?
-
-Maintaining this Vim configuration isn't my day job. Daily I am the founder/CEO of [Doist](https://doist.com/). You could come and help us build the workplace of the future while living a balanced life (anywhere in the world 🌍🌎🌏).
-
-PS: Using Vim isn't a requirement 😄
-
-

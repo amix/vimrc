@@ -1,2 +1,0 @@
-*.vim eol=lf
-/dist/** -whitespace -diff

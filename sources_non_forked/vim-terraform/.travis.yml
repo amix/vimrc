@@ -1,4 +1,0 @@
-language: vim
-
-script: |
-  make

@@ -1,6 +1,0 @@
-version: '2'
-services:
-  rspec:
-    build: .
-    volumes:
-    - .:/vim-python-pep8-indent
