@@ -65,7 +65,7 @@ SOURCE_DIR = path.join(path.dirname(__file__), "sources_non_forked")
 
 def download_extract_replace(plugin_name, zip_path, temp_dir, source_dir):
     # Download and extract file in temp dir
-    with urllib.request.urlopen(zip_path) as req:
+    with urllib.request.urlopen(zip_path, timeout=60) as req:
         zip_f = zipfile.ZipFile(BytesIO(req.read()))
         zip_f.extractall(temp_dir)
         content_disp = req.headers.get("Content-Disposition")
