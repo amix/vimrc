@@ -1,4 +1,5 @@
-**This repo is no longer maintained. Refer to my [vim-config](https://github.com/Willie169/vim-config) and [nvim-config](https://github.com/Willie169/nvim-config) repos for my new configurations for Vim and Neovim.**
+# This repo is no longer maintained. Refer to my [vim-config](https://github.com/Willie169/vim-config) and [nvim-config](https://github.com/Willie169/nvim-config) repos for my new configurations for Vim and Neovim.
+# This repo is a fork of [amix's vimrc](https://github.com/amix/vimrc).
 
 ![VIM](https://www.vim.org/images/vim_small.gif)
 
